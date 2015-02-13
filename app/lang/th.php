@@ -7,10 +7,17 @@
  */
 
 return [
+    'ADD' => 'เพิ่ม',
+    'EDIT' => 'แก้ไข',
+    'DELETE' => 'ลบ',
+    'SEARCH' => 'ค้นหา',
+    'BUTTON' => 'จัดการ',
+
     # โครงสร้างระบบ
     'MOD_PARENT_ID' => 'โหนดแม่',
     'MOD_NAME_TH' => 'ชื่อรายการ(TH)',
-    'MOD_LEVLE' => 'ระดับรายการ',
+    'MOD_NAME_EN' => 'ชื่อรายการ(EN)',
+    'MOD_LEVEL' => 'ระดับรายการ',
     'MOD_ORDER' => 'ลำดับ',
     'MOD_ENABLE' => 'เปีดใช้งาน',
     'ENABLE' => [

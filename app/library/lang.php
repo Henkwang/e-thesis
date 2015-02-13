@@ -15,17 +15,22 @@ class Lang
 
     function __construct($lang = 'th')
     {
-        $this->_lang = require_once(__DIR__ . '../../lang/' . $lang. '.php');
+        $this->_lang = require_once(__DIR__ . '../../lang/' . $lang . '.php');
     }
 
-    public function label($name = '')
+    public function label($name = '', $more = '')
     {
         if (isset($this->_lang[$name])) {
             if (is_array($this->_lang[$name])) {
-                return (isset($this->_lang[$name]['label']) ? $this->_lang[$name]['label'] : $name);
+                $label = (isset($this->_lang[$name]['label']) ? $this->_lang[$name]['label'] : $name);
+
             } else {
-                return $this->_lang[$name];
+                $label = $this->_lang[$name];
             }
+            $label = str_replace('__M__', $more, $label);
+            return $label;
+        } else if (stripos($name, '_TH') || stripos($name, '_EN')) {
+
         } else {
             return $name;
         }

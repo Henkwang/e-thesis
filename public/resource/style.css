@@ -31,3 +31,10 @@ ul{
 .form-horizontal .checkbox,.form-horizontal .radio{
     padding-top: 0;
 }
+
+.dataTables_wrapper .dataTables_length{
+    position: absolute;
+    left: 50%;
+    right: auto;
+    padding-top: 5px;
+}
