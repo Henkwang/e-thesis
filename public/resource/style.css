@@ -1,0 +1,33 @@
+.nopadding-right{
+    padding-right: 0 !important;
+}
+
+.nopadding-left{
+    padding-left: 0 !important;
+}
+
+.nopadding{
+    padding: 0 !important;
+}
+
+.padding-mini{
+     padding-right: 5px;
+     padding-left: 5px;
+}
+
+ul{
+    padding: 0;
+}
+
+.form-control-wrapper{
+    margin-left: 0px !important;
+    margin-right: 0px !important;
+}
+
+.input-group-addon{
+    padding: 0px;
+}
+
+.form-horizontal .checkbox,.form-horizontal .radio{
+    padding-top: 0;
+}

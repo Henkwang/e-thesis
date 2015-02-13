@@ -1,0 +1,147 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: attapon.th
+ * Date: 20/1/2558
+ * Time: 13:01
+ */
+?>
+<?php
+$menu_class = new \EThesis\Library\MenuEThesis();
+$html = $menu_class->createMenu();
+?>
+
+
+<div class="navbar navbar-material-deep-purple-700" style="margin-bottom: 0px">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-inverse-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="<?= '/e-thesis' ?>">E-Thesis</a>
+    </div>
+    <div class="navbar-collapse collapse navbar-inverse-collapse">
+
+    </div>
+</div>
+<script>
+    $(function () {
+        $('a[href="#"]').on('click', function (e) {
+            e.preventDefault();
+        });
+    });
+</script>
+
+
+<div class="navbar navbar-material-purple-400 navber-small">
+    <div class="navbar-collapse collapse navbar-responsive-collapse">
+        <ul class="nav navbar-nav">
+            <?= $html ?>
+        </ul>
+    </div>
+</div>
+
+
+<style>
+    .navber-small {
+        min-height: 10px;
+    }
+
+    .navber-small .navbar-nav > li > a {
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+
+    .nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+        border-radius: 0;
+        border: 2px inset rgba(0, 255, 233, 0.52) !important;
+        /*border-right: 2px inset #b5c8b4 !important;*/
+        background-color: #005d4f !important;
+    }
+
+
+</style>
+
+<div class="col-md-12" id="main_tab">
+    <ul class="nav nav-tabs">
+
+    </ul>
+    <div id="main_tab_content" class="tab-content">
+
+    </div>
+</div>
+
+<script>
+
+    function count_tab(tab_id) {
+        var count = jQuery("#" + tab_id + " > ul > li").length;
+        return count;
+    }
+
+    function getRandomInt() {
+        var max = 999999;
+        return Math.floor(Math.random() * max);
+    }
+
+    function tab_close(tab_id, num_tab) {
+        jQuery("#" + tab_id + "_id-" + num_tab).remove();
+        jQuery("#" + tab_id + " ul li a[href=#" + tab_id + "_id-" + num_tab + "]").parent().remove();
+
+        var count = count_tab(tab_id);
+        var elm = jQuery(jQuery("#" + tab_id + " > ul > li")[count - 1]).children('a');
+        //console.log(elm);
+        if (elm.length > 0)
+            elm[0].click();
+        //jQuery("#" + tab_id + " > ul > li").children('a').click();
+        //jQuery("#" + tab_id + " ul li a[href=#" + tab_id + "_id-" + (num_tab - 1) + "]").click();
+
+    }
+
+    function add_tab(tab_id) {
+        var tab_link = jQuery("#" + tab_id + ' > ul');
+        var tab_contant = jQuery("#" + tab_id + ' > #' + tab_id + '_content');
+        var id = getRandomInt();
+        tab_link.append('<li class=""><a href="#main_tab_id-' + id + '" data-toggle="tab"><i class="md md-sync md-lg md-spin-reverse"></i></a></li>');
+        tab_contant.append('<div class="tab-pane fade" id="main_tab_id-' + id + '">'
+        + '<button type="button" style="margin:1px" class="close btn btn-danger btn-raised" onclick="javascript:tab_close(\'main_tab\',' + id + ')"><i class="md-close"></i></button>'
+        + '<div class="well">'
+        + '<div id="main_tab_content-' + id + '"><div class="text-center"> <i class="md md-sync md-5x md-spin-reverse"></i> </div></div>'
+        + '</div>'
+        + '</div>');
+        var label_tab_elm = jQuery("#" + tab_id + ' > ul > li > a[href=#' + tab_id + '_id-' + id + ']');
+        var content_elm = jQuery('#' + tab_id + '_content-' + id);
+        label_tab_elm.click();
+        //console.log([label_tab_elm, content_elm]);
+        //label_tab_elm.html(id);
+        //content_elm.html('<div class="well">' + id + '</div>');
+        return {'label': label_tab_elm, 'content': content_elm, 'id': id};
+    }
+
+    function call_page(label, url, data) {
+        var tab_name = 'main_tab';
+        var elm = add_tab(tab_name);
+        jQuery.ajax({
+            type: "POST",
+            url: "<?= \EThesis\Library\DIPhalcon::get('url')->get('');?>" + url,
+            data: data,
+            success: function (result) {
+                if (result == '') {
+                    alert('หมดเวลาการใช้งานระบบ กรุณาลงชื่อเข้าใช้งานใหม่')
+                } else {
+                    elm.label.html(label);
+                    elm.content.html(result);
+                }
+            },
+            error: function () {
+                tab_close(tab_name, elm.id);
+                alert('ผิดพลาด ไม่เจอหน้านี้');
+            }
+        });
+    }
+</script>
+
+
+
+
+
