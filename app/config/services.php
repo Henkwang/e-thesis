@@ -92,6 +92,7 @@ $di->set('sess', function () {
     $session->set('userfac', '');
     $session->set('usergroup', '1');
     $session->set('usertype', 'A');
+    $session->set('lang', 'th');
 
     return $session;
 });

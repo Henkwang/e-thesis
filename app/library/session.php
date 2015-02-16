@@ -39,7 +39,6 @@ class Session
         $this->phalcon_session->set('user_ip', $this->get_userip());
         $this->phalcon_session->set('user_agent', $_SERVER['HTTP_USER_AGENT']);
         $this->phalcon_session->set('last_active', $now);
-        //$this->phalcon_session->set('lang', 'th');
     }
 
     public function init()
@@ -71,7 +70,10 @@ class Session
         $name = strtolower($name);
         if ($name == '' || $name == 'all') {
             foreach ($this->phalcon_session->getIterator() as $key => $val) {
-                $item[$key] = $val;
+                if (strpos($key, Session::SESSION_NAME) !== FALSE) {
+                    $key = str_replace(Session::SESSION_NAME, '', $key);
+                    $item[$key] = $val;
+                }
             }
 
         } else if ($this->phalcon_session->has($name)) {

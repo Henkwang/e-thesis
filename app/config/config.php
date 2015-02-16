@@ -23,8 +23,9 @@ return new \Phalcon\Config(array(
     'module' => [
         'testform',
         'main',
-        'autovalue',
+        'ajax',
         'system',
+        'bs'
     ],
 
     /*

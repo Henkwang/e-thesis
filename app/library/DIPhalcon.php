@@ -16,7 +16,7 @@ class DIPhalcon
 
     /**
      * @param string $name
-     * @return bool|mixed|\Phalcon\DI|\Phalcon\DiInterface
+     * @return bool|\stdClass
      */
     public static function get($name = '')
     {

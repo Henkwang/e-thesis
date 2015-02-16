@@ -115,5 +115,11 @@ class Module_model extends \EThesis\Library\Adodb
         return $result;
     }
 
+    public function delete($id){
+        $arr = ['RECORD_STATUS'=> 'D'];
+        $result = $this->update($arr, $id);
+        return $result;
+    }
+
 
 }
