@@ -15,6 +15,14 @@ return [
         'filter' => ['FACULTY_TYPE'=>'F'],
         'order' => 'FACULTY_CODE ASC',
     ],
+    'MAS_DIVISION' => [
+        'module' => 'Upreg',
+        'model' => 'Faculty_model',
+        'key' => 'FACULTY_ID',
+        'label' => "FACULTY_CODE + ' ' + FACULTY_NAME_ML",
+        'filter' => [],
+        'order' => 'FACULTY_CODE ASC',
+    ],
     'MAS_PROGRAM' => [
         'module' => 'Upreg',
         'model' => 'Program_model',

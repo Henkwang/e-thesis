@@ -56,7 +56,7 @@ class Program_model extends \EThesis\Library\Adodb
         $sql = "SELECT  {$sql_field} ";
         $sql .= "FROM " . ($this->use_view !== FALSE ? "{$this->schema}.{$this->use_view}_{$this->table}" : "{$this->schema}.{$this->table}");
         $sql .= " WHERE " . $this->check_filter($filters);
-        echo $sql .= ($order != FALSE ? "ORDER BY {$order}" : '');
+        $sql .= ($order != FALSE ? "ORDER BY {$order}" : '');
         $result = ($limit == FALSE ? $this->adodb->Execute($sql) : $this->adodb->SelectLimit($sql, $limit, $offset));
 
         return $result;

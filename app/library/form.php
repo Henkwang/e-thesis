@@ -61,6 +61,7 @@ class Form
         'attr' => [],
         'select_multiple' => false,
         'select_size' => false,
+        'select_filter' => false,
         'disable' => false,
 
         //- Select CheckBok Radio AutoComplete
@@ -85,8 +86,10 @@ class Form
         'minlength' => false,
         'trim' => false,
         'phone' => false,
+        'citizen' => false,
         'callback' => false,
         'tooltip' => false,
+        'between' => [],
         //-------------
     ];
 
@@ -105,6 +108,7 @@ class Form
     private $_formid = '';
     private $_input_array = [];
     private $_param_array = [];
+    private $_input_validate = [];
     /*
      * External Library
      */
@@ -146,8 +150,10 @@ class Form
      */
     public function add_input($name, array $param = [])
     {
+//        print_r($param);
         $this->_input_array[] = $name;
-        $this->_param_array[$name] = array_merge($this->param_default, $param);
+        $this->_param_array[$name] = Form::array_marge($this->param_default, $param);
+
     }
 
 
@@ -180,6 +186,7 @@ class Form
             'input' => $this->_cp_input,
             'valid' => $this->_cp_validate,
         ];
+//        print_r($this->_param_array);
         return $data;
     }
 
@@ -231,7 +238,7 @@ class Form
             if ($param['label_disable'] == FALSE) {
                 $lang = ($param['label'] ? $param['label'] : $this->_lang_class->label($name));
                 $attr['for'] = $name;
-                $attr['class'] = ['col-xs-offset-' . $param['offset'], 'col-xs-' . $param['col'], $param['label_class_default'], $param['label_class']];
+                $attr['class'] = ['col-xs-offset-' . $param['label_offset'], 'col-xs-' . $param['label_col'], $param['label_class_default'], $param['label_class']];
                 $attr['style'] = ['display:' . ($param['label_hide'] ? 'none;' : 'block;'), $param['label_style']];
                 $html = '<label ' . $this->join_attr($attr) . '>' . $lang . '</label>';
             }
@@ -268,9 +275,11 @@ class Form
         } else {
             $lang = 'locale:\'' . strtolower($this->lang) . '_' . strtoupper($this->lang) . '\',';
         }
-        $this->_cp_validate = "$('#{$this->formname}')
+        $this->_cp_validate = "
+                $('#{$this->formname}')
                     .formValidation({
                         framework: 'bootstrap',
+                        excluded: ':hidden :not(:visible) :disabled ',
                         {$lang}
                         icon: {
                             valid: 'md-check',
@@ -278,42 +287,45 @@ class Form
                             validating: 'md-refresh',
                             feedback: 'form-control-feedback'
                         },
-                        excluded: ':hidden :not(:visible) :disabled ',
+                        fields: decode_json('" . json_encode($this->_input_validate) . "'),
                     });";
     }
 
 
-    private function check_validation(array $vilid)
+    private function check_validation($input_name, array $vilid)
     {
+//        print_r($vilid);
         $attr = [];
-        if ($vilid['max'] !== false) {
-            $attr['data-fv-between-max'] = $vilid['max'];
-        }
-        if ($vilid['min'] !== false) {
-            $attr['data-fv-between-min'] = $vilid['min'];
+        if ($vilid['max'] || $vilid['max'] || $vilid['between']) {
+            $attr['between']['max'] = (!empty($vilid['between'] ? max($vilid['between']) : $vilid['max']));
+            $attr['between']['min'] = (!empty($vilid['between'] ? min($vilid['between']) : $vilid['min']));
         }
         if ($vilid['maxlength'] !== false) {
-            $attr['data-fv-stringlength-max'] = $vilid['maxlength'];
+            $attr['stringLength']['max'] = $vilid['maxlength'];
         }
         if ($vilid['minlength'] !== false) {
-            $attr['data-fv-stringlength-min'] = $vilid['minlength'];
+            $attr['stringLength']['min'] = $vilid['minlength'];
         }
-        if ($vilid['trim'] !== false) {
-            $attr['data-fv-stringlength-trim'] = 'true';
-        }
-        if ($vilid['phone'] !== false) {
-            $attr['data-fv-phone'] = 'true';
-            $attr['data-fv-phone-country'] = 'TH';
+        if ($vilid['phone'] !== false || $vilid['type'] == Form::TYPE_TEL) {
+            $attr['phone'] = ['country' => 'TH'];
         }
         if ($vilid['callback'] !== false) {
-            $attr['data-fv-callback'] = 'true';
-            $attr['data-fv-callback-callback'] = $vilid['callback'];
+            $attr['callback']['callback'] = $vilid['callback'];
         }
         if ($vilid['required'] !== false) {
-            $attr['required'] = 'required';
+            $attr['notEmpty'] = [];
+        }
+        if ($vilid['type'] == Form::TYPE_NUMBER) {
+            $attr['integer'] = [];
+        }
+        if ($vilid['citizen'] !== FALSE) {
+            $attr['id'] = ['country' => 'TH'];
         }
 
-        return $attr;
+//        print_r($attr);
+
+        $this->_input_validate[$input_name]['validators'] = $attr;
+
     }
 
     private function join_attr(array $attr)
@@ -336,9 +348,10 @@ class Form
     private function _input_textbox($input_name, array $param = array())
     {
 //        print_r($this->check_validation($param));
+//        print_r($param);
         $div_attr['class'] = ['col-xs-' . $param['col'], 'col-xs-offset-' . $param['offset'], 'padding-mini'];
-        $attr = array_merge($param['attr'], $this->check_validation($param));
-        $attr['type'] = $param['type'];
+        $attr = $param['attr'];
+        $attr['type'] = Form::TYPE_TEXT;
         $attr['id'] = $input_name;
         $attr['name'] = $input_name;
         $attr['value'] = $param['value'];
@@ -346,6 +359,7 @@ class Form
         $html = '<div ' . $this->join_attr($div_attr) . '>'
             . '<input ' . $this->join_attr($attr) . '/>'
             . '</div>';
+        $this->check_validation($input_name, $param);
         return $html;
     }
 
@@ -353,7 +367,7 @@ class Form
     private function _input_datetime($input_name, array $param = array())
     {
         $div_attr['class'] = ['col-xs-' . $param['col'], 'col-xs-offset-' . $param['offset'], 'padding-mini'];
-        $attr = array_merge($param['attr'], $this->check_validation($param));
+        $attr = $param['attr'];
 
         $attr['type'] = $param['type'];
         $attr['id'] = $input_name;
@@ -384,13 +398,15 @@ class Form
             . '$(\'#' . $this->formname . ' #' . $input_name . '\').removeClass(\'empty\'); });'
             . '});'
             . '</script>';
+        $this->check_validation($input_name, $param);
         return $html;
     }
 
     private function _input_select($input_name, array $param = array())
     {
+
         $div_attr['class'] = ['col-xs-' . $param['col'], 'col-xs-offset-' . $param['offset'], 'padding-mini'];
-        $attr = array_merge($param['attr'], $this->check_validation($param));
+        $attr = $param['attr'];
 
         $attr['id'] = $input_name;
         $attr['name'] = $input_name;
@@ -407,24 +423,55 @@ class Form
             $data = $param['data'];
         }
         $option = '';
-        foreach ($data as $key => $label) {
-            $option .= '<option ' . (in_array($key, $value) ? 'selected="selected"' : "") . ' value="' . $key . '">' . $label . '</option>';
+        $script = '';
+        if ($param['select_filter'] == false) {
+            foreach ($data as $key => $label) {
+                $option .= '<option ' . (in_array($key, $value) ? 'selected="selected"' : "") . ' value="' . $key . '">' . $label . '</option>';
+            }
+        } else {
+            if (isset($this->_param_array[$param['select_filter']]['value'])) {
+                $parent_value = $this->_param_array[$param['select_filter']]['value'];
+                $tmp_data = (isset($data[$parent_value]) ? $data[$parent_value] : []);
+            }
+            foreach ($tmp_data as $key => $label) {
+                $option .= '<option ' . (in_array($key, $value) ? 'selected="selected"' : "") . ' value="' . $key . '">' . $label . '</option>';
+            }
         }
+        if ($param['select_filter'] !== false) {
+            $script = '<script>'
+                . '$(function(){'
+                . '$(\'#' . $this->formname . ' #' . $param['select_filter'] . ' \').change(function(){ '
+                . 'var data = decode_json(\'' . json_encode($data) . '\');'
+                . 'var chil = $(\'#' . $this->formname . ' #' . $input_name . '\');'
+                . 'chil.html(\'<option value="">-- กรุณาเลือกข้อมูล --</option>\');'
+                . '$.each(data[$(this).val()], function(k,v){chil.append(\'<option value="\' + k + \'">\' + v + \'</option>\')});'
+                . '$(\'#' . $this->formname . '\').formValidation(\'revalidateField\', \'' . $input_name . '\');'
+                . '});'
+                . '});'
+                . '</script>';
+        }
+
         $html = '<div ' . $this->join_attr($div_attr) . '>'
             . '<select ' . $this->join_attr($attr) . '>'
             . '<option value="">-- กรุณาเลือกข้อมูล --</option>'
             . $option
             . '</select>'
+            . $script
             . '</div>';
+
+        $this->check_validation($input_name, $param);
         return $html;
     }
 
     private function _input_checkbox($input_name, array $param = array())
     {
         $div_attr['class'] = ['col-xs-' . $param['col'], 'col-xs-offset-' . $param['offset'], 'padding-mini'];
-        $attr = array_merge($param['attr'], $this->check_validation($param));
+        $attr = $param['attr'];
         $attr['name'] = $input_name . '[]';
         $attr['type'] = Form::TYPE_CHECKBOX;
+        if ($param['required']) {
+            $attr['required'] = 'required';
+        }
 
         $value = explode(',', $param['value']);
         $data = [];
@@ -451,6 +498,7 @@ class Form
                 . '</div>';
         }
         $checkbox .= '</div>';
+        $this->check_validation($input_name, $param);
         return $checkbox;
     }
 
@@ -458,9 +506,12 @@ class Form
     private function _input_radio($input_name, array $param = array())
     {
         $div_attr['class'] = ['col-xs-' . $param['col'], 'col-xs-offset-' . $param['offset'], 'padding-mini'];
-        $attr = array_merge($param['attr'], $this->check_validation($param));
-        $attr['name'] = $input_name . '[]';
-        $attr['type'] = Form::TYPE_CHECKBOX;
+        $attr = $param['attr'];
+        $attr['name'] = $input_name;
+        $attr['type'] = Form::TYPE_RADIO;
+        if ($param['required']) {
+            $attr['required'] = 'required';
+        }
 
         $value = explode(',', $param['value']);
         $data = [];
@@ -474,19 +525,21 @@ class Form
         }
 
         $radio = '<div ' . $this->join_attr($div_attr) . '>';
+        $radio .= '<div class="radio radio-primary">';
+        $tmp_attr = $attr;
         foreach ($data as $key => $val) {
+            $attr = $tmp_attr;
             $attr['value'] = $key;
             if (in_array($key, $value)) {
                 $attr['checked'] = 'checked';
             }
             $radio .= ''
-                . '<div class="radio radio-primary">'
                 . '<label>'
                 . '<input  ' . $this->join_attr($attr) . ' >' . $val
-                . '</label>'
-                . '</div>';
+                . '</label>';
         }
-        $radio .= '</div>';
+        $radio .= '</div></div>';
+        $this->check_validation($input_name, $param);
         return $radio;
     }
 
@@ -496,6 +549,16 @@ class Form
     public function set_urlset($url_set)
     {
         $this->url_set = $url_set;
+    }
+
+    public static function array_marge(array $base_array, array $update_array = [])
+    {
+        foreach ($update_array as $key => $val) {
+            if (isset($base_array[$key])) {
+                $base_array[$key] = $val;
+            }
+        }
+        return $base_array;
     }
 
 

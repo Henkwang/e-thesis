@@ -22,7 +22,8 @@ class HomeController extends \Phalcon\Mvc\Controller
     public function mainAction()
     {
         \Phalcon\Tag::setTitle('Main');
-        $this->view->setTemplateBefore('/navbar');
+        $this->view->setTemplateBefore('navbar');
+//        $this->view->pick('/main/navber');
     }
 
 
