@@ -6,9 +6,14 @@ error_reporting(E_ALL & ~E_STRICT & ~E_NOTICE);
 
 
 date_default_timezone_set('Asia/Bangkok');
-define('AUTH_FALSE_J', '"auth":false');
 
 try {
+
+    /*
+     * Helper
+     */
+    include __DIR__. "/../app/helper/define_varible.php";
+    include __DIR__. "/../app/helper/ethesis_helper.php";
 
     /**
      * Read the configuration

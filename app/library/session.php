@@ -37,8 +37,9 @@ class Session
         $now = date(DATE_ISO8601);
         $this->phalcon_session->set('auth', true);
         $this->phalcon_session->set('user_ip', $this->get_userip());
-        $this->phalcon_session->set('user_agent', $_SERVER['HTTP_USER_AGENT']);
         $this->phalcon_session->set('last_active', $now);
+        $this->phalcon_session->has('user_agent') || $this->phalcon_session->set('user_agent', get_browser( null,true)[comment]);
+
     }
 
     public function init()
@@ -51,7 +52,6 @@ class Session
         } else if ($deff_time > $this->session_config['interval_refresh']) {
             $now = date(DATE_ISO8601);
             $this->phalcon_session->set('user_ip', $this->get_userip());
-            $this->phalcon_session->set('user_agent', $_SERVER['HTTP_USER_AGENT']);
             $this->phalcon_session->set('last_active', $now);
         }
         return TRUE;
@@ -111,7 +111,6 @@ class Session
     public function destroy()
     {
         $this->phalcon_session->destroy();
-        $this->phalcon_session = FALSE;
     }
 
 

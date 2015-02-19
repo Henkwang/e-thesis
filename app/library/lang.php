@@ -12,10 +12,14 @@ namespace EThesis\Library;
 class Lang
 {
     private $_lang;
+    private $_sess_lang;
 
-    function __construct($lang = 'th')
+    function __construct()
     {
-        $this->_lang = require_once(__DIR__ . '../../lang/' . $lang . '.php');
+        $sess = new \EThesis\Library\Session();
+        $lang = ($sess->has('lang') ? $sess->get('lang') : 'th');
+        $this->_sess_lang = $lang;
+        $this->_lang = require(__DIR__ . '../../lang/' . $lang . '.php');
     }
 
     public function label($name = '', $more = '')
@@ -29,8 +33,12 @@ class Lang
             }
             $label = str_replace('__M__', $more, $label);
             return $label;
-        } else if (stripos($name, '_TH') || stripos($name, '_EN')) {
-
+        } else if (stripos($name, '_TH') !== FALSE) {
+            $name_new = $label = str_replace('_TH', '_ML', $name);
+            return (isset($this->_lang[$name_new]) ? $this->_lang[$name_new] . '(TH)' : $name);
+        } else if (stripos($name, '_EN') !== FALSE) {
+            $name_new = $label = str_replace('_EN', '_ML', $name);
+            return (isset($this->_lang[$name_new]) ? $this->_lang[$name_new] . '(EN)' : $name);
         } else {
             return $name;
         }
@@ -42,6 +50,15 @@ class Lang
             return $this->_lang[$name];
         } else {
             return $name;
+        }
+    }
+
+    public function label_manual($th, $en = false)
+    {
+        if ($en !== false && $this->_sess_lang == 'en') {
+            return $en;
+        } else {
+            return $th;
         }
     }
 

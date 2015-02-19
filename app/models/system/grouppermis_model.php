@@ -37,7 +37,7 @@ class Grouppermis_model extends \EThesis\Library\Adodb
 
     private function check_filter(array $filter)
     {
-        $sql = "RECORD_STATUS='N'";
+        $sql = "$this->primary IS NOT NULL ";
         if (empty($filter)) {
 
         } else if (is_array($filter)) {

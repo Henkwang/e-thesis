@@ -36,11 +36,11 @@ class MenuEThesis
     }
 
 
-    function get_menu()
+    private function get_menu()
     {
         $id = [];
         if ($this->type == 'A') {
-            $id =  [1, 2, 3, 4, 5, 6, 7, 8, 11, 12];
+            $id =  [1, 2, 3, 4, 5, 6, 7, 8];
         } else {
             $id = [6, 7, 8];
         }
@@ -72,11 +72,9 @@ class MenuEThesis
     private function get_groupPremis($groupID)
     {
         $this->_permis_model = new \EThesis\Models\System\Grouppermis_model();
-
-
         $id = [];
         $result = $this->_permis_model->select_by_filter(['MOD_ID'], ['GRD_ID' => $groupID]);
-        if ($result && $result->RecordCout() > 0) {
+        if ($result && $result->RecordCount() > 0) {
             while ($row = $result->FetchRow()) {
                 $id[] = $row['MOD_ID'];
             }
@@ -111,7 +109,7 @@ class MenuEThesis
      * @param $parent
      * @return array
      */
-    function createTree(&$list, $parent)
+    private function createTree(&$list, $parent)
     {
         $tree = array();
         foreach ($parent as $k => $l) {

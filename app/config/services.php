@@ -14,7 +14,6 @@ define('ET_SV_VIEW', 'view');
 define('ET_SV_SESSION', 'sess');
 
 
-
 /**
  * The FactoryDefault Dependency Injector automatically register the right services providing a full stack framework
  */
@@ -75,6 +74,8 @@ $di->set('view', function () use ($config) {
 }, true);
 
 
+
+
 /**
  * If the configuration specify the use of metadata adapter use it or use memory otherwise
  */
@@ -86,16 +87,25 @@ $di->set('modelsMetadata', function () {
  * Start the session the first time some component request the session service
  */
 $di->set('sess', function () {
-    $session = new \EThesis\Library\Session();
 
+    $session = new \EThesis\Library\Session();
     $session->set('username', 'attapon.th');
     $session->set('userfac', '');
     $session->set('usergroup', '1');
     $session->set('usertype', 'A');
-    $session->set('lang', 'th');
+
+    $session->has('lang') || $session->set('lang', 'th');
 
     return $session;
 });
+
+/**
+ * Lang สอง ภาาา
+ */
+//$di->set('lang', function () {
+//    $lang = new \EThesis\Library\Lang();
+//    return $lang;
+//});
 
 
 /*

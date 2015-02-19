@@ -29,7 +29,7 @@ class Form
     const TYPE_TIME = 'time';
     const TYPE_DATETIME = 'datetime';
     const TYPE_AUTOCOMPLETE = 'autocomplete';
-    const TYPE_CHECKBOX = 'checkbok';
+    const TYPE_CHECKBOX = 'checkbox';
     const TYPE_RADIO = 'radio';
     const TYPE_HIDDEN = 'hidden';
     const TYPE_EMAIL = 'email';
@@ -54,8 +54,10 @@ class Form
         'time_format' => 'hh:mm',
         'datetime_format' => 'dd/MM/yyyy hh:mm',
         'class_default' => 'form-control',
+        'button_class_default' => 'btn btn-raised',
         'class' => '',
         'style' => '',
+        'holder' => '',
         'value' => false,
         'lock_parmis' => true, // lock data by user session
         'attr' => [],
@@ -63,6 +65,7 @@ class Form
         'select_size' => false,
         'select_filter' => false,
         'disable' => false,
+        'textarea_rows' => 3,
 
         //- Select CheckBok Radio AutoComplete
         'data' => [],
@@ -121,6 +124,8 @@ class Form
      */
     private $_complete = false;
     private $_cp_label = [];
+    private $_cp_label_pure = [];
+    private $_cp_label_group = [];
     private $_cp_input = [];
     private $_cp_validate = '';
 
@@ -137,7 +142,7 @@ class Form
         $this->_formid = "__" . substr(sha1(rand(0, 1024)), 0, 10);
         $this->formname = $this->formname . $this->_formid;
         $this->_lang_class = new \EThesis\Library\Lang();
-        $this->_session_class = DIPhalcon::get('sess');
+        $this->_session_class = DIPhalcon::get(ET_SV_SESSION);
         $this->lang = $this->_session_class->get('lang');
         $this->_datamodel_class = new \EThesis\Controllers\Ajax\AutocompleteController();
 
@@ -183,11 +188,28 @@ class Form
             'formid' => $this->_formid,
             'action' => $this->url_set,
             'label' => $this->_cp_label,
+            'labelpure' => $this->_cp_label_pure,
+            'labelgroup' => $this->_cp_label_group,
             'input' => $this->_cp_input,
             'valid' => $this->_cp_validate,
         ];
 //        print_r($this->_param_array);
         return $data;
+    }
+
+    public function get_formedit($pk_id)
+    {
+        $field = $this->_input_array;
+        $filter = ['IN_ID' => $pk_id];
+        $result = $this->_set_model->select_by_filter($field, $filter);
+        if (is_object($result) && $result->RecordCount() > 0) {
+            $row = $result->FetchRow();
+            foreach ($field as $val) {
+                $this->_param_array[$val]['value'] = $row[$val];
+            }
+            $this->_complete = false;
+        }
+        return $this->get_form();
     }
 
 
@@ -235,14 +257,19 @@ class Form
     {
         foreach ($this->_param_array as $name => $param) {
             $html = '';
+            $hgroup = '';
             if ($param['label_disable'] == FALSE) {
                 $lang = ($param['label'] ? $param['label'] : $this->_lang_class->label($name));
                 $attr['for'] = $name;
                 $attr['class'] = ['col-xs-offset-' . $param['label_offset'], 'col-xs-' . $param['label_col'], $param['label_class_default'], $param['label_class']];
                 $attr['style'] = ['display:' . ($param['label_hide'] ? 'none;' : 'block;'), $param['label_style']];
                 $html = '<label ' . $this->join_attr($attr) . '>' . $lang . '</label>';
+                $hgroup = '<span class="input-group-addon">' . $lang . '</span>';
+
             }
             $this->_cp_label[$name] = $html;
+            $this->_cp_label_pure[$name] = $lang;
+            $this->_cp_label_group[$name] = $hgroup;
         }
 
     }
@@ -261,6 +288,10 @@ class Form
                     $this->_cp_input[$name] = $this->_input_checkbox($name, $param);
                 } else if ($param['type'] == Form::TYPE_RADIO) {
                     $this->_cp_input[$name] = $this->_input_radio($name, $param);
+                } else if ($param['type'] == Form::TYPE_TEXTAREA) {
+                    $this->_cp_input[$name] = $this->_input_textarea($name, $param);
+                } else if (in_array($param['type'], [Form::TYPE_SUBMIT, Form::TYPE_RESET])) {
+                    $this->_cp_input[$name] = $this->_input_button($name, $param);
                 }
             }
         }
@@ -354,6 +385,7 @@ class Form
         $attr['type'] = Form::TYPE_TEXT;
         $attr['id'] = $input_name;
         $attr['name'] = $input_name;
+        $attr['placeholder'] = $param['holder'];
         $attr['value'] = $param['value'];
         $attr['class'] = [$param['class_default'], $param['class']];
         $html = '<div ' . $this->join_attr($div_attr) . '>'
@@ -369,12 +401,17 @@ class Form
         $div_attr['class'] = ['col-xs-' . $param['col'], 'col-xs-offset-' . $param['offset'], 'padding-mini'];
         $attr = $param['attr'];
 
-        $attr['type'] = $param['type'];
+        $attr['type'] = Form::TYPE_TEXT;
         $attr['id'] = $input_name;
         $attr['name'] = $input_name;
         $attr['value'] = $param['value'];
         $attr['class'] = [$param['class_default'], $param['class']];
         $attr['readonly'] = 'true';
+        if (is_array($param['style'])) {
+            $attr['style'] = $this->array_marge($param['style'], ['cursor:pointer']);
+        } else {
+            $attr['style'] = ['cursor:pointer', $param['style']];
+        }
 
         $format = '';
         $icon = '';
@@ -387,15 +424,16 @@ class Form
             $icon['data-date-icon'][] = 'md-access-time md-lg';
         }
 
-        $html = '<div ' . $this->join_attr($div_attr) . '>'
-            . '<div class="input-group">'
+        $html = "\n" . '<div ' . $this->join_attr($div_attr) . '>'
+            . '<div class="input-group" id="' . $input_name . '_datetime">'
             . '<input ' . $this->join_attr($attr) . '/>'
             . '<span class="add-on input-group-addon"><i ' . $this->join_attr($icon) . '></i> </span>'
             . '</div></div>'
             . '<script type="text/javascript">'
-            . '$(function () {$(\'#' . $this->formname . ' #' . $input_name . '_datetime\').datetimepicker({language: lang})'
+            . '$(function () {$(\'#' . $this->formname . ' #' . $input_name . '_datetime\').datetimepicker({language: lang,isBuddhist: true})'
             . '.on(\'changeDate\', function (ev) { $(\'#' . $this->formname . '\').formValidation(\'revalidateField\', \'' . $input_name . '\');'
             . '$(\'#' . $this->formname . ' #' . $input_name . '\').removeClass(\'empty\'); });'
+            . '$("#' . $input_name . '").click(function(){$(\'#' . $this->formname . ' #' . $input_name . '_datetime .add-on.input-group-addon i\').click();});'
             . '});'
             . '</script>';
         $this->check_validation($input_name, $param);
@@ -484,20 +522,19 @@ class Form
             $data = $param['data'];
         }
 
-        $checkbox = '<div ' . $this->join_attr($div_attr) . '>';
+        $checkbox = '<div ' . $this->join_attr($div_attr) . '>'
+            . '<div class="checkbox checkbox-primary">';
         foreach ($data as $key => $val) {
             $attr['value'] = $key;
             if (in_array($key, $value)) {
                 $attr['checked'] = 'checked';
             }
             $checkbox .= ''
-                . '<div class="checkbox checkbox-primary">'
                 . '<label>'
-                . '<input  ' . $this->join_attr($attr) . ' >' . $val
-                . '</label>'
-                . '</div>';
+                . '<input  ' . $this->join_attr($attr) . ' />' . $val
+                . '</label>';
         }
-        $checkbox .= '</div>';
+        $checkbox .= '</div></div>';
         $this->check_validation($input_name, $param);
         return $checkbox;
     }
@@ -519,7 +556,8 @@ class Form
             $data = $this->_datamodel_class->get_dataModel($param['datamodel']);
         } else if ($param['datalang']) {
             $data = $this->_lang_class->lang($input_name);
-            unset($data['label']);
+            if (isset($data['label']))
+                unset($data['label']);
         } else {
             $data = $param['data'];
         }
@@ -541,6 +579,41 @@ class Form
         $radio .= '</div></div>';
         $this->check_validation($input_name, $param);
         return $radio;
+    }
+
+    private function _input_textarea($input_name, array $param = array())
+    {
+        $div_attr['class'] = ['col-xs-' . $param['col'], 'col-xs-offset-' . $param['offset'], 'padding-mini'];
+        $attr = $param['attr'];
+        $attr['id'] = $input_name;
+        $attr['name'] = $input_name;
+        $attr['placeholder'] = $param['holder'];
+        $attr['rows'] = $param['textarea_rows'];
+//        $attr['value'] = $param['value'];
+        $attr['class'] = [$param['class_default'], $param['class']];
+        $html = '<div ' . $this->join_attr($div_attr) . '>'
+            . '<textarea  ' . $this->join_attr($attr) . ' style="border-top:1px solid #D8D8D8;border-left:1px solid #D8D8D8;border-right:1px solid #D8D8D8;">' . $param['value'] . '</textarea>'
+            . '</div>';
+        $this->check_validation($input_name, $param);
+        return $html;
+    }
+
+    private function _input_button($input_name, array $param = [])
+    {
+        $div_attr['class'] = ['col-xs-' . $param['col'], 'col-xs-offset-' . $param['offset'], 'padding-mini'];
+        $attr = $param['attr'];
+        $attr['id'] = $input_name;
+        $attr['name'] = $input_name;
+        $attr['type'] = $param['type'];
+        if ($param['type'] == Form::TYPE_SUBMIT) {
+            $attr['class'] = [$param['button_class_default'], 'btn-primary'];
+            $icon = '<i class="md-done-all"></i> ';
+        } else if ($param['type'] == Form::TYPE_RESET) {
+            $icon = '<i class="md-autorenew"></i> ';
+            $attr['class'] = [$param['button_class_default'], 'btn-default'];
+        }
+        $html = '<button ' . $this->join_attr($attr) . '>' . $icon . $this->_lang_class->label($input_name) . '</button>';
+        return $html;
     }
 
     /**

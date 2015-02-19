@@ -12,7 +12,7 @@ return [
         'model' => 'Faculty_model',
         'key' => 'FACULTY_ID',
         'label' => "FACULTY_CODE + ' ' + FACULTY_NAME_ML",
-        'filter' => ['FACULTY_TYPE'=>'F'],
+        'filter' => ['FACULTY_TYPE' => 'F'],
         'order' => 'FACULTY_CODE ASC',
     ],
     'MAS_DIVISION' => [
@@ -31,6 +31,22 @@ return [
         'filter' => [],
         'order' => 'PROGRAM_NAME_ML ASC',
         'parent' => 'FACULTY_ID',
-    ]
+    ],
+    'MAS_TITLE' => [
+        'module' => 'Upreg',
+        'model' => 'Title_model',
+        'key' => 'TITLE_ID',
+        'label' => "TITLE_NAME_ML",
+        'filter' => [],
+        'order' => 'TITLE_ID ASC',
+    ],
+    'MAS_TITLE_SHORT' => [
+        'module' => 'Upreg',
+        'model' => 'Title_model',
+        'key' => 'TITLE_ID',
+        'label' => "TITLE_SHORT_NAME_ML",
+        'filter' => [],
+        'order' => 'TITLE_ID ASC',
+    ],
 ];
 

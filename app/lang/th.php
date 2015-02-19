@@ -12,6 +12,8 @@ return [
     'DELETE' => 'ลบ',
     'SEARCH' => 'ค้นหา',
     'BUTTON' => 'จัดการ',
+    'OK' => 'ตกลง',
+    'RESET' => 'เริ่มใหม่',
 
     # โครงสร้างระบบ
     'MOD_PARENT_ID' => 'โหนดแม่',
@@ -36,11 +38,37 @@ return [
         'S' => 'อาจารย์พิเศษบัณฑิตศึกษา'
     ],
     'MOD_URL' => 'เส้นทาง',
-    'ACAD_YEAR' => 'ปีการศึกษา',
+    'ACAD_YEAR' => 'ปีการศึกษา พ.ศ.',
     'FACULTY_ID' => 'คณะ',
     'PROGRAM_ID' => 'สาขา',
-    'CITIZEN_ID' => 'รหัสประจำตัวประชาชน'
+    'CITIZEN_ID' => 'รหัสประจำตัวประชาชน',
+    'MAX_DEGREE_ID' => [
+        'label' => 'คุณวุฒิสูงสุด',
+        '2' => 'ปริญญาตรี',
+        '3' => 'ปริญญาโท',
+        '4' => 'ปริญญาเอก',
+    ],
+    'PROVINCE' => 'จังหวัด',
+    'COUNTRY' => 'ประเทศ',
 
+
+
+
+    // บศ 1
+    'POS_EXECUTIVE' => 'ตำแหน่งทางบริหาร',
+    'POS_ACADEMIC' => 'ตำแหน่งทางวิชาการ',
+    'DIVISION_ID' => 'คณะ/หน่วยงาน',
+    'UNIVERSITY_NAME' => 'มหาวิทยาลัย/สถาบัน',
+    'TEL_PERSONNEL' => 'โทรศัพท์มือถือ',
+    'TEL_WORK' => 'เบอร์ที่ทำงาน',
+    'TEL_WORK_NEXT' => 'ต่อ',
+    'MAX_GRADUATE_DATE' => 'วันที่สำเร็จการศึกษา',
+    'MAX_COURSE_NAME_ML' => 'หลักสูตร',
+    'MAX_PROGRAM_NAME_ML' => 'สาขาวิชา',
+    'MAX_UNIVERSITY_NAME_ML' => 'สถาบัน/มหาวิทยาลัย',
+    'MAX_COUNTRY_NAME_ML' => 'ประเทศ',
+    'PRESENT_ACADEMIC_TYPE' => 'เผยแพร่โดย',
+    'PRESENT_ACADEMIC_YEAR' => 'ระบุปีที่เผยแพร่ พ.ศ.',
 
 
 ];

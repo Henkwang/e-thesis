@@ -239,7 +239,7 @@ class Datatable
         } else if ($name == 'DELETE') {
             $href = 'datatable_manage';
             $class = 'danger';
-            $icon = 'md-remove';
+            $icon = 'md-delete';
         }
         $label = $this->_liv_lang->label($name);
         if ($pos == 'gt' || $pos == 'g') {

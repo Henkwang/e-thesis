@@ -36,6 +36,9 @@ class Faculty_model extends \EThesis\Library\Adodb
             $sql .= (isset($filter['CAMPUS_ID']) ? " AND CAMPUS_ID='{$filter['CAMPUS_ID']}'" : '');
             $sql .= (isset($filter['FACULTY_NAME_TH']) ? " AND FACULTY_NAME_TH LIKE'%{$filter['FACULTY_NAME_TH']}%'" : '');
             $sql .= (isset($filter['FACULTY_NAME_EN']) ? " AND FACULTY_NAME_EN='{$filter['FACULTY_NAME_EN']}'" : '');
+
+            $sql .= (isset($filter['IN_ID']) ? " AND {$this->primary} IN ({$filter['IN_ID']})" : '');
+            $sql .= (isset($filter['NOT_IN_ID']) ? " AND {$this->primary} NOT IN ({$filter['IN_ID']})" : '');
         }
         return $sql;
     }
