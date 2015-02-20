@@ -93,6 +93,8 @@ class Form
         'callback' => false,
         'tooltip' => false,
         'between' => [],
+        'choice' => false,
+        'maxitem' => false,
         //-------------
     ];
 
@@ -292,6 +294,8 @@ class Form
                     $this->_cp_input[$name] = $this->_input_textarea($name, $param);
                 } else if (in_array($param['type'], [Form::TYPE_SUBMIT, Form::TYPE_RESET])) {
                     $this->_cp_input[$name] = $this->_input_button($name, $param);
+                } else if (in_array($param['type'], [Form::TYPE_AUTOCOMPLETE])) {
+                    $this->_cp_input[$name] = $this->_input_autocomplete($name, $param);
                 }
             }
         }
@@ -327,6 +331,7 @@ class Form
     {
 //        print_r($vilid);
         $attr = [];
+
         if ($vilid['max'] || $vilid['max'] || $vilid['between']) {
             $attr['between']['max'] = (!empty($vilid['between'] ? max($vilid['between']) : $vilid['max']));
             $attr['between']['min'] = (!empty($vilid['between'] ? min($vilid['between']) : $vilid['min']));
@@ -352,7 +357,10 @@ class Form
         if ($vilid['citizen'] !== FALSE) {
             $attr['id'] = ['country' => 'TH'];
         }
-
+        if ($vilid['choice'] !== FALSE && is_array($vilid['choice']) && count($vilid['choice']) >= 2) {
+            $attr['choice']['max'] = max($vilid['choice']);
+            $attr['choice']['min'] = min($vilid['choice']);
+        }
 //        print_r($attr);
 
         $this->_input_validate[$input_name]['validators'] = $attr;
@@ -593,6 +601,33 @@ class Form
         $attr['class'] = [$param['class_default'], $param['class']];
         $html = '<div ' . $this->join_attr($div_attr) . '>'
             . '<textarea  ' . $this->join_attr($attr) . ' style="border-top:1px solid #D8D8D8;border-left:1px solid #D8D8D8;border-right:1px solid #D8D8D8;">' . $param['value'] . '</textarea>'
+            . '</div>';
+        $this->check_validation($input_name, $param);
+        return $html;
+    }
+
+    private function _input_autocomplete($input_name, array $param = [])
+    {
+        $div_attr['class'] = ['col-xs-' . $param['col'], 'col-xs-offset-' . $param['offset'], 'padding-mini'];
+        $attr['id'] = $input_name;
+        $attr['name'] = $input_name;
+        $attr['class'] = [$param['class_default'], $param['class']];
+        $maxitem = ($param['maxitem'] !== false ? ',maximumSelectionLength=' . $param['maxitem'] : '');
+
+        $url = \EThesis\Library\DIPhalcon::get('url')->get('ajax/autocomplete/autoselect2/' . $param['datamodel']);
+
+        $html = '<div ' . $this->join_attr($div_attr) . '>'
+            . '<select ' . $this->join_attr($attr) . '></select>'
+            . '<script>'
+            . '$("#' . $input_name . '").select2({'
+            . 'language: lang,allowClear: true,multiple: true,minimumInputLength: 1' . $maxitem . ','
+            . 'ajax: {'
+            . 'url: "' . $url . '",'
+            . 'dataType: \'json\',method: \'POST\', delay: 250,data: function (params) {return {q: params.term};},'
+            . 'processResults: function (data, page) {return {results: data.items};}, cache: false'
+            . '}'
+            . ' });'
+            . '</script>'
             . '</div>';
         $this->check_validation($input_name, $param);
         return $html;

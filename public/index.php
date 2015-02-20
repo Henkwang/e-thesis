@@ -7,7 +7,7 @@ error_reporting(E_ALL & ~E_STRICT & ~E_NOTICE);
 
 date_default_timezone_set('Asia/Bangkok');
 
-try {
+//try {
 
     /*
      * Helper
@@ -37,6 +37,6 @@ try {
 
     echo $application->handle()->getContent();
 
-} catch (\Exception $e) {
-    echo $e->getMessage();
-}
+//} catch (\Exception $e) {
+//    echo $e->getMessage();
+//}

@@ -68,6 +68,10 @@ $html = $menu_class->createMenu();
         padding-top: 0px;
     }
 
+    .radio label, .checkbox label{
+        padding-left: 30px;
+    }
+
 
 </style>
 
@@ -147,6 +151,19 @@ $html = $menu_class->createMenu();
             }
         });
     }
+
+    window.onbeforeunload = function (e) {
+        e = e || window.event;
+
+        // For IE and Firefox prior to version 4
+        if (e) {
+            e.returnValue = 'คุณแน่ใจว่าต้องการออกจากหน้านี้?';
+        }
+
+        // For Safari
+        return 'คุณแน่ใจว่าต้องการออกจากหน้านี้?';
+    };
+
 </script>
 
 

@@ -21,7 +21,7 @@ class Program_model extends \EThesis\Library\Adodb
     public function initialize()
     {
         parent::__construct();
-        //$this->adodb->debug = TRUE;
+        $this->adodb->debug = TRUE;
     }
 
     private function check_filter(array $filter)
@@ -37,6 +37,9 @@ class Program_model extends \EThesis\Library\Adodb
 
             $sql .= (isset($filter['IN_ID']) ? " AND {$this->primary} IN ({$filter['IN_ID']})" : '');
             $sql .= (isset($filter['NOT_IN_ID']) ? " AND {$this->primary} NOT IN ({$filter['IN_ID']})" : '');
+
+            $sql .= (isset($filter['SQL']) ? " AND {$filter['SQL']}" : '');
+
         }
         return $sql;
     }

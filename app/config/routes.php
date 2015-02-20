@@ -27,17 +27,20 @@ foreach ($config->module as $module) {
      * Add Module
      */
     $module = strtolower($module);
-    $router->add('/' . $module . '/:controller/:action', array(
+    $router->add('/' . $module . '/:controller', array(
+        'namespace' => 'EThesis\Controllers\\' . ucfirst($module),
+        'controller' => 1
+    ));
+
+
+    $router->add('/' . $module . '/:controller/:action/:params', array(
         'namespace' => 'EThesis\Controllers\\' . ucfirst($module),
         'controller' => 1,
         'action' => 2,
         'params' => 3,
     ));
 
-    $router->add('/' . $module . '/:controller', array(
-        'namespace' => 'EThesis\Controllers\\' . ucfirst($module),
-        'controller' => 1
-    ));
+
 
 }
 //echo '<pre>';
