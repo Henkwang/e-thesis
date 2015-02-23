@@ -3,17 +3,17 @@
 namespace EThesis\Models\System;
 
 
-class Label_model extends \EThesis\Library\Adodb
+class Sys_module_model extends \EThesis\Library\Adodb
 {
 
     var $schema = 'system';
-    var $table = 'SYS_LABEL';
-    var $primary = '';
+    var $table = 'SYS_MODULE';
+    var $primary = 'MOD_ID';
 
     var $use_view = FALSE;
 
-    var $field_insert = ['LBL_NAME', 'LBL_GRID_TH', 'LBL_BTN_TH', 'LBL_FORM_TH', 'LBL_GRID_EN', 'LBL_BTN_EN', 'LBL_FORM_EN'];
-    var $field_update = ['LBL_NAME', 'LBL_GRID_TH', 'LBL_BTN_TH', 'LBL_FORM_TH', 'LBL_GRID_EN', 'LBL_BTN_EN', 'LBL_FORM_EN'];
+    var $field_insert = ['MOD_PARENT_ID', 'MOD_NAME_TH', 'MOD_NAME_EN', 'MOD_LEVLE', 'MOD_ORDER', 'ENABLE', 'MOD_URL'];
+    var $field_update = ['MOD_PARENT_ID', 'MOD_NAME_TH', 'MOD_NAME_EN', 'MOD_LEVLE', 'MOD_ORDER', 'ENABLE', 'MOD_URL'];
 
     var $date_current;
     var $user_access;
@@ -24,14 +24,15 @@ class Label_model extends \EThesis\Library\Adodb
     public function initialize()
     {
         parent::__construct();
-        //$this->adodb->debug = TRUE;
+
+        $this->adodb->debug = TRUE;
 
         $sess = new \EThesis\Library\Session();
 
         $this->date_current = $this->adodb->sysTimeStamp;
-        $this->user_access = ($sess->has('username') ? $sess->get('username') : die('Session Time Out'));
-        $this->user_group = ($sess->has('usergroup') ? $sess->get('usergroup') : die('Session Time Out'));
-        $this->user_type = ($sess->has('usertype') ? $sess->get('usertype') : die('Session Time Out'));
+        $this->user_access = ($sess->has('username') ? $sess->get('username') : die(AUTH_FALSE_J));
+        $this->user_group = ($sess->has('usergroup') ? $sess->get('usergroup') : die(AUTH_FALSE_J));
+        $this->user_type = ($sess->has('usertype') ? $sess->get('usertype') : die(AUTH_FALSE_J));
     }
 
     private function check_filter(array $filter)
@@ -40,16 +41,18 @@ class Label_model extends \EThesis\Library\Adodb
         if (empty($filter)) {
 
         } else if (is_array($filter)) {
-            $sql .= (isset($filter['LBL_NAME']) ? " AND LBL_NAME IN ({$filter['LBL_NAME']})" : '');
-            $sql .= (isset($filter['LBL_GRID_TH']) ? " AND LBL_GRID_TH LIKE '%{$filter['LBL_GRID_TH']}%'" : '');
-            $sql .= (isset($filter['LBL_BTN_TH']) ? " AND LBL_BTN_TH LIKE '%{$filter['LBL_BTN_TH']}%'" : '');
-            $sql .= (isset($filter['LBL_FORM_TH']) ? " AND LBL_FORM_TH LIKE '%{$filter['LBL_FORM_TH']}%'" : '');
-            $sql .= (isset($filter['LBL_GRID_EN']) ? " AND LBL_GRID_EN LIKE '%{$filter['LBL_GRID_EN']}%'" : '');
-            $sql .= (isset($filter['LBL_BTN_EN']) ? " AND LBL_BTN_EN LIKE '%{$filter['LBL_BTN_EN']}%'" : '');
-            $sql .= (isset($filter['LBL_FORM_EN']) ? " AND LBL_FORM_EN LIKE '%{$filter['LBL_FORM_EN']}%'" : '');
+            $sql .= (isset($filter['MOD_PARENT_ID']) ? " AND MOD_PARENT_ID IN ({$filter['MOD_PARENT_ID']})" : '');
+            $sql .= (isset($filter['MOD_NAME_TH']) ? " AND MOD_NAME_TH LIKE '%{$filter['MOD_NAME_TH']}%'" : '');
+            $sql .= (isset($filter['MOD_NAME_EN']) ? " AND MOD_NAME_EN LIKE '%{$filter['MOD_NAME_EN']}%'" : '');
+            $sql .= (isset($filter['MOD_LEVEL']) ? " AND MOD_LEVEL = '{$filter['MOD_LEVEL']}'" : '');
+            $sql .= (isset($filter['MOD_ORDER']) ? " AND MOD_ORDER = '{$filter['MOD_ORDER']}'" : '');
+            $sql .= (isset($filter['ENABLE']) ? " AND ENABLE = '{$filter['ENABLE']}'" : '');
+            $sql .= (isset($filter['MOD_URL']) ? " AND MOD_URL LIKE '%{$filter['MOD_URL']}%'" : '');
 
             $sql .= (isset($filter['IN_ID']) ? " AND {$this->primary} IN ({$filter['IN_ID']})" : '');
             $sql .= (isset($filter['NOT_IN_ID']) ? " AND {$this->primary} NOT IN ({$filter['IN_ID']})" : '');
+
+            $sql .= (isset($filter['ID']) ? " AND ({$this->primary} IN ({$filter['ID']}) OR MOD_PARENT_ID IN ({$filter['ID']}))" : '');
         }
         return $sql;
     }
@@ -109,6 +112,12 @@ class Label_model extends \EThesis\Library\Adodb
         $sql .= ";";
 
         $result = $this->adodb->Execute($sql);
+        return $result;
+    }
+
+    public function delete($id){
+        $arr = ['RECORD_STATUS'=> 'D'];
+        $result = $this->update($arr, $id);
         return $result;
     }
 

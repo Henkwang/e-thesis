@@ -612,12 +612,27 @@ class Form
         $attr['id'] = $input_name;
         $attr['name'] = $input_name;
         $attr['class'] = [$param['class_default'], $param['class']];
-        $maxitem = ($param['maxitem'] !== false ? ',maximumSelectionLength=' . $param['maxitem'] : '');
+        $attr['multiple'] = 'true';
+        $maxitem = ($param['maxitem'] !== false ? ',maximumSelectionLength:' . $param['maxitem'] : '');
+
+        $data = [];
+        if ($param['datamodel']) {
+            $search = (!empty($param['value']) ? ['IN_ID' => $param['value']] : []);
+            $data = $this->_datamodel_class->get_search($param['datamodel'], $search);
+            $option = '';
+            foreach ($data as $k => $v) {
+                $option .= '<option selected="selected" value="' . $k . '">' . $v . '</option>';
+            }
+        }
+
 
         $url = \EThesis\Library\DIPhalcon::get('url')->get('ajax/autocomplete/autoselect2/' . $param['datamodel']);
 
+
         $html = '<div ' . $this->join_attr($div_attr) . '>'
-            . '<select ' . $this->join_attr($attr) . '></select>'
+            . '<select ' . $this->join_attr($attr) . '>'
+            . $option
+            . '</select>'
             . '<script>'
             . '$("#' . $input_name . '").select2({'
             . 'language: lang,allowClear: true,multiple: true,minimumInputLength: 1' . $maxitem . ','

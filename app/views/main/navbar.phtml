@@ -19,7 +19,7 @@ $html = $menu_class->createMenu();
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="<?= \EThesis\Library\DIPhalcon::get('url')->get('main') ?>">E-Thesis</a>
+        <a class="navbar-brand" href="<?= \EThesis\Library\DIPhalcon::get('url')->get('') ?>">E-Thesis</a>
     </div>
     <div class="navbar-collapse collapse navbar-inverse-collapse">
 
@@ -54,22 +54,10 @@ $html = $menu_class->createMenu();
     }
 
     .nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
-        color: inherit;
-        background-color: rgba(255, 255, 255, .2) !important;
-    }
-    select.form-control{
-        margin-top: 5px ;
-    }
-    span.input-group-addon{
-        font-weight: 500;
-        color: #0c0c0c;
-    }
-    .form-horizontal .checkbox{
-        padding-top: 0px;
-    }
-
-    .radio label{
-        padding-left: 30px;
+        border-radius: 0;
+        border: 2px inset rgba(0, 255, 233, 0.52) !important;
+        /*border-right: 2px inset #b5c8b4 !important;*/
+        background-color: #005d4f !important;
     }
 
 
@@ -151,50 +139,7 @@ $html = $menu_class->createMenu();
             }
         });
     }
-
-    window.onbeforeunload = function (e) {
-        e = e || window.event;
-
-        // For IE and Firefox prior to version 4
-        if (e) {
-            e.returnValue = 'คุณแน่ใจว่าต้องการออกจากหน้านี้?';
-        }
-
-        // For Safari
-        return 'คุณแน่ใจว่าต้องการออกจากหน้านี้?';
-    };
-
 </script>
-
-
-<style>
-
-    .navbar .navber-center {
-        text-align: center;
-    }
-</style>
-<div class="navbar navbar-fixed-bottom navbar-material-deep-purple-700 navber-small" style="margin-bottom: 0px">
-    <div class="navbar-collapse navber-center collapse navbar-inverse-collapse">
-        <ul class="nav navbar-nav" style=" display: inline-block;float: none;">
-            <li class="dropdown">
-                <a href="#" data-target="#" class="dropdown-toggle" data-toggle="dropdown">-- Attapon ---
-                    <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                    <li class="divider"></li>
-                    <li><a href="javascript:void(0)">Administrator <i class="md-done md-lg"></i></a></li>
-                    <li class="divider"></li>
-                    <li><a href="javascript:void(0)">Another action</a></li>
-                    <li><a href="javascript:void(0)">Something else here</a></li>
-                    <li><a href="javascript:void(0)">Separated link</a></li>
-                </ul>
-            </li>
-            <li><a href="javascript:void(0)"><b>Logout</b></a></li>
-        </ul>
-    </div>
-</div>
-
-
-
 
 
 

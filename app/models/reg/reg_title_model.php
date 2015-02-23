@@ -1,14 +1,14 @@
 <?php
 
-namespace EThesis\Models\Upreg;
+namespace EThesis\Models\Reg;
 
 
-class Program_model extends \EThesis\Library\Adodb
+class Reg_title_model extends \EThesis\Library\Adodb
 {
 
     var $schema = 'upreg';
-    var $table = 'MAS_PROGRAM';
-    var $primary = 'PROGRAM_ID';
+    var $table = 'MAS_TITLE';
+    var $primary = 'TITLE_ID';
 
     var $use_view = 'VW';
 
@@ -21,7 +21,7 @@ class Program_model extends \EThesis\Library\Adodb
     public function initialize()
     {
         parent::__construct();
-        $this->adodb->debug = TRUE;
+//        $this->adodb->debug = TRUE;
     }
 
     private function check_filter(array $filter)
@@ -30,10 +30,6 @@ class Program_model extends \EThesis\Library\Adodb
         if (empty($filter)) {
 
         } else if (is_array($filter)) {
-            $sql .= (isset($filter['FACULTY_ID']) ? " AND FACULTY_ID IN ({$filter['FACULTY_ID']})" : '');
-            $sql .= (isset($filter['PROGRAM_CODE']) ? " AND PROGRAM_CODE IN ({$filter['PROGRAM_CODE']})" : '');
-            $sql .= (isset($filter['PROGRAM_NAME_TH']) ? " AND PROGRAM_NAME_TH LIKE '%{$filter['PROGRAM_NAME_TH']}%'" : '');
-            $sql .= (isset($filter['PROGRAM_NAME_EN']) ? " AND PROGRAM_NAME_EN LIKE '%{$filter['PROGRAM_NAME_EN']}%'" : '');
 
             $sql .= (isset($filter['IN_ID']) ? " AND {$this->primary} IN ({$filter['IN_ID']})" : '');
             $sql .= (isset($filter['NOT_IN_ID']) ? " AND {$this->primary} NOT IN ({$filter['IN_ID']})" : '');

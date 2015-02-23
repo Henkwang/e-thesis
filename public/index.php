@@ -3,9 +3,11 @@
 //ini_set('display_errors', '0');
 
 error_reporting(E_ALL & ~E_STRICT & ~E_NOTICE);
+(new \Phalcon\Debug)->listen();
 
 
 date_default_timezone_set('Asia/Bangkok');
+
 
 //try {
 

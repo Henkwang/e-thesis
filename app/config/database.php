@@ -4,7 +4,7 @@ return (array(
     'active' => 'default_db',
     'default_db' => array(
         'adapter' => 'pdo',
-        'hostname' => 'sqlsrv:server=10.210.53.127 ',
+        'hostname' => 'sqlsrv:server=10.210.53.127',
         'username' => 'sa',
         'password' => '123456789',
         'dbname' => 'E-Thesis',

@@ -3,49 +3,50 @@
 namespace EThesis\Models\System;
 
 
-class Grouppermis_model extends \EThesis\Library\Adodb
+class Sys_log_model extends \EThesis\Library\Adodb
 {
 
     var $schema = 'system';
-    var $table = 'SYS_GROUP_PERMIS';
-    var $primary = 'PMS_ID';
+    var $table = 'SYS_LOG';
+    var $primary = 'LOG_ID';
 
     var $use_view = FALSE;
 
-    var $field_insert = ['GRD_ID', 'MOD_ID', 'PMD_ADD', 'PMD_EDIT', 'PMD_DELETE'];
-    var $field_update = ['GRD_ID', 'MOD_ID', 'PMD_ADD', 'PMD_EDIT', 'PMD_DELETE'];
+    var $field_insert = ['LOG_USER', 'LOG_USER_TYPE', 'LOG_PAGE', 'LOG_PROCESS', 'LOG_VALUE', 'LOG_TYPE', 'LOG_DATE', 'LOG_IP', 'LOG_BROWSER_INFO', 'LOG_LOCAL_IP'];
 
     var $date_current;
     var $user_access;
     var $user_group;
     var $user_type;
 
+    var $sess_class;
+
 
     public function initialize()
     {
         parent::__construct();
 
-//        $this->adodb->debug = TRUE;
+        $this->adodb->debug = TRUE;
 
-        $sess = new \EThesis\Library\Session();
+        $this->sess_class = \EThesis\Library\DIPhalcon::get('sess');
 
         $this->date_current = $this->adodb->sysTimeStamp;
-        $this->user_access = ($sess->has('username') ? $sess->get('username') : die(AUTH_FALSE_J));
-        $this->user_group = ($sess->has('usergroup') ? $sess->get('usergroup') : die(AUTH_FALSE_J));
-        $this->user_type = ($sess->has('usertype') ? $sess->get('usertype') : die(AUTH_FALSE_J));
+        $this->user_access = ($this->sess_class->has('username') ? $this->sess_class->get('username') : die(AUTH_FALSE_J));
+        $this->user_group = ($this->sess_class->has('usergroup') ? $this->sess_class->get('usergroup') : die(AUTH_FALSE_J));
+        $this->user_type = ($this->sess_class->has('usertype') ? $this->sess_class->get('usertype') : die(AUTH_FALSE_J));
     }
 
     private function check_filter(array $filter)
     {
-        $sql = "$this->primary IS NOT NULL ";
+        $sql = "RECORD_STATUS='N'";
         if (empty($filter)) {
 
         } else if (is_array($filter)) {
-            $sql .= (isset($filter['GRD_ID']) ? " AND GRD_ID IN ({$filter['GRD_ID']})" : '');
-            $sql .= (isset($filter['MOD_ID']) ? " AND MOD_ID IN ({$filter['MOD_ID']})" : '');
-            $sql .= (isset($filter['PMD_ADD']) ? " AND PMD_ADD = '{$filter['PMD_ADD']}'" : '');
-            $sql .= (isset($filter['PMD_EDIT']) ? " AND PMD_EDIT = '{$filter['PMD_EDIT']}'" : '');
-            $sql .= (isset($filter['PMD_DELETE']) ? " AND PMD_DELETE = '{$filter['PMD_DELETE']}'" : '');
+            $sql .= (isset($filter['LOG_USER']) ? " AND LOG_USER LIKE '%{$filter['LOG_USER']}%'" : '');
+            $sql .= (isset($filter['LOG_USER_TYPE']) ? " AND LOG_USER_TYPE = '{$filter['LOG_USER_TYPE']}'" : '');
+            $sql .= (isset($filter['LOG_PAGE']) ? " AND LOG_PAGE LIKE '%{$filter['LOG_PAGE']}%'" : '');
+            $sql .= (isset($filter['LOG_PROCESS']) ? " AND LOG_PROCESS LIKE '%{$filter['LOG_PROCESS']}%'" : '');
+            $sql .= (isset($filter['LOG_BROWSER_INFO']) ? " AND LOG_BROWSER_INFO LIKE '%{$filter['LOG_BROWSER_INFO']}%'" : '');
 
             $sql .= (isset($filter['IN_ID']) ? " AND {$this->primary} IN ({$filter['IN_ID']})" : '');
             $sql .= (isset($filter['NOT_IN_ID']) ? " AND {$this->primary} NOT IN ({$filter['IN_ID']})" : '');
@@ -75,8 +76,19 @@ class Grouppermis_model extends \EThesis\Library\Adodb
         return $result;
     }
 
-    public function insert(array $arrInsert)
+    public function insert($log_page, $log_process, $log_type)
     {
+        $arrInsert = [
+            'LOG_USER' => $this->sess_class->get('username'),
+            'LOG_USER_TYPE' => $this->user_type,
+            'LOG_PAGE' => $log_page,
+            'LOG_PROCESS' => $log_process,
+            'LOG_VALUE' => json_encode($this->sess_class->get()),
+            'LOG_TYPE' => $log_type,
+            'LOG_DATE' => $this->date_current,
+            'LOG_IP' => $this->sess_class->get('user_ip'),
+            'LOG_BROWSER_INFO' => $this->sess_class->get('user_agent'),
+            'LOG_LOCAL_IP' => $_SERVER['SERVER_ADDR'] ];
         $sql_field = '';
         $sql_value = '';
         foreach ($this->field_insert as $field) {
@@ -85,31 +97,11 @@ class Grouppermis_model extends \EThesis\Library\Adodb
                 $sql_value .= "'{$arrInsert[$field]}',";
             }
         }
-        $sql_field .= "RECORD_STATUS, CREATE_DATE, CREATE_USER, CREATE_GROUP, LAST_DATE, LAST_USER, LAST_GROUP";
-        $sql_value .= "'N','{$this->date_current}','{$this->user_access}','{$this->user_group}','{$this->date_current}','{$this->user_access}','{$this->user_group}'";
         $sql = "INSERT INTO {$this->schema}.{$this->table} ({$sql_field}) VALUES ({$sql_value})";
         $sql .= ";";
         $result = $this->adodb->Execute($sql);
         return $result;
 
-    }
-
-    public function update(array $arrUpdate, $id)
-    {
-        $sql = "UPDATE {$this->schema}.{$this->table} SET ";
-        foreach ($this->field_update as $field) {
-            if (isset($arrUpdate[$field])) {
-                $sql .= "{$field}='{$arrUpdate[$field]}',";
-            } else {
-                $sql .= "{$field}='',";
-            }
-        }
-        $sql .= "LAST_DATE='{$this->date_current}', LAST_USER='{$this->user_access}', LAST_GROUP='{$this->user_group}'";
-        $sql .= "WHERE {$this->primary}='$id'";
-        $sql .= ";";
-
-        $result = $this->adodb->Execute($sql);
-        return $result;
     }
 
 
