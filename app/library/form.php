@@ -130,6 +130,7 @@ class Form
     private $_cp_label_group = [];
     private $_cp_input = [];
     private $_cp_validate = '';
+    private $_url_prefix = '';
 
     /*
      * model Set
@@ -147,6 +148,7 @@ class Form
         $this->_session_class = DIPhalcon::get(ET_SV_SESSION);
         $this->lang = $this->_session_class->get('lang');
         $this->_datamodel_class = new \EThesis\Controllers\Ajax\AutocompleteController();
+        $this->_url_prefix = \EThesis\Library\DIPhalcon::get('url')->get('');
 
     }
 
@@ -194,6 +196,7 @@ class Form
             'labelgroup' => $this->_cp_label_group,
             'input' => $this->_cp_input,
             'valid' => $this->_cp_validate,
+            'preurl' => $this->_url_prefix,
         ];
 //        print_r($this->_param_array);
         return $data;
@@ -343,7 +346,8 @@ class Form
             $attr['stringLength']['min'] = $vilid['minlength'];
         }
         if ($vilid['phone'] !== false || $vilid['type'] == Form::TYPE_TEL) {
-            $attr['phone'] = ['country' => 'TH'];
+//            $attr['phone'] = ['country' => 'TH'];
+            $attr['integer'] = [];
         }
         if ($vilid['callback'] !== false) {
             $attr['callback']['callback'] = $vilid['callback'];
@@ -616,7 +620,7 @@ class Form
         $maxitem = ($param['maxitem'] !== false ? ',maximumSelectionLength:' . $param['maxitem'] : '');
 
         $data = [];
-        if ($param['datamodel']) {
+        if ($param['datamodel'] && !empty($param['value'])) {
             $search = (!empty($param['value']) ? ['IN_ID' => $param['value']] : []);
             $data = $this->_datamodel_class->get_search($param['datamodel'], $search);
             $option = '';

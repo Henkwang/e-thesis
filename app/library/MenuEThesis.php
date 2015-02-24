@@ -53,7 +53,7 @@ class MenuEThesis
             $gid[] = $val;
         }
 
-        $module_model = new \EThesis\Models\System\Module_model();
+        $module_model = new \EThesis\Models\System\Sys_module_model();
         $field = ['MOD_PARENT_ID', 'MOD_LEVEL', 'MOD_ID', 'MOD_NAME_' . strtoupper($this->lang) . ' [MOD_NAME]', 'MOD_URL'];
         $filter = ['IN_ID' => implode(',', $gid), 'ENABLE' => 'T'];
         $order = 'MOD_LEVEL ASC, MOD_ORDER ASC';
@@ -71,7 +71,7 @@ class MenuEThesis
      */
     private function get_groupPremis($groupID)
     {
-        $this->_permis_model = new \EThesis\Models\System\Grouppermis_model();
+        $this->_permis_model = new \EThesis\Models\System\Sys_grouppermis_model();
         $id = [];
         $result = $this->_permis_model->select_by_filter(['MOD_ID'], ['GRD_ID' => $groupID]);
         if ($result && $result->RecordCount() > 0) {

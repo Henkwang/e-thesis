@@ -43,6 +43,27 @@ class bs1formController extends \Phalcon\Mvc\Controller
 
     }
 
+    public function datapersonAction()
+    {
+        $his_person_model = new \EThesis\Models\Hrd\Hrd_person_model();
+        $pk_id = $_POST['id'];
+        $result = $his_person_model->select_by_filter([], ['IN_ID' => $pk_id]);
+        if (is_object($result) && $result->RecordCount() > 0) {
+            $row = $result->FetchRow();
+            $data = [
+                'FACULTY_ID' => $row['FACULTY_ID'],
+                'CITIZEN_ID' => $row['CITIZEN_ID'],
+                'TITLE_ID' => $row['TITLE_ID'],
+                'FNAME_TH' => $row['FNAME_TH'],
+                'LNAME_TH' => $row['LNAME_TH'],
+                'POS_ACADEMIC_ID' => $row['POS_ACAD_ID'],
+                'POS_EXECUTIVE_ID' => $row['POS_EXEC_ID'],
+                'TEL_PERSONNEL' => $row['MOBILE_PHONE'],
+            ];
+            echo json_encode($data);
+        }
+    }
+
     private function _get_config()
     {
         $form = new Form();
@@ -77,20 +98,17 @@ class bs1formController extends \Phalcon\Mvc\Controller
         $form->add_input('ADVISER_STATUS', [
             'type' => Form::TYPE_RADIO,
             'datalang' => 'ADVISER_STATUS',
-
         ]);
         $form->add_input('FACULTY_ID', [
             'type' => Form::TYPE_SELECT,
             'datamodel' => 'MAS_FACULTY',
-
         ]);
-        $form->add_input('PROGRAM_ID_TEST', [
+        $form->add_input('PERSON_ID', [
             'type' => Form::TYPE_AUTOCOMPLETE,
-            'datamodel' => 'MAS_PROGRAM',
-            'value' => '62',
+            'datamodel' => 'HRD_HIS_PERSON',
             'maxitem' => 1,
+            'required' => false,
         ]);
-
         $form->add_input('PROGRAM_ID', [
             'type' => Form::TYPE_SELECT,
             'datamodel' => 'MAS_PROGRAM',
@@ -106,40 +124,47 @@ class bs1formController extends \Phalcon\Mvc\Controller
          */
         $form->add_input('TITLE_ID', [
             'type' => Form::TYPE_SELECT,
-            'datamodel' => 'MAS_TITLE',
+            'datamodel' => 'HRD_TITLE',
             'label' => 'ชื่อ - สกุล',
         ]);
-        $form->add_input('BS1_FNAME_TH', [
+        $form->add_input('FNAME_TH', [
             'type' => Form::TYPE_TEXT,
             'holder' => $this->lang_class->label_manual('ชื่อ', 'First Name')
         ]);
-        $form->add_input('BS1_LNAME_TH', [
+        $form->add_input('LNAME_TH', [
             'type' => Form::TYPE_TEXT,
             'holder' => $this->lang_class->label_manual('สกุล', 'Last Name')
 
         ]);
-        $form->add_input('POS_EXECUTIVE', [
-            'type' => Form::TYPE_TEXT,
+        $form->add_input('POS_EXECUTIVE_ID', [
+            'type' => Form::TYPE_SELECT,
+            'datamodel' => 'HRD_POS_EXEC',
+            'required' => false,
         ]);
-        $form->add_input('POS_ACADEMIC', [
-            'type' => Form::TYPE_TEXT,
+        $form->add_input('POS_ACADEMIC_ID', [
+            'type' => Form::TYPE_SELECT,
+            'datamodel' => 'HRD_POS_ACAD'
         ]);
         $form->add_input('DIVISION_ID', [
             'type' => Form::TYPE_SELECT,
-            'datamodel' => 'MAS_DIVISION',
+            'datamodel' => 'HRD_FACULTY',
         ]);
         $form->add_input('UNIVERSITY_NAME', [
             'type' => Form::TYPE_TEXT,
+            'value' => 'มหาวิทยาลัยพะเยา'
         ]);
         $form->add_input('TEL_PERSONNEL', [
-            'type' => Form::TYPE_TEL,
-
+            'type' => Form::TYPE_TEXT,
+            'minlength' => 9
         ]);
         $form->add_input('TEL_WORK', [
-            'type' => Form::TYPE_TEL,
+            'type' => Form::TYPE_TEXT,
+            'minlength' => 4,
+            'value' => '054466666'
         ]);
         $form->add_input('TEL_WORK_NEXT', [
             'type' => Form::TYPE_TEXT,
+            'minlength' => 4
         ]);
         /*
          * 2.  ข้อมูลคถณวุฒิสูงสุด
@@ -260,11 +285,11 @@ class bs1formController extends \Phalcon\Mvc\Controller
         ]);
         $form->add_input('MORE_RESEARCH_NAME[0]', [
             'type' => Form::TYPE_TEXT,
-            'label' =>'5.1',
+            'label' => '5.1',
         ]);
         $form->add_input('MORE_RESEARCH_NAME[1]', [
             'type' => Form::TYPE_TEXT,
-            'label' =>'5.2',
+            'label' => '5.2',
             'required' => false,
         ]);
 
@@ -278,23 +303,22 @@ class bs1formController extends \Phalcon\Mvc\Controller
         ]);
         $form->add_input('AWARD_NAME[0]', [
             'type' => Form::TYPE_TEXT,
-            'label' =>'6.1',
+            'label' => '6.1',
         ]);
         $form->add_input('AWARD_YEAR[0]', [
             'type' => Form::TYPE_NUMBER,
-            'label' =>'ปีที่ได้รับ',
+            'label' => 'ปีที่ได้รับ',
         ]);
         $form->add_input('AWARD_NAME[1]', [
             'type' => Form::TYPE_TEXT,
             'required' => false,
-            'label' =>'6.2',
+            'label' => '6.2',
         ]);
         $form->add_input('AWARD_YEAR[1]', [
             'type' => Form::TYPE_NUMBER,
             'required' => false,
-            'label' =>'ปีที่ได้รับ',
+            'label' => 'ปีที่ได้รับ',
         ]);
-
 
 
         return $form;

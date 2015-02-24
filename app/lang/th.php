@@ -50,13 +50,14 @@ return [
     ],
     'PROVINCE' => 'จังหวัด',
     'COUNTRY' => 'ประเทศ',
+    'PERSON_ID' => 'ชื่อบุคลากร',
 
 
 
 
     // บศ 1
-    'POS_EXECUTIVE' => 'ตำแหน่งทางบริหาร',
-    'POS_ACADEMIC' => 'ตำแหน่งทางวิชาการ',
+    'POS_EXECUTIVE_ID' => 'ตำแหน่งทางบริหาร',
+    'POS_ACADEMIC_ID' => 'ตำแหน่งทางวิชาการ',
     'DIVISION_ID' => 'คณะ/หน่วยงาน',
     'UNIVERSITY_NAME' => 'มหาวิทยาลัย/สถาบัน',
     'TEL_PERSONNEL' => 'โทรศัพท์มือถือ',

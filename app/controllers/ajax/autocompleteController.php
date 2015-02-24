@@ -114,7 +114,7 @@ class AutocompleteController
         $model = ucfirst($cfe['model']);
         $label = $cfe['label'];
         $pkid = $cfe['key'];
-        $filter = '';
+        $filter = [];
         $order = (isset($cfe['order']) ? $cfe['order'] : '');
 
         if (is_array($search)) {
@@ -165,7 +165,7 @@ class AutocompleteController
             $label = str_replace('_ML', '_' . strtoupper($this->lang), $label);
             $order = str_replace('_ML', '_' . strtoupper($this->lang), $order);
 
-            $filter['SQL'] = "{$label} LIKE '%{$q}%'";
+            $filter['AUTO'] = "{$label} LIKE '%{$q}%'";
 
             $field = [($key) . ' AS [key]', $label . ' AS [label]'];
 

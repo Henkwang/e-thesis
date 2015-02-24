@@ -35,16 +35,26 @@
         <div class="form-group">
             <div class="col-xs-offset-3 col-xs-6">
                 <div class="input-group">
+                    {{ labelgroup['PERSON_ID'] }}
+                    {{ input['PERSON_ID'] }}
+                    <span class="input-group-addon">(ถ้ามี)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-xs-offset-3 col-xs-6">
+                <div class="input-group">
                     {{ labelgroup['FACULTY_ID'] }}
                     {{ input['FACULTY_ID'] }}
                 </div>
             </div>
         </div>
+
+
         <div class="form-group">
             <div class="col-xs-offset-3 col-xs-6">
                 <div class="input-group">
-                    {#{{ labelgroup['PROGRAM_ID_TEST'] }}#}
-                    {#{{ input['PROGRAM_ID_TEST'] }}#}
                     {{ labelgroup['PROGRAM_ID'] }}
                     {{ input['PROGRAM_ID'] }}
                 </div>
@@ -102,12 +112,12 @@
             </div>
             <div class="col-xs-5">
                 <div class="form-group">
-                    {{ input['BS1_FNAME_TH'] }}
+                    {{ input['FNAME_TH'] }}
                 </div>
             </div>
             <div class="col-xs-5">
                 <div class="form-group">
-                    {{ input['BS1_LNAME_TH'] }}
+                    {{ input['LNAME_TH'] }}
                 </div>
             </div>
         </div>
@@ -116,16 +126,16 @@
             <div class="col-xs-6">
                 <div class="form-group">
                     <div class="input-group">
-                        {{ labelgroup['POS_EXECUTIVE'] }}
-                        {{ input['POS_EXECUTIVE'] }}
+                        {{ labelgroup['POS_EXECUTIVE_ID'] }}
+                        {{ input['POS_EXECUTIVE_ID'] }}
                     </div>
                 </div>
             </div>
             <div class="col-xs-6">
                 <div class="form-group">
                     <div class="input-group">
-                        {{ labelgroup['POS_ACADEMIC'] }}
-                        {{ input['POS_ACADEMIC'] }}
+                        {{ labelgroup['POS_ACADEMIC_ID'] }}
+                        {{ input['POS_ACADEMIC_ID'] }}
                     </div>
                 </div>
             </div>
@@ -583,7 +593,6 @@
     </div>
 </div>
 
-
 </form>
 
 
@@ -591,6 +600,24 @@
     $(document).ready(function () {
         {{ valid }}
         $.material.init();
+
+        $('#PERSON_ID').on('select2:select', function (e) {
+            {#console.log('{{ preurl }}');#}
+            $.ajax({
+                url: '{{ preurl }}bs/bs1form/dataperson',
+                type: "POST",
+                dataType: 'json',
+                data: "id=" + e.params.data.id,
+                success: function (result) {
+                    $.each(result, function(k,v){
+                        $('#' + k).val(v).change();
+                    });
+                }
+
+            });
+        });
+
+
     });
 
 

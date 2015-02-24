@@ -35,6 +35,7 @@ class Reg_title_model extends \EThesis\Library\Adodb
             $sql .= (isset($filter['NOT_IN_ID']) ? " AND {$this->primary} NOT IN ({$filter['IN_ID']})" : '');
 
             $sql .= (isset($filter['SQL']) ? " AND {$filter['SQL']}" : '');
+            $sql .= (isset($filter['AUTO']) ? " AND {$filter['AUTO']}" : '');
 
         }
         return $sql;
