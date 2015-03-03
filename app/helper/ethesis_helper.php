@@ -13,7 +13,7 @@ if(!function_exists('setVars')){
 }
 
 if(!function_exists('et_array_marge')){
-    function et_array_marge(array $base_array, array $update_array = [])
+    function et_array_marge(array $base_array, array $update_array)
     {
         foreach ($update_array as $key => $val) {
             if (isset($base_array[$key])) {

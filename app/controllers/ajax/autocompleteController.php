@@ -171,6 +171,8 @@ class AutocompleteController
 
             $result = $md_class->select_by_filter($field, $filter, $order, 20, 0);
 
+//            print_r($result->_array);
+
             if ($result && $result->RecordCount() > 0) {
                 $data['total_count'] = $result->RecordCount();
                 while ($row = $result->FetchRow()) {

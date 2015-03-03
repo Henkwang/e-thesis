@@ -442,6 +442,7 @@
 
       html = '';
       year = parseInt(year/10, 10) * 10;
+	  console.log(year);
       var yearCont = this.widget.find('.datepicker-years').find(
         'th:eq(1)').text(year + '-' + (year + 9)).end().find('td');
       this.widget.find('.datepicker-years').find('th').removeClass('disabled');
@@ -453,7 +454,7 @@
       }
       year -= 1;
       for (var i = -1; i < 11; i++) {
-        html += '<span class="year' + (i === -1 || i === 10 ? ' old' : '') + (currentYear === year ? ' active' : '') + ((year < startYear || year > endYear) ? ' disabled' : '') + '">' + year + '</span>';
+        html += '<span class="year' + (i === -1 || i === 10 ? ' old' : '') + (currentYear === year ? ' active' : '') + ((year < startYear || year > endYear) ? ' disabled' : '') + '">' + (parseInt(year) + 543) + '</span>';
         year += 1;
       }
       yearCont.html(html);

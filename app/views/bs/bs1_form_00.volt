@@ -1,7 +1,7 @@
 <form id="{{ formname }}" action="{{ action }}" role="form" class="form-horizontal" method="post">
-
+{{ input['pk_id'] }}
 <div class="row">
-    <div class="col-xs-10 col-xs-offset-1">
+    <div class="col-xs-12 col-lg-10 col-lg-offset-1">
         <p class="text-right">บศ.1 : ปรับปรุง 2557</p>
 
         <div class="text-center">
@@ -51,7 +51,6 @@
             </div>
         </div>
 
-
         <div class="form-group">
             <div class="col-xs-offset-3 col-xs-6">
                 <div class="input-group">
@@ -77,7 +76,7 @@
 <hr/>
 
 <div class="row" style="min-height: 100%">
-<div class="col-md-12" id="tab_bs1">
+<div class="col-lg-12" id="tab_bs1">
 <ul class="nav nav-tabs">
     <li class="active"><a href="#bs1_001" data-toggle="tab">ข้อมูลส่วนบุคคล</a></li>
     <li class=""><a href="#bs1_002" data-toggle="tab">คุณวุฒิสูงสุด</a></li>
@@ -85,7 +84,6 @@
     <li class=""><a href="#bs1_004" data-toggle="tab">ผลงานทางวิชาการ</a></li>
     <li class=""><a href="#bs1_005" data-toggle="tab">งานวิจัยที่สนใจหรือตำเนินอยู่</a></li>
     <li class=""><a href="#bs1_006" data-toggle="tab">รางวัลหรือเกียรติคุณ</a></li>
-    <li class=""><a href="#bs1_007" data-toggle="tab">คณะที่จัดการเรียนการสอน</a></li>
 </ul>
 
 
@@ -99,7 +97,7 @@
     <h4 class="text-left">1. ข้อมูลส่วนบุคคล</h4>
     <br><br>
 
-    <div class="col-xs-10 col-xs-offset-1">
+    <div class="col-xs-12 col-lg-10 col-lg-offset-1">
 
         <div class="row">
             <div class="col-xs-2">
@@ -196,7 +194,7 @@
     <h4 class="text-left">2. ข้อมูลคุณวุฒิสูงสุดจที่สำเร็จการศึกษา</h4>
     <br><br>
 
-    <div class="col-xs-10 col-xs-offset-1">
+    <div class="col-xs-12 col-lg-10 col-lg-offset-1">
         <div class="row">
             <div class="col-xs-7">
                 <div class="form-group">
@@ -333,135 +331,136 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-xs-10 col-xs-offset-1">
-            <div class="row">
-                <div class="col-xs-12">
-                    <div class="form-group">
-                        <div class="input-group">
-                            {{ labelgroup['PRESENT_ACADEMIC_FOR_GRADUATE'] }}
-                            {{ input['PRESENT_ACADEMIC_FOR_GRADUATE'] }}
+    <div class="col-xs-12">
+        <div class="row">
+            <div class="col-xs-12 col-lg-10 col-lg-offset-1">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <div class="input-group">
+                                {{ labelgroup['PRESENT_ACADEMIC_FOR_GRADUATE'] }}
+                                {{ input['PRESENT_ACADEMIC_FOR_GRADUATE'] }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <div class="input-group">
+                                {{ labelgroup['PRESENT_ACADEMIC_TYPE'] }}
+                                {{ input['PRESENT_ACADEMIC_TYPE'] }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-3">
+                        <div class="form-group">
+                            <div class="input-group">
+                                {{ labelgroup['PRESENT_ACADEMIC_YEAR'] }}
+                                {{ input['PRESENT_ACADEMIC_YEAR'] }}
+                                <span class="input-group-addon">ล่าสุด</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <div class="input-group">
+                                {{ labelgroup['PRESENT_ACADEMIC_TYPE_NAME'] }}
+                                {{ input['PRESENT_ACADEMIC_TYPE_NAME'] }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-5">
+                        <div class="form-group">
+                            <div class="input-group">
+                                {{ labelgroup['PRESENT_ACADEMIC_PLACE_NAME'] }}
+                                {{ input['PRESENT_ACADEMIC_PLACE_NAME'] }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <div class="input-group">
+                                {{ labelgroup['PRESENT_ACADEMIC_PROVINCE_NAME'] }}
+                                {{ input['PRESENT_ACADEMIC_PROVINCE_NAME'] }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-3">
+                        <div class="form-group">
+                            <div class="input-group">
+                                {{ labelgroup['PRESENT_ACADEMIC_COUNTRY_NAME'] }}
+                                {{ input['PRESENT_ACADEMIC_COUNTRY_NAME'] }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-3">
+                        <div class="form-group">
+                            <div class="input-group">
+                                {{ labelgroup['PRESENT_ACADEMIC_TITLE_ID'] }}
+                                {{ input['PRESENT_ACADEMIC_TITLE_ID'] }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-5">
+                        <div class="form-group">
+                            {{ input['PRESENT_ACADEMIC_FNAME_TH'] }}
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            {{ input['PRESENT_ACADEMIC_LNAME_TH'] }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <div class="input-group">
+                                {{ labelgroup['PRESENT_ACADEMIC_NAME'] }}
+                                {{ input['PRESENT_ACADEMIC_NAME'] }}
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="row">
-                <div class="col-xs-4">
-                    <div class="form-group">
-                        <div class="input-group">
-                            {{ labelgroup['PRESENT_ACADEMIC_TYPE'] }}
-                            {{ input['PRESENT_ACADEMIC_TYPE'] }}
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-3">
-                    <div class="form-group">
-                        <div class="input-group">
-                            {{ labelgroup['PRESENT_ACADEMIC_YEAR'] }}
-                            {{ input['PRESENT_ACADEMIC_YEAR'] }}
-                            <span class="input-group-addon">ล่าสุด</span>
-                        </div>
+        <div class="row">
+            <br>
+
+            <div class="col-xs-1">
+                <p class="text-right" style="margin-bottom: 0px;margin-top:7px"> 4.2</p>
+            </div>
+            <div class="col-xs-5">
+                <div class="form-group">
+                    <div class="input-group">
+                        {{ labelgroup['PRESENT_ACADEMIC_IS_EXPERIENCE'] }}
+                        {{ input['PRESENT_ACADEMIC_IS_EXPERIENCE'] }}
                     </div>
                 </div>
             </div>
-
-            <div class="row">
-                <div class="col-xs-12">
-                    <div class="form-group">
-                        <div class="input-group">
-                            {{ labelgroup['PRESENT_ACADEMIC_TYPE_NAME'] }}
-                            {{ input['PRESENT_ACADEMIC_TYPE_NAME'] }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-xs-5">
-                    <div class="form-group">
-                        <div class="input-group">
-                            {{ labelgroup['PRESENT_ACADEMIC_PLACE_NAME'] }}
-                            {{ input['PRESENT_ACADEMIC_PLACE_NAME'] }}
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-4">
-                    <div class="form-group">
-                        <div class="input-group">
-                            {{ labelgroup['PRESENT_ACADEMIC_PROVINCE_NAME'] }}
-                            {{ input['PRESENT_ACADEMIC_PROVINCE_NAME'] }}
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-3">
-                    <div class="form-group">
-                        <div class="input-group">
-                            {{ labelgroup['PRESENT_ACADEMIC_COUNTRY_NAME'] }}
-                            {{ input['PRESENT_ACADEMIC_COUNTRY_NAME'] }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-xs-3">
-                    <div class="form-group">
-                        <div class="input-group">
-                            {{ labelgroup['PRESENT_ACADEMIC_TITLE_ID'] }}
-                            {{ input['PRESENT_ACADEMIC_TITLE_ID'] }}
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-5">
-                    <div class="form-group">
-                        {{ input['PRESENT_ACADEMIC_FNAME_TH'] }}
-                    </div>
-                </div>
-                <div class="col-xs-4">
-                    <div class="form-group">
-                        {{ input['PRESENT_ACADEMIC_LNAME_TH'] }}
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-xs-12">
-                    <div class="form-group">
-                        <div class="input-group">
-                            {{ labelgroup['PRESENT_ACADEMIC_NAME'] }}
-                            {{ input['PRESENT_ACADEMIC_NAME'] }}
-                        </div>
+            <div class="col-xs-4">
+                <div class="form-group">
+                    <div class="input-group">
+                        {{ labelgroup['PRESENT_ACADEMIC_IS_EXPERIENCE_YEAR'] }}
+                        {{ input['PRESENT_ACADEMIC_IS_EXPERIENCE_YEAR'] }}
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <div class="row">
-        <br>
-
-        <div class="col-xs-1">
-            <p class="text-right" style="margin-bottom: 0px;margin-top:7px"> 4.2</p>
-        </div>
-        <div class="col-xs-5">
-            <div class="form-group">
-                <div class="input-group">
-                    {{ labelgroup['PRESENT_ACADEMIC_IS_EXPERIENCE'] }}
-                    {{ input['PRESENT_ACADEMIC_IS_EXPERIENCE'] }}
-                </div>
-            </div>
-        </div>
-        <div class="col-xs-4">
-            <div class="form-group">
-                <div class="input-group">
-                    {{ labelgroup['PRESENT_ACADEMIC_IS_EXPERIENCE_YEAR'] }}
-                    {{ input['PRESENT_ACADEMIC_IS_EXPERIENCE_YEAR'] }}
-                </div>
-            </div>
-        </div>
-    </div>
-
 </div>
 
 
@@ -474,43 +473,40 @@
     </div>
     <br>
 
-    <div class="row">
-        <div class="col-xs-10 col-xs-offset-1">
-            <div class="row">
-                <div class="col-xs-12">
-                    <div class="form-group">
-                        <div class="input-group">
-                            {{ labelgroup['MORE_RESEARCH_STATUS'] }}
-                            {{ input['MORE_RESEARCH_STATUS'] }}
+    <div class="col-xs-12">
+        <div class="row">
+            <div class="col-xs-12 col-lg-10 col-lg-offset-1">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <div class="input-group">
+                                {{ labelgroup['MORE_RESEARCH_STATUS'] }}
+                                {{ input['MORE_RESEARCH_STATUS'] }}
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-12">
-                    <div class="form-group">
-                        <div class="input-group">
-                            {{ labelgroup['MORE_RESEARCH_NAME[0]'] }}
-                            {{ input['MORE_RESEARCH_NAME[0]'] }}
-                            {#<span class="input-group-addon"><a class="btn  btn-success btn-flat" href="javascript:void(0)"><i class="md-add-circle"></i> </a> </span>#}
+                <div class="row" id="row_MORE_RESEARCH_NAME_0">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <div class="input-group">
+                                {{ labelgroup['MORE_RESEARCH_NAME[]'] }}
+                                {{ input['MORE_RESEARCH_NAME[]'] }}
+                                <span class="input-group-addon">
+                                    <a class="btn  btn-success btn-link"
+                                       href="javascript:man_input(0 ,'MORE_RESEARCH_NAME')">
+                                        <i class="md-add-circle"></i>
+                                    </a>
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-12">
-                    <div class="form-group">
-                        <div class="input-group">
-                            {{ labelgroup['MORE_RESEARCH_NAME[1]'] }}
-                            {{ input['MORE_RESEARCH_NAME[1]'] }}
-                            {#<span class="input-group-addon"><a class="btn  btn-success btn-flat" href="javascript:void(0)"><i class="md-add-circle"></i> </a> </span>#}
-                        </div>
-                    </div>
-                </div>
-            </div>
 
+            </div>
         </div>
     </div>
+
 </div>
 
 
@@ -524,57 +520,46 @@
     </div>
     <br>
 
-    <div class="row">
-        <div class="col-xs-10 col-xs-offset-1">
+    <div class="col-xs-12">
+        <div class="row">
+            <div class="col-xs-12 col-lg-10 col-lg-offset-1">
 
-            <div class="row">
-                <div class="col-xs-12">
-                    <div class="form-group">
-                        <div class="input-group">
-                            {{ labelgroup['AWARD_NAME_STATUS'] }}
-                            {{ input['AWARD_NAME_STATUS'] }}
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <div class="input-group">
+                                {{ labelgroup['AWARD_NAME_STATUS'] }}
+                                {{ input['AWARD_NAME_STATUS'] }}
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="row">
-                <div class="col-xs-8">
-                    <div class="form-group">
-                        <div class="input-group">
-                            {{ labelgroup['AWARD_NAME[0]'] }}
-                            {{ input['AWARD_NAME[0]'] }}
+                <div class="row" id="row_AWARD_0">
+                    <div class="col-xs-8">
+                        <div class="form-group">
+                            <div class="input-group">
+                                {{ labelgroup['AWARD_NAME[]'] }}
+                                {{ input['AWARD_NAME[]'] }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group">
+                            <div class="input-group">
+                                {{ labelgroup['AWARD_YEAR[]'] }}
+                                {{ input['AWARD_YEAR[]'] }}
+                                <span class="input-group-addon">
+                                    <a class="btn btn-success btn-link" href="javascript:man_input(0 ,'AWARD')">
+                                        <i class="md-add-circle"></i>
+                                    </a>
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-xs-4">
-                    <div class="form-group">
-                        <div class="input-group">
-                            {{ labelgroup['AWARD_YEAR[0]'] }}
-                            {{ input['AWARD_YEAR[0]'] }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-8">
-                    <div class="form-group">
-                        <div class="input-group">
-                            {{ labelgroup['AWARD_NAME[1]'] }}
-                            {{ input['AWARD_NAME[1]'] }}
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-4">
-                    <div class="form-group">
-                        <div class="input-group">
-                            {{ labelgroup['AWARD_YEAR[1]'] }}
-                            {{ input['AWARD_YEAR[1]'] }}
-                        </div>
-                    </div>
-                </div>
-            </div>
 
+            </div>
         </div>
     </div>
 </div>
@@ -589,7 +574,7 @@
 <hr>
 <div class="form-group">
     <div class="col-xs-offset-5 col-xs-4">
-        {{ input['ADD'] }}{{ input['RESET'] }}
+        {{ input['OK'] }}{{ input['RESET'] }}
     </div>
 </div>
 
@@ -597,9 +582,11 @@
 
 
 <script>
+    var num_moreinput = {};
     $(document).ready(function () {
         {{ valid }}
         $.material.init();
+
 
         $('#PERSON_ID').on('select2:select', function (e) {
             {#console.log('{{ preurl }}');#}
@@ -609,16 +596,65 @@
                 dataType: 'json',
                 data: "id=" + e.params.data.id,
                 success: function (result) {
-                    $.each(result, function(k,v){
+                    clog(result);
+                    $.each(result, function (k, v) {
                         $('#' + k).val(v).change();
                     });
+                    $('#{{ formname }} #MAX_DEGREE_ID_v' + result.MAX_DEGREE_ID).click();//                    clog(result);
                 }
 
             });
         });
 
 
+
+
+        $("#AWARD_NAME_STATUS_vF").change(function () {
+            var inputnum = (typeof num_moreinput['AWARD'] == 'undefined' ? 1 : num_moreinput['AWARD']);
+            for (var i = 0; i < inputnum; i++) {
+                $('#{{ formname }} ' + '#row_AWARD_' + i).hide();
+            }
+        });
+        $("#AWARD_NAME_STATUS_vT").change(function () {
+            var inputnum = (typeof num_moreinput['AWARD'] == 'undefined' ? 1 : num_moreinput['AWARD']);
+            for (var i = 0; i < inputnum; i++) {
+                $('#{{ formname }} ' + '#row_AWARD_' + i).show();
+            }
+        });
+        $("#MORE_RESEARCH_STATUS_vF").change(function () {
+            var inputnum = (typeof num_moreinput['MORE_RESEARCH_NAME'] == 'undefined' ? 1 : num_moreinput['MORE_RESEARCH_NAME']);
+            for (var i = 0; i < inputnum; i++) {
+                $('#{{ formname }} ' + '#row_MORE_RESEARCH_NAME_' + i).hide();
+            }
+        });
+        $("#MORE_RESEARCH_STATUS_vT").change(function () {
+            var inputnum = (typeof num_moreinput['MORE_RESEARCH_NAME'] == 'undefined' ? 1 : num_moreinput['MORE_RESEARCH_NAME']);
+            for (var i = 0; i < inputnum; i++) {
+                $('#{{ formname }} ' + '#row_MORE_RESEARCH_NAME_' + i).show();
+            }
+        });
+
     });
+
+
+    function man_input(num, id) {
+        var inputnum = (typeof num_moreinput[id] == 'undefined' ? 1 : num_moreinput[id]);
+        if (num == 0 && inputnum < 9) {
+            var elm = $('#{{ formname }} ' + '#row_' + id + '_0').clone();
+            elm.attr('id', 'row_' + id + '_' + inputnum.toString());
+            elm.find('a').first().attr('href', "javascript:man_input(" + inputnum.toString() + ",'" + id + "');").removeClass('btn-success').addClass('btn-danger');
+            elm.find('a').first().find('i').first().attr('class', 'md-remove-circle');
+            var elmsp = elm.find('div span[class="input-group-addon"]').first();
+            elmsp.html((parseFloat(elmsp.text()) + (parseFloat(inputnum) / 10.0)).toFixed(1).toString());
+            inputnum++;
+            $('#{{ formname }} ' + '#row_' + id + '_0').parent().append(elm);
+        } else if (num > 0 && inputnum < 10) {
+            inputnum--;
+            var elm = $('#{{ formname }} ' + '#row_' + id + '_' + inputnum.toString());
+            elm.remove();
+        }
+        num_moreinput[id] = inputnum;
+    }
 
 
 </script>

@@ -86,15 +86,10 @@ $di->set('modelsMetadata', function () {
 /**
  * Start the session the first time some component request the session service
  */
+
 $di->set('sess', function () {
 
     $session = new \EThesis\Library\Session();
-    $session->set('username', 'attapon.th');
-    $session->set('userfac', '');
-    $session->set('usergroup', '1');
-    $session->set('usertype', 'A');
-
-    $session->has('lang') || $session->set('lang', 'th');
 
     return $session;
 });

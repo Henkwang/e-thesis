@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html >
+<html>
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -12,7 +12,10 @@
             'public/resource/css/material-design-iconic-font.min.css',
             'public/resource/css/ripples.min.css',
             'public/resource/css/material.min.css',
-            'public/resource/plugin/datetimepicker/css/bootstrap-datetimepicker.min.css',
+//            'public/resource/plugin/datetimepicker/css/bootstrap-datetimepicker.min.css',
+            'public/resource/plugin/datepicker/datepicker.css',
+
+
             //'public/resource/plugin/chosen/chosen.min.css',
             'public/resource/plugin/select2/css/select2.css',
             'public/resource/plugin/formvalidation/css/formValidation.min.css',
@@ -26,8 +29,13 @@
             'public/resource/js/bootstrap.min.js',
             'public/resource/js/ripples.min.js',
             'public/resource/js/material.min.js',
-            'public/resource/plugin/datetimepicker/js/bootstrap-datetimepicker.min.js',
-            'public/resource/plugin/datetimepicker/js/locales/bootstrap-datetimepicker.th.js',
+//            'public/resource/plugin/datetimepicker/js/bootstrap-datetimepicker.js',
+//            'public/resource/plugin/datetimepicker/js/locales/bootstrap-datetimepicker.th.js',
+
+            'public/resource/plugin/datepicker/bootstrap-datepicker.min.js',
+            'public/resource/plugin/datepicker/bootstrap-datepicker-thai.min.js',
+            'public/resource/plugin/datepicker/locales/bootstrap-datepicker.th.js',
+
 //            'public/resource/plugin/validator.min.js',
             'public/resource/plugin/formvalidation/js/formValidation.min.js',
             'public/resource/plugin/formvalidation/js/framework/bootstrap.min.js',
@@ -60,6 +68,15 @@
     </style>
 </head>
 <body>
+<?php
+$sess = \EThesis\Library\DIPhalcon::get('sess');
+$lang = $sess->get('lang');
+$base_url = \EThesis\Library\DIPhalcon::get('url')->get();
+?>
+<script>
+    var lang = '<?=$lang?>';
+    var base_url = '<?=$base_url?>';
+</script>
 
 <?= $this->getContent() ?>
 
@@ -68,10 +85,51 @@
 <script>
     $.material.init();
     $('[data-toggle="tooltip"]').tooltip();
-    <?php
-        $session = $_SESSION[\EThesis\Library\Session::SESSION_NAME .'lang'];
-    ?>
-    var lang = '<?=$session?>';
+
+
+
+    function access_group(id, title) {
+        var form = '#form-login';
+        $(form).hide();
+        $('#login-access').append('<div class="text-center" id="loading"><i class="md md-sync md-5x md-spin-reverse"></i></div>');
+        $("#login-alert").html('');
+        $.ajax({
+            dataType: 'json',
+            method: 'POST',
+            url: base_url + 'main/auth/logingroup',
+            data: 'grouploginid=' + id,
+            success: function (result) {
+                if (result.error !== false || typeof result.msg !== 'undefined') {
+                    $("#login-alert").show().html(result.msg).delay(5000).fadeOut(500);
+                    $("#loading").remove();
+                } else {
+                    window.location = result.reurl;
+                    $("#loading").remove();
+                }
+            },
+            error: function () {
+                $("#loading").remove();
+                $("#login-alert").show().html('ไม่สามารถเชื่อมต่อเซิฟเวอร์ได้').delay(5000).fadeOut(500);
+            }
+        });
+    }
+
+    function logout() {
+        var form = '#form-login';
+        $.ajax({
+            dataType: 'json',
+            method: 'POST',
+            url: base_url + 'main/auth/logout',
+            success: function (result) {
+                $("#loading").remove();
+                window.location = base_url;
+            },
+            error: function () {
+                $("#loading").remove();
+                $("#login-alert").show().html('ไม่สามารถเชื่อมต่อเซิฟเวอร์ได้').delay(5000).fadeOut(500);
+            }
+        });
+    }
 
 </script>
 </body>

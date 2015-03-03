@@ -29,7 +29,7 @@ class MenuEThesis
     public function __construct()
     {
         $session = \EThesis\Library\DIPhalcon::get('sess');
-        $this->group = ($session->has('usergroup') ? $session->get('usergroup') : '');
+        $this->group = ($session->has('grouplogin') ? $session->get('grouplogin') : '');
         $this->type = ($session->has('usertype') ? $session->get('usertype') : '');
         $this->lang = ($session->has('lang') ? $session->get('lang') : 'th');
         $this->get_menu();
@@ -129,7 +129,7 @@ class MenuEThesis
                 $this->createSubMenu($html, $node['children']);
                 //$html .= '</li>';
             } else {
-                $html .= '<li><a href="javascript:call_page(\'' . $node['name'] . '\',\'' . $node['url'] . '\')">' . $node['name'] . '</a></li>';
+                $html .= '<li><a href="javascript:call_page(\'' . $node['name'] . '\',\'' . $node['url'] . '\',\'' . $node['id'] . '\')">' . $node['name'] . '</a></li>';
             }
         }
 

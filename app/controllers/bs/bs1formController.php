@@ -21,19 +21,18 @@ class bs1formController extends \Phalcon\Mvc\Controller
     public function initialize()
     {
         $this->init_class = \EThesis\Library\DIPhalcon::get();
-        if ($this->init_class[sess]->get('auth') <> true) {
-            die(AUTH_FALSE_J);
-        }
         $this->_lang = $this->init_class[sess]->get('lang');
         $this->lang_class = new \EThesis\Library\Lang();
+
 
         //print_r($this->init_class[sess]->get());
     }
 
     public function indexAction()
     {
+//        $form = $this->_get_config();
 //        echo '<pre>';
-//        print_r($this->lang);
+//        print_r(array_keys($form->get_form()['input']));
 //        echo '</pre>';
 //        return;
         $this->view->enable();
@@ -46,12 +45,15 @@ class bs1formController extends \Phalcon\Mvc\Controller
     public function datapersonAction()
     {
         $his_person_model = new \EThesis\Models\Hrd\Hrd_person_model();
+        $his_education_model = new \EThesis\Models\Hrd\Hrd_education_model();
         $pk_id = $_POST['id'];
         $result = $his_person_model->select_by_filter([], ['IN_ID' => $pk_id]);
+
         if (is_object($result) && $result->RecordCount() > 0) {
             $row = $result->FetchRow();
             $data = [
                 'FACULTY_ID' => $row['FACULTY_ID'],
+                'DIVISION_ID' => $row['FACULTY_ID'],
                 'CITIZEN_ID' => $row['CITIZEN_ID'],
                 'TITLE_ID' => $row['TITLE_ID'],
                 'FNAME_TH' => $row['FNAME_TH'],
@@ -60,6 +62,29 @@ class bs1formController extends \Phalcon\Mvc\Controller
                 'POS_EXECUTIVE_ID' => $row['POS_EXEC_ID'],
                 'TEL_PERSONNEL' => $row['MOBILE_PHONE'],
             ];
+
+            $result = $his_education_model->select_by_filter([], ['PERSON_ID' => $pk_id, 'HIGHEST_DEGREE' => 'T']);
+            if (is_object($result) && $result->RecordCount() > 0) {
+                $row = $result->FetchRow();
+                $data['MAX_DEGREE_ID'] = ($row['LEV_ID'] == '80' ? 4 :
+                    ($row['LEV_ID'] == '60' ? 3 :
+                        ($row['LEV_ID'] == '40' ? 2 : '')
+                    )
+                );
+                $data['MAX_COURSE_NAME_TH'] = $row['QUA_NAME_TH'];
+                $data['MAX_COURSE_NAME_EN'] = $row['QUA_NAME_EN'];
+
+                $data['MAX_PROGRAM_NAME_TH'] = $row['MAJOR_NAME_TH'];
+                $data['MAX_PROGRAM_NAME_EN'] = $row['MAJOR_NAME_EN'];
+
+                $data['MAX_UNIVERSITY_NAME_TH'] = $row['EDUC_NAME_TH'];
+                $data['MAX_UNIVERSITY_NAME_EN'] = $row['EDUC_NAME_EN'];
+
+                $data['MAX_COUNTRY_NAME_TH'] = $row['COUNTRY_NAME_TH'];
+                $data['MAX_COUNTRY_NAME_EN'] = $row['COUNTRY_NAME_EN'];
+
+            }
+
             echo json_encode($data);
         }
     }
@@ -73,7 +98,7 @@ class bs1formController extends \Phalcon\Mvc\Controller
         $form->set_model(new \EThesis\Models\Bs\Bs1_model());
 
 
-        $form->add_input('ADD', [
+        $form->add_input('OK', [
             'type' => Form::TYPE_SUBMIT,
         ]);
         $form->add_input('RESET', [
@@ -105,7 +130,7 @@ class bs1formController extends \Phalcon\Mvc\Controller
         ]);
         $form->add_input('PERSON_ID', [
             'type' => Form::TYPE_AUTOCOMPLETE,
-            'datamodel' => 'HRD_HIS_PERSON',
+            'datamodel' => 'HRD_HIS_INSTRUCTOR',
             'maxitem' => 1,
             'required' => false,
         ]);
@@ -283,15 +308,16 @@ class bs1formController extends \Phalcon\Mvc\Controller
             'label' => 'งานวิจัยที่สนใจหรือกำลังดำเนินการ',
             'data' => ['F' => 'ไม่มี', 'T' => 'มี'],
         ]);
-        $form->add_input('MORE_RESEARCH_NAME[0]', [
+        $form->add_input('MORE_RESEARCH_NAME[]', [
             'type' => Form::TYPE_TEXT,
             'label' => '5.1',
+            'novalidate' => true,
         ]);
-        $form->add_input('MORE_RESEARCH_NAME[1]', [
-            'type' => Form::TYPE_TEXT,
-            'label' => '5.2',
-            'required' => false,
-        ]);
+//        $form->add_input('MORE_RESEARCH_NAME[1]', [
+//            'type' => Form::TYPE_TEXT,
+//            'label' => '5.2',
+//            'required' => false,
+//        ]);
 
         /*
         * 6
@@ -301,23 +327,36 @@ class bs1formController extends \Phalcon\Mvc\Controller
             'label' => 'รางวัลหรือเกียรติคุณทางการสอน การวิจัยหรือทางวิชาการ ที่เคยได้รับ',
             'data' => ['F' => 'ไม่มี', 'T' => 'มี'],
         ]);
-        $form->add_input('AWARD_NAME[0]', [
+        $form->add_input('AWARD_NAME[]', [
             'type' => Form::TYPE_TEXT,
             'label' => '6.1',
+            'novalidate' => true,
         ]);
-        $form->add_input('AWARD_YEAR[0]', [
+        $form->add_input('AWARD_YEAR[]', [
             'type' => Form::TYPE_NUMBER,
             'label' => 'ปีที่ได้รับ',
+            'novalidate' => true,
         ]);
-        $form->add_input('AWARD_NAME[1]', [
-            'type' => Form::TYPE_TEXT,
-            'required' => false,
-            'label' => '6.2',
-        ]);
-        $form->add_input('AWARD_YEAR[1]', [
-            'type' => Form::TYPE_NUMBER,
-            'required' => false,
-            'label' => 'ปีที่ได้รับ',
+//        $form->add_input('AWARD_NAME[1]', [
+//            'type' => Form::TYPE_TEXT,
+//            'required' => false,
+//            'label' => '6.2',
+//        ]);
+//        $form->add_input('AWARD_YEAR[1]', [
+//            'type' => Form::TYPE_NUMBER,
+//            'required' => false,
+//            'label' => 'ปีที่ได้รับ',
+//        ]);
+
+        /*
+         *
+         *  7
+         *
+         */
+        $form->add_input('AWARD_NAME_STATUS', [
+            'type' => Form::TYPE_RADIO,
+            'label' => 'รางวัลหรือเกียรติคุณทางการสอน การวิจัยหรือทางวิชาการ ที่เคยได้รับ',
+            'data' => ['F' => 'ไม่มี', 'T' => 'มี'],
         ]);
 
 

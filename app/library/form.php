@@ -27,7 +27,7 @@ class Form
     const TYPE_SELECT = 'select';
     const TYPE_DATE = 'date';
     const TYPE_TIME = 'time';
-    const TYPE_DATETIME = 'datetime';
+//    const TYPE_DATETIME = 'datetime';
     const TYPE_AUTOCOMPLETE = 'autocomplete';
     const TYPE_CHECKBOX = 'checkbox';
     const TYPE_RADIO = 'radio';
@@ -82,6 +82,7 @@ class Form
         'label_disable' => false,
         //-------------------
         // Validate
+        'novalidate' => false,
         'required' => true,
         'max' => false,
         'min' => false,
@@ -149,6 +150,8 @@ class Form
         $this->lang = $this->_session_class->get('lang');
         $this->_datamodel_class = new \EThesis\Controllers\Ajax\AutocompleteController();
         $this->_url_prefix = \EThesis\Library\DIPhalcon::get('url')->get('');
+
+        $this->add_input('pk_id', ['type' => Form::TYPE_HIDDEN, 'novalidate' => true]);
 
     }
 
@@ -285,7 +288,7 @@ class Form
             if (!$param['disable']) {
                 if (in_array($param['type'], [Form::TYPE_TEXT, Form::TYPE_HIDDEN, Form::TYPE_NUMBER, Form::TYPE_EMAIL, Form::TYPE_TEL])) {
                     $this->_cp_input[$name] = $this->_input_textbox($name, $param);
-                } else if (in_array($param['type'], [Form::TYPE_DATE, Form::TYPE_DATETIME, Form::TYPE_TIME])) {
+                } else if (in_array($param['type'], [Form::TYPE_DATE, Form::TYPE_TIME])) {
                     $this->_cp_input[$name] = $this->_input_datetime($name, $param);
                 } else if ($param['type'] == Form::TYPE_SELECT) {
                     $this->_cp_input[$name] = $this->_input_select($name, $param);
@@ -334,6 +337,10 @@ class Form
     {
 //        print_r($vilid);
         $attr = [];
+
+        if ($vilid['novalidate'] == true) {
+            return;
+        }
 
         if ($vilid['max'] || $vilid['max'] || $vilid['between']) {
             $attr['between']['max'] = (!empty($vilid['between'] ? max($vilid['between']) : $vilid['max']));
@@ -395,6 +402,9 @@ class Form
         $div_attr['class'] = ['col-xs-' . $param['col'], 'col-xs-offset-' . $param['offset'], 'padding-mini'];
         $attr = $param['attr'];
         $attr['type'] = Form::TYPE_TEXT;
+        if ($param['type'] == Form::TYPE_HIDDEN) {
+            $attr['type'] = Form::TYPE_HIDDEN;
+        }
         $attr['id'] = $input_name;
         $attr['name'] = $input_name;
         $attr['placeholder'] = $param['holder'];
@@ -424,30 +434,31 @@ class Form
         } else {
             $attr['style'] = ['cursor:pointer', $param['style']];
         }
-
-        $format = '';
-        $icon = '';
-        if (stripos($param['type'], 'date') !== FALSE) {
-            $attr['data-format'][] = 'dd/MM/yyyy';
-            $icon['data-date-icon'][] = 'md-event md-lg';
+        if($param['type']== Form::TYPE_DATE){
+            $html = "\n" . '<div ' . $this->join_attr($div_attr) . '>'
+                . '<div class="input-group date" id="' . $input_name . '_datetime">'
+                . '<input ' . $this->join_attr($attr) . '/>'
+                . '<span class="input-group-addon"><i class="md-event md-lg"></i> </span>'
+                . '</div></div>'
+                . '<script type="text/javascript">'
+                . '$(function () {$(\'#' . $this->formname . ' #' . $input_name . '_datetime\').datepicker({language: lang+\'-th\',format:\'dd/mm/yyyy\'})'
+                . '.on(\'changeDate\', function (ev) { $(\'#' . $this->formname . '\').formValidation(\'revalidateField\', \'' . $input_name . '\');'
+                . '$(\'#' . $this->formname . ' #' . $input_name . '\').removeClass(\'empty\'); });'
+                . '$("#' . $input_name . '").click(function(){$(\'#' . $this->formname . ' #' . $input_name . '_datetime .input-group-addon i\').click();});'
+                . '});'
+                . '</script>';
+        }else if($param['type'] == Form::TYPE_TIME){
+            $attr['id'] = $input_name;
+            $attr['name'] = $input_name;
+            $attr['type'] = Form::TYPE_TIME;
+            $attr['placeholder'] = $param['holder'];
+            $attr['value'] = $param['value'];
+            $attr['class'] = [$param['class_default'], $param['class']];
+            $html = '<div ' . $this->join_attr($div_attr) . '>'
+                . '<input ' . $this->join_attr($attr) . '/>'
+                . '</div>';
         }
-        if (stripos($param['type'], 'time') !== FALSE) {
-            $attr['data-format'][] = 'hh:mm';
-            $icon['data-date-icon'][] = 'md-access-time md-lg';
-        }
 
-        $html = "\n" . '<div ' . $this->join_attr($div_attr) . '>'
-            . '<div class="input-group" id="' . $input_name . '_datetime">'
-            . '<input ' . $this->join_attr($attr) . '/>'
-            . '<span class="add-on input-group-addon"><i ' . $this->join_attr($icon) . '></i> </span>'
-            . '</div></div>'
-            . '<script type="text/javascript">'
-            . '$(function () {$(\'#' . $this->formname . ' #' . $input_name . '_datetime\').datetimepicker({language: lang,isBuddhist: true})'
-            . '.on(\'changeDate\', function (ev) { $(\'#' . $this->formname . '\').formValidation(\'revalidateField\', \'' . $input_name . '\');'
-            . '$(\'#' . $this->formname . ' #' . $input_name . '\').removeClass(\'empty\'); });'
-            . '$("#' . $input_name . '").click(function(){$(\'#' . $this->formname . ' #' . $input_name . '_datetime .add-on.input-group-addon i\').click();});'
-            . '});'
-            . '</script>';
         $this->check_validation($input_name, $param);
         return $html;
     }
@@ -541,6 +552,7 @@ class Form
             if (in_array($key, $value)) {
                 $attr['checked'] = 'checked';
             }
+            $attr['id'] = $input_name . '_v' . $key;
             $checkbox .= ''
                 . '<label>'
                 . '<input  ' . $this->join_attr($attr) . ' />' . $val
@@ -583,6 +595,7 @@ class Form
             if (in_array($key, $value)) {
                 $attr['checked'] = 'checked';
             }
+            $attr['id'] = $input_name . '_v' . $key;
             $radio .= ''
                 . '<label>'
                 . '<input  ' . $this->join_attr($attr) . ' >' . $val

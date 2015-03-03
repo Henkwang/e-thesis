@@ -51,7 +51,7 @@ return [
     /*
      * HRD
      */
-    'HRD_HIS_PERSON' => [
+    'HRD_HIS_INSTRUCTOR' => [
         'module' => 'hrd',
         'model' => 'hrd_person_model',
         'key' => 'PERSON_ID',
@@ -91,13 +91,21 @@ return [
         'filter' => [],
         'order' => 'FACULTY_CODE ASC',
     ],
-    'HRD_DIVISON' => [
+    'HRD_DIVISION' => [
         'module' => 'hrd',
         'model' => 'hrd_division_model',
         'key' => 'DIVISION_ID',
         'label' => "DIVISION_NAME_ML",
         'filter' => [],
         'order' => 'DIVISION_CODE ASC',
+    ],
+    'HRD_DIVISION' => [
+        'module' => 'hrd',
+        'model' => 'hrd_position_model',
+        'key' => 'POS_ID',
+        'label' => "POS_NAME_TH",
+        'filter' => [],
+        'order' => 'POS_NAME_TH ASC',
     ],
 
 ];

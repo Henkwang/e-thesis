@@ -11,6 +11,11 @@
                     <form method="post" accept-charset="utf-8" autocomplete="off" role="form" novalidate=""
                           action="<?= $actionLogin ?>"
                           class="form-horizontal" id="form-login">
+                        <?php
+                        $sess = \EThesis\Library\DIPhalcon::get('sess');
+                        ?>
+                        <input type="hidden" name="skey" value="<?= $sess->get('key') ?>">
+
                         <div class="form-group">
                             <input type="text" class="form-control" name="login" id="inputLogin"
                                    required=""
@@ -24,6 +29,7 @@
 
                         <p class="text-danger" id="login-alert" style="display: none"></p>
 
+
                         <br/>
 
                         <div class="form-group">
@@ -32,6 +38,14 @@
                             </button>
                         </div>
                     </form>
+                    <div class="row" style="display: none;">
+                        <div class="col-xs-10 col-xs-offset-1" id="showgroup">
+                        </div>
+                        <div class="form-group">
+                            <a class="btn btn-danger btn-link text-danger" href="javascript:logout();"><i
+                                    class="md-exit-to-app"></i> Logout</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -47,33 +61,67 @@
             var form = this;
             $(this).hide();
             $('#login-access').append('<div class="text-center" id="loading"><i class="md md-sync md-5x md-spin-reverse"></i></div>');
+            $("#login-alert").html('');
 
-            setTimeout(function () {
-                $("#loading").remove();
-                $("#login-alert").show().html('ชื่อหรือรหัสผ่านไม่ถูกต้อง').delay(5000).fadeOut(500);
-                $(form).show();
-
-            }, 2000);
-
+            $.ajax({
+                dataType: 'json',
+                method: 'POST',
+                data: login,
+                url: $("#form-login").attr('action'),
+                success: function (result) {
+                    if (result.error !== false || typeof result.msg !== 'undefined') {
+                        $("#login-alert").show().html(result.msg).delay(5000).fadeOut(500);
+                        $("#loading").remove();
+                        $(form).show();
+                    } else {
+                        show_group(result);
+                        $("#loading").remove();
+                    }
+                },
+                error: function () {
+                    $("#loading").remove();
+                    $("#login-alert").show().html('ไม่สามารถเชื่อมต่อเซิฟเวอร์ได้').delay(5000).fadeOut(500);
+                    $(form).show();
+                }
+            });
             //console.log(login);
         });
     });
+
+    <?php
+    $sess = \EThesis\Library\DIPhalcon::get('sess');
+    $url = \EThesis\Library\DIPhalcon::get('url');
+    if($sess->get('auth') === TRUE){
+        echo 'show_group({
+            name : "'.$sess->get('name').'",
+            group : decode_json(\''.json_encode($sess->get('usergroup')).'\'),
+            grouplogin_url : "'.$url->get('main/auth/grouplogin/').'",
+        });';
+    }
+
+    ?>
+
+    // array( group, grouplogin_url, name)
+    function show_group(result) {
+        $("#form-login").hide();
+        var group = result.group;
+        var h = '<h4>' + result.name + '</h4>';
+        h += '<ul>';
+        $.each(group, function (k, v) {
+            h += '<li><a href="javascript:access_group(\'' + k + '\',\'' + v + '\')">' + v + '</a></li>';
+        });
+        h += '</ul>';
+        $("#showgroup").parent().show();
+        $("#showgroup").html(h);
+    }
+
+
 
 </script>
 
 
 <style>
     /*@import url("http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,700");*/
-
-    login-body {
-        /*font-family: Open Sans;*/
-        font-size: 14px;
-        line-height: 1.42857;
-        background: #333333;
-        height: 350px;
-        padding: 0;
-        margin: 0;
-    }
 
     .container-login {
         min-height: 0;
