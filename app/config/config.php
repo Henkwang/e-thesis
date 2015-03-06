@@ -33,7 +33,7 @@ return new \Phalcon\Config(array(
      * Use In Library Session
      */
     'session' =>[
-        'interval_refresh' => 30,
+        'interval_refresh' => 99,
         'lifetime' => 3600,
         'close_start' => '01:00',// เวลาปีดเวปในแต่ละวัน
         'close_end' => '04:00',

@@ -112,5 +112,12 @@ class Bs1_model extends \EThesis\Library\Adodb
         return $result;
     }
 
+    public function delete($id){
+        $sql = "UPDATE  {$this->schema}.{$this->table} SET RECORD_STATUS='D' ";
+        $sql .= "LAST_DATE='{$this->date_current}', LAST_USER='{$this->user_access}', LAST_USER_TYPE='{$this->user_type}'";
+        $result = $this->adodb->Execute($sql);
+        return $result;
+    }
+
 
 }

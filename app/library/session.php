@@ -34,21 +34,25 @@ class Session
         $now = date(DATE_ISO8601);
         $this->phalcon_session = new SessionAdapter(['uniqueId' => Session::SESSION_NAME]);
         $this->phalcon_session->start();
+        $nnow = strtotime('now');
+        $nlat = strtotime($this->get('last_active'));
 
-        if($this->has('last_active')){
-            $deff_time = strtotime('now') - strtotime($this->get('last_active'));
+        if ($this->has('last_active')) {
+            $deff_time = $nnow - $nlat;
             if (!empty($this->session_config['lifetime']) && $deff_time > $this->session_config['lifetime']) {
                 $this->destroy();
                 $this->set('auth', false);
                 return FALSE;
             }
+            if (!empty($this->session_config['interval_refresh']) && $deff_time > $this->session_config['interval_refresh']) {
+                $this->set('key', sha1(rand(1, 999999)));
+            }
         }
         $now = date(DATE_ISO8601);
-        $this->has_set('key', sha1(rand(1, 999999)));
         $this->has_set('auth', false);
         $this->set('user_ip', $this->get_userip());
         $this->set('last_active', $now);
-        $this->has('user_agent') || $this->set('user_agent', get_browser(null, true)[comment]);
+        $this->has('user_agent') || $this->set('user_agent', get_browser(null, true)['comment']);
 
 
         return true;

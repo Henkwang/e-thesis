@@ -50,7 +50,7 @@ return [
     ],
     'PROVINCE' => 'จังหวัด',
     'COUNTRY' => 'ประเทศ',
-    'PERSON_ID' => 'ชื่อบุคลากร',
+    'PERSON_ID' => 'บุคลากร',
 
 
 

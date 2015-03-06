@@ -8,7 +8,7 @@
 
 namespace EThesis\Controllers\Bs;
 
-use EThesis\Library\Form;
+use EThesis\Library;
 
 class bs1formController extends \Phalcon\Mvc\Controller
 {
@@ -41,6 +41,18 @@ class bs1formController extends \Phalcon\Mvc\Controller
         $this->view->pick('/bs/bs1_form_00');
 
     }
+
+
+    public function setdata($manage = false, $pk_id = false)
+    {
+        if ($manage <> FALSE){
+
+
+        }else{
+            echo Libcontrol::BACKEND_RESPONCE(['set' => FALSE]);
+        }
+    }
+
 
     public function datapersonAction()
     {
