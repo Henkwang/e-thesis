@@ -16,16 +16,15 @@ class bs1formController extends \Phalcon\Mvc\Controller
     var $init_class;
 
     private $_lang = 'th';
-    private $lang_class;
 
-    public function initialize()
-    {
-        $this->init_class = \EThesis\Library\DIPhalcon::get();
-        $this->_lang = $this->init_class[sess]->get('lang');
+
+    public function initialize(){
         $this->lang_class = new \EThesis\Library\Lang();
-
-
-        //print_r($this->init_class[sess]->get());
+        $this->_lang = $this->sess->get('lang');
+        if($this->sess->get('auth') !== TRUE){
+            die(Library\Libcontrol::BACKEND_RESPONCE());
+        }
+                //print_r($this->init_class[sess]->get());
     }
 
     public function indexAction()
@@ -45,10 +44,16 @@ class bs1formController extends \Phalcon\Mvc\Controller
 
     public function setdata($manage = false, $pk_id = false)
     {
-        if ($manage <> FALSE){
+        if ($manage <> FALSE) {
+            if ($manage == 'add') {
 
+            } else if ($manage == 'edit') {
 
-        }else{
+            }else if($manage == 'delete'){
+
+            }
+
+        } else {
             echo Libcontrol::BACKEND_RESPONCE(['set' => FALSE]);
         }
     }
@@ -106,7 +111,7 @@ class bs1formController extends \Phalcon\Mvc\Controller
         $form = new Form();
         $form->param_default['col'] = 12;
 
-        $form->set_urlset($this->init_class['url']->get('bs/bs1/setdata/'));
+        $form->set_urlset($this->url->get('bs/bs1/setdata/'));
         $form->set_model(new \EThesis\Models\Bs\Bs1_model());
 
 
