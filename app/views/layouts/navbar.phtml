@@ -87,7 +87,6 @@ if ($di->session->get('auth') === true && is_numeric($di->session->get('grouplog
     </div>
 
     <script>
-        var ethesis_tab = [];
         function count_tab(ID) {
             var count = jQuery("#" + ID + " > ul > li").length;
             return count;
@@ -96,7 +95,6 @@ if ($di->session->get('auth') === true && is_numeric($di->session->get('grouplog
             var elm = $('#' + ID);
             if (count_tab(ID) < 1) {
                 var ck = elm.html('<ul class="nav nav-tabs"></ul> <div id="' + ID + '_content" class="tab-content"> </div>');
-                ethesis_tab[ID] = true;
             }
             var num_tab = Math.floor(Math.random() * 99999);
 

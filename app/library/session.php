@@ -44,10 +44,8 @@ class Session
                 $this->set('auth', false);
                 return FALSE;
             }
-            if (!empty($this->session_config['interval_refresh']) && $deff_time > $this->session_config['interval_refresh']) {
-                $this->set('key', sha1(rand(1, 999999)));
-            }
         }
+        $this->has_set('key', sha1(rand(1, 999999)));
         $now = date(DATE_ISO8601);
         $this->has_set('auth', false);
         $this->set('user_ip', $this->get_userip());

@@ -190,7 +190,7 @@ class bs1formController extends \Phalcon\Mvc\Controller
             'type' => Form::TYPE_SELECT,
             'datamodel' => 'HRD_POS_ACAD'
         ]);
-        $form->add_input('FACULTY_ID', [
+        $form->add_input('HRD_FACULTY_ID', [
             'type' => Form::TYPE_SELECT,
             'datamodel' => 'HRD_FACULTY',
         ]);
