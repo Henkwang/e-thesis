@@ -69,9 +69,8 @@
 </head>
 <body>
 <?php
-$sess = \EThesis\Library\DIPhalcon::get('sess');
-$lang = $sess->get('lang');
-$base_url = \EThesis\Library\DIPhalcon::get('url')->get();
+$lang = $di->session->get('lang');
+$base_url = $di->url->get();
 ?>
 <script>
     var lang = '<?=$lang?>';

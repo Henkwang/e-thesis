@@ -9,10 +9,12 @@ class HomeController extends \Phalcon\Mvc\Controller
     protected function initialize()
     {
         $this->view->reset();
+        $this->view->setVar('di', $this);
     }
 
     public function indexAction()
     {
+
         $this->view->setTemplateBefore('/login');
         \Phalcon\Tag::setTitle('Index');
         $this->view->pick('/main/login');
@@ -25,8 +27,6 @@ class HomeController extends \Phalcon\Mvc\Controller
         $this->view->setTemplateBefore('navbar');
 //        $this->view->pick('/main/navber');
     }
-
-
 
 
 }

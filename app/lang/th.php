@@ -59,6 +59,7 @@ return [
     'POS_EXECUTIVE_ID' => 'ตำแหน่งทางบริหาร',
     'POS_ACADEMIC_ID' => 'ตำแหน่งทางวิชาการ',
     'DIVISION_ID' => 'คณะ/หน่วยงาน',
+    'HRD_FACULTY_ID' => 'คณะ/หน่วยงาน',
     'UNIVERSITY_NAME' => 'มหาวิทยาลัย/สถาบัน',
     'TEL_PERSONNEL' => 'โทรศัพท์มือถือ',
     'TEL_WORK' => 'เบอร์ที่ทำงาน',

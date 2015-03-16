@@ -17,7 +17,7 @@ class AuthController extends \Phalcon\Mvc\Controller
     {
         \Phalcon\Tag::setTitle('Authentication');
         $this->ldap = new \EThesis\Library\adLDAP();
-        $this->sess = \EThesis\Library\DIPhalcon::get('sess');
+        $this->sess = $this->session;
     }
 
     public function indexAction()
@@ -56,7 +56,7 @@ class AuthController extends \Phalcon\Mvc\Controller
 
     function loginAction()
     {
-        $sess = \EThesis\Library\DIPhalcon::get('sess');
+        $sess = $this->session;
 
 
         $user = $_POST['login'];

@@ -12,9 +12,9 @@
                           action="<?= $actionLogin ?>"
                           class="form-horizontal" id="form-login">
                         <?php
-                        $sess = \EThesis\Library\DIPhalcon::get('sess');
+
                         ?>
-                        <input type="hidden" name="skey" value="<?= $sess->get('key') ?>">
+                        <input type="hidden" name="skey" value="<?= $di->session->get('key') ?>">
 
                         <div class="form-group">
                             <input type="text" class="form-control" name="login" id="inputLogin"
@@ -52,7 +52,7 @@
     </article>
 </div>
 <pre>
-    <? print_r($sess->get()); ?>
+    <? print_r($di->session->get()); ?>
 </pre>
 <script>
     $(document).ready(function () {
@@ -91,13 +91,13 @@
     });
 
     <?php
-    $sess = \EThesis\Library\DIPhalcon::get('sess');
-    $url = \EThesis\Library\DIPhalcon::get('url');
-    if($sess->get('auth') === TRUE){
+
+    $url = $di->url;
+    if($di->session->get('auth') === TRUE){
         echo 'show_group({
-            name : "'.$sess->get('name').'",
-            group : decode_json(\''.json_encode($sess->get('usergroup')).'\'),
-            grouplogin_url : "'.$url->get('main/auth/grouplogin/').'",
+            name : "'.$di->session->get('name').'",
+            group : decode_json(\''.json_encode($di->session->get('usergroup')).'\'),
+            grouplogin_url : "'.$di->url->get('main/auth/grouplogin/').'",
         });';
     }
 

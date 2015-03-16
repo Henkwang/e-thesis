@@ -5,14 +5,15 @@
  * Date: 16/2/2558
  * Time: 13:33
  */
- 
+
 
 namespace EThesis\Controllers\Bs;
 
-use EThesis\Library;
+use \EThesis\Library\Form AS Form;
 
 class bs1formController extends \Phalcon\Mvc\Controller
 {
+
 
     var $init_class;
 
@@ -21,9 +22,9 @@ class bs1formController extends \Phalcon\Mvc\Controller
 
     public function initialize(){
         $this->lang_class = new \EThesis\Library\Lang();
-        $this->_lang = $this->sess->get('lang');
-        if($this->sess->get('auth') !== TRUE){
-            die(Library\Libcontrol::BACKEND_RESPONCE());
+        $this->_lang = $this->session->get('lang');
+        if($this->session->get('auth') !== TRUE){
+            die('false');
         }
                 //print_r($this->init_class[sess]->get());
     }
@@ -70,8 +71,9 @@ class bs1formController extends \Phalcon\Mvc\Controller
         if (is_object($result) && $result->RecordCount() > 0) {
             $row = $result->FetchRow();
             $data = [
-                'FACULTY_ID' => $row['FACULTY_ID'],
-                'DIVISION_ID' => $row['FACULTY_ID'],
+                'FACULTY_ID' => $row['REG_FACULTY_ID'],
+                'HRD_FACULTY_ID' => $row['FACULTY_ID'],
+                'PROGRAM_ID' => $row['REG_PROGRAM_ID'],
                 'CITIZEN_ID' => $row['CITIZEN_ID'],
                 'TITLE_ID' => $row['TITLE_ID'],
                 'FNAME_TH' => $row['FNAME_TH'],
@@ -188,7 +190,7 @@ class bs1formController extends \Phalcon\Mvc\Controller
             'type' => Form::TYPE_SELECT,
             'datamodel' => 'HRD_POS_ACAD'
         ]);
-        $form->add_input('DIVISION_ID', [
+        $form->add_input('FACULTY_ID', [
             'type' => Form::TYPE_SELECT,
             'datamodel' => 'HRD_FACULTY',
         ]);

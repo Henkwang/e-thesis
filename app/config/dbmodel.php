@@ -99,14 +99,7 @@ return [
         'filter' => [],
         'order' => 'DIVISION_CODE ASC',
     ],
-    'HRD_DIVISION' => [
-        'module' => 'hrd',
-        'model' => 'hrd_position_model',
-        'key' => 'POS_ID',
-        'label' => "POS_NAME_TH",
-        'filter' => [],
-        'order' => 'POS_NAME_TH ASC',
-    ],
+
 
 ];
 

@@ -28,7 +28,7 @@ class MenuEThesis
 
     public function __construct()
     {
-        $session = \EThesis\Library\DIPhalcon::get('sess');
+        $session = new \EThesis\Library\Session();
         $this->group = ($session->has('grouplogin') ? $session->get('grouplogin') : '');
         $this->type = ($session->has('usertype') ? $session->get('usertype') : '');
         $this->lang = ($session->has('lang') ? $session->get('lang') : 'th');

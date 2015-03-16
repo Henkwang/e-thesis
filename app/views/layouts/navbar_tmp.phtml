@@ -84,63 +84,67 @@ if ($di->session->get('auth') === true && is_numeric($di->session->get('grouplog
     </style>
 
     <div class="col-md-12" id="main_tab">
+        <ul class="nav nav-tabs">
+
+        </ul>
+        <div id="main_tab_content" class="tab-content">
+
+        </div>
     </div>
 
     <script>
         var ethesis_tab = [];
-        function count_tab(ID) {
-            var count = jQuery("#" + ID + " > ul > li").length;
+
+
+        function count_tab(tab_id) {
+            var count = jQuery("#" + tab_id + " > ul > li").length;
             return count;
         }
-        function add_tab(ID) {
-            var elm = $('#' + ID);
-            if (count_tab(ID) < 1) {
-                var ck = elm.html('<ul class="nav nav-tabs"></ul> <div id="' + ID + '_content" class="tab-content"> </div>');
-                ethesis_tab[ID] = true;
-            }
-            var num_tab = Math.floor(Math.random() * 99999);
 
-            var tab_link = elm.children('ul').first();
-            tab_link.append('<li class=""><a href="#' + ID + '_link-' + num_tab + '"  data-toggle="tab"><i class="md md-sync md-lg md-spin-reverse"></i></a></li>');
+        function getRandomInt() {
+            var max = 999999;
+            return Math.floor(Math.random() * max);
+        }
 
-            var tab_content = elm.children('#' + ID + '_content').first();
-            tab_content.append('<div class="tab-pane fade" id="' + ID + '_link-' + num_tab + '">'
-            + '<button type="button" style="margin:1px" class="close btn btn-danger btn-raised" onclick="javascript:close_tab(\'' + ID + '\',' + num_tab + ')"><i class="md-close"></i></button>'
+
+
+        function tab_close(tab_id, num_tab) {
+            jQuery("#" + tab_id + "_id-" + num_tab).remove();
+            jQuery("#" + tab_id + " ul li a[href=#" + tab_id + "_id-" + num_tab + "]").parent().remove();
+
+            var count = count_tab(tab_id);
+            var elm = jQuery(jQuery("#" + tab_id + " > ul > li")[count - 1]).children('a');
+            //console.log(elm);
+            if (elm.length > 0)
+                elm[0].click();
+            //jQuery("#" + tab_id + " > ul > li").children('a').click();
+            //jQuery("#" + tab_id + " ul li a[href=#" + tab_id + "_id-" + (num_tab - 1) + "]").click();
+
+        }
+
+        function add_tab(tab_id) {
+            var tab_link = jQuery("#" + tab_id + ' > ul');
+            var tab_contant = jQuery("#" + tab_id + ' > #' + tab_id + '_content');
+            var id = getRandomInt();
+            tab_link.append('<li class=""><a href="#main_tab_id-' + id + '" data-toggle="tab"><i class="md md-sync md-lg md-spin-reverse"></i></a></li>');
+            tab_contant.append('<div class="tab-pane fade" id="main_tab_id-' + id + '">'
+            + '<button type="button" style="margin:1px" class="close btn btn-danger btn-raised" onclick="javascript:tab_close(\'main_tab\',' + id + ')"><i class="md-close"></i></button>'
             + '<div class="well">'
-            + '<div data-number="' + num_tab + '" id="' + ID + '_content"><div class="text-center"> <i class="md md-sync md-5x md-spin-reverse"></i> </div></div>'
+            + '<div id="main_tab_content-' + id + '"><div class="text-center"> <i class="md md-sync md-5x md-spin-reverse"></i> </div></div>'
             + '</div>'
             + '</div>');
-            tab_link.children().last().children().first().click();
-            return {
-                tab: tab_link.children().last().children().first(),
-                content: $('#' + ID + '_content[data-number="' + num_tab + '"]')
-            }
+            var label_tab_elm = jQuery("#" + tab_id + ' > ul > li > a[href=#' + tab_id + '_id-' + id + ']');
+            var content_elm = jQuery('#' + tab_id + '_content-' + id);
+            label_tab_elm.click();
+            //console.log([label_tab_elm, content_elm]);
+            //label_tab_elm.html(id);
+            //content_elm.html('<div class="well">' + id + '</div>');
+            return {'label': label_tab_elm, 'content': content_elm, 'id': id};
         }
-
-        function close_tab(ID, num_tab) {
-            var elm = $('#' + ID);
-            if (count_tab(ID) < 2) {
-                elm.html('');
-                return true;
-            } else {
-                $('a[href="#' + ID + '_link-' + num_tab + '"]').parent().first().remove();
-                $('#' + ID + '_link-' + num_tab + '').remove();
-                elm.children('ul').first().children().last().children().first().click();
-                return true;
-            }
-            return false;
-        }
-
-        function close_alltab(ID) {
-            var elm = $('#' + ID);
-            elm.html('');
-        }
-
 
         function call_page(label, url, data) {
-            var ID = 'main_tab';
-            close_alltab(ID);
-            var elm = add_tab(ID);
+            var tab_name = 'main_tab';
+            var elm = add_tab(tab_name);
             jQuery.ajax({
                 type: "POST",
                 url: "<?= $di->url->get('');?>" + url,
@@ -148,26 +152,36 @@ if ($di->session->get('auth') === true && is_numeric($di->session->get('grouplog
                 success: function (result) {
                     if (result == '') {
                         alert('หมดเวลาการใช้งานระบบ หรือคุณไม่ได้รับสิทธิ์ในการเข้าถึง');
-                    } else if (result == 'false') {
-                        alert('หมดเวลาการใช้งานระบบ');
                     } else {
-                        elm.tab.html(label);
-                        elm.content.html(result);
+                        var res = decode_json(result);
+                        if (res.auth === false) {
+                            alert('หมดเวลาการใช้งานระบบ');
+                        } else {
+                            elm.label.html(label);
+                            elm.content.html(result);
+                        }
                     }
                 },
                 error: function () {
-                    close_alltab(ID);
-                    alert('!ผิดพลาด 404 ไม่เจอหน้านี้');
+                    tab_close(tab_name, elm.id);
+                    alert('ผิดพลาด 404 ไม่เจอหน้านี้');
                 }
             });
         }
 
+        function get_login() {
+            $.post(base_url + 'main/auth/get_login');
+        }
 
         window.onbeforeunload = function (e) {
             e = e || window.event;
+
+            // For IE and Firefox prior to version 4
             if (e) {
                 e.returnValue = 'คุณแน่ใจว่าต้องการออกจากหน้านี้?';
             }
+
+            // For Safari
             return 'คุณแน่ใจว่าต้องการออกจากหน้านี้?';
         };
 
