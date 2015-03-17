@@ -1,0 +1,106 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: attapon.th
+ * Date: 17/3/2558
+ * Time: 10:24
+ */
+
+$table_name = 'module_' . rand(0, 999999);
+?>
+<br/><br/>
+<div class="row">
+    <div class="col-xs-8 col-xs-offset-2">
+        <form id="<?= $formname ?>" class="form-horizontal" onsubmit="return false">
+            <div class="row">
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <?= $labelgroup['MOD_PARENT_ID'] ?>
+                            <?= $input['MOD_PARENT_ID'] ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <?= $labelgroup['ENABLE'] ?>
+                            <?= $input['ENABLE'] ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <?= $labelgroup['MOD_NAME_TH'] ?>
+                            <?= $input['MOD_NAME_TH'] ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <?= $labelgroup['MOD_NAME_EN'] ?>
+                            <?= $input['MOD_NAME_EN'] ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-offset-5">
+                    <button type="button" class="btn btn-primary btn-raised"
+                            onclick="O<?= $table_name ?>.search(JSON.stringify($('#<?= $formname ?>').serializeArray())).draw();">
+                        <i class="md-search"></i> <?= $Lang->label('SEARCH') ?></button>
+                    <button type="reset" class="btn btn-default btn-raised">
+                        <i class="md-refresh"></i> <?= $Lang->label('CLEAR') ?></button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+<hr/>
+<div class="row">
+    <div class="col-sm-12">
+        <table id="<?= $table_name ?>" class="display cell-border hover" cellspacing="0" width="100%"></table>
+        <script>
+            $.material.init();
+            var O<?=$table_name?> = $('#<?=$table_name?>').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '<?=$di->url->get('system/module/getdata');?>',
+                    type: 'POST'
+                },
+                language: (lang == 'th' ? {"sProcessing":"กำลังดำเนินการ...","sLengthMenu":"แสดง_MENU_ แถว","sZeroRecords":"ไม่พบข้อมูล","sInfo":"แสดง _START_ ถึง _END_ จาก _TOTAL_ แถว","sInfoEmpty":"แสดง 0 ถึง 0 จาก 0 แถว","sInfoFiltered":"(กรองข้อมูล _MAX_ ทุกแถว)","sInfoPostFix":"","sSearch":"ค้นหา:","sUrl":"","oPaginate":{"sFirst":"เิริ่มต้น","sPrevious":"ก่อนหน้า","sNext":"ถัดไป","sLast":"สุดท้าย"}}: ''),
+                dom: '<"#top">rt<"#bottom"ilp>',
+                columns: decode_json('<?php
+                /*
+                  'name' => '',
+                    'data' => [],
+                    'className' => null,
+                    'searchable' => false,
+                    'orderable' => true,
+                    'width' => null,
+                    'visible' => true,
+                    'title' => ''
+                 */
+
+                    echo json_encode([
+                    ['name' => 'MOD_ID','data' => 'MOD_ID','orderable' => false,'title' => 'รหัส'],
+                    ['name' => 'MOD_PARENT_ID','data' => 'MOD_PARENT_ID','orderable' => true,'title' => $Lang->label('MOD_PARENT_ID')],
+                    ['name' => 'MOD_ORDER','data' => 'MOD_ORDER','orderable' => true,'title' => $Lang->label('MOD_ORDER')],
+                    ['name' => 'MOD_NAME_TH','data' => 'MOD_NAME_TH','orderable' => true,'title' => $Lang->label('MOD_NAME_TH')],
+                    ['name' => 'MOD_NAME_EN','data' =>  'MOD_NAME_EN','orderable' => true,'title' => $Lang->label('MOD_NAME_EN')],
+                    ['name' => 'MOD_LEVEL','data' => 'MOD_LEVEL','orderable' => true,'title' => $Lang->label('MOD_LEVEL')],
+                    ['name' => 'MANAGE','data' => 'MANAGE','orderable' => false,'title' => $Lang->label('MANAGE')],
+                    ]);
+                ?>')
+            });
+
+
+        </script>
+    </div>
+</div>

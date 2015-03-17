@@ -110,6 +110,13 @@ class Session
         return TRUE;
     }
 
+    public function check_auth_die($message){
+        if($this->get('auth') !== true){
+            die($message);
+        }
+
+    }
+
 
     public function destroy()
     {
@@ -130,4 +137,6 @@ class Session
         }
         return $ip;
     }
+
+
 }

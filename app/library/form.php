@@ -48,7 +48,7 @@ class Form
     public $param_default = [
         'type' => Form::TYPE_TEXT,
         'required' => true,
-        'col' => 4,
+        'col' => 12,
         'offset' => 0,
         'date_format' => 'dd/MM/yyyy',
         'time_format' => 'hh:mm',

@@ -8,10 +8,7 @@ use Phalcon\Mvc\View\Engine\Volt as VoltEngine;
 use Phalcon\Mvc\Model\Metadata\Memory as MetaDataAdapter;
 use Phalcon\Session\Adapter\Files as SessionAdapter;
 
-define('ET_SV_URL', 'url');
-define('ET_SV_ROUTER', 'router');
-define('ET_SV_VIEW', 'view');
-define('ET_SV_SESSION', 'sess');
+
 
 
 /**
@@ -25,6 +22,10 @@ $di->set('router', function () use ($config) {
     return require __DIR__ . '/routes.php';
 }, true);
 
+$di->set('logs', function ()  {
+    $log = new \EThesis\Models\System\Sys_log_model();
+    return $log;
+}, true);
 /**
  * The URL component is used to generate all kind of urls in the application
  */

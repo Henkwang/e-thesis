@@ -31,6 +31,7 @@ class bs1formController extends \Phalcon\Mvc\Controller
 
     public function indexAction()
     {
+
 //        $form = $this->_get_config();
 //        echo '<pre>';
 //        print_r(array_keys($form->get_form()['input']));
@@ -40,6 +41,7 @@ class bs1formController extends \Phalcon\Mvc\Controller
         $form = $this->_get_config();
         $this->view->setVars($form->get_form());
         $this->view->pick('/bs/bs1_form_00');
+        $this->logs->set(LOG_OPEN_PAGE);
 
     }
 

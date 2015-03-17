@@ -41,18 +41,18 @@ class Sys_module_model extends \EThesis\Library\Adodb
         if (empty($filter)) {
 
         } else if (is_array($filter)) {
-            $sql .= (isset($filter['MOD_PARENT_ID']) ? " AND MOD_PARENT_ID IN ({$filter['MOD_PARENT_ID']})" : '');
-            $sql .= (isset($filter['MOD_NAME_TH']) ? " AND MOD_NAME_TH LIKE '%{$filter['MOD_NAME_TH']}%'" : '');
-            $sql .= (isset($filter['MOD_NAME_EN']) ? " AND MOD_NAME_EN LIKE '%{$filter['MOD_NAME_EN']}%'" : '');
-            $sql .= (isset($filter['MOD_LEVEL']) ? " AND MOD_LEVEL = '{$filter['MOD_LEVEL']}'" : '');
-            $sql .= (isset($filter['MOD_ORDER']) ? " AND MOD_ORDER = '{$filter['MOD_ORDER']}'" : '');
-            $sql .= (isset($filter['ENABLE']) ? " AND ENABLE = '{$filter['ENABLE']}'" : '');
-            $sql .= (isset($filter['MOD_URL']) ? " AND MOD_URL LIKE '%{$filter['MOD_URL']}%'" : '');
+            $sql .= (!empty($filter['MOD_PARENT_ID']) ? " AND MOD_PARENT_ID IN ({$filter['MOD_PARENT_ID']})" : '');
+            $sql .= (!empty($filter['MOD_NAME_TH']) ? " AND MOD_NAME_TH LIKE '%{$filter['MOD_NAME_TH']}%'" : '');
+            $sql .= (!empty($filter['MOD_NAME_EN']) ? " AND MOD_NAME_EN LIKE '%{$filter['MOD_NAME_EN']}%'" : '');
+            $sql .= (!empty($filter['MOD_LEVEL']) ? " AND MOD_LEVEL = '{$filter['MOD_LEVEL']}'" : '');
+            $sql .= (!empty($filter['MOD_ORDER']) ? " AND MOD_ORDER = '{$filter['MOD_ORDER']}'" : '');
+            $sql .= (!empty($filter['ENABLE']) ? " AND ENABLE = '{$filter['ENABLE']}'" : '');
+            $sql .= (!empty($filter['MOD_URL']) ? " AND MOD_URL LIKE '%{$filter['MOD_URL']}%'" : '');
 
-            $sql .= (isset($filter['IN_ID']) ? " AND {$this->primary} IN ({$filter['IN_ID']})" : '');
-            $sql .= (isset($filter['NOT_IN_ID']) ? " AND {$this->primary} NOT IN ({$filter['IN_ID']})" : '');
+            $sql .= (!empty($filter['IN_ID']) ? " AND {$this->primary} IN ({$filter['IN_ID']})" : '');
+            $sql .= (!empty($filter['NOT_IN_ID']) ? " AND {$this->primary} NOT IN ({$filter['IN_ID']})" : '');
 
-            $sql .= (isset($filter['ID']) ? " AND ({$this->primary} IN ({$filter['ID']}) OR MOD_PARENT_ID IN ({$filter['ID']}))" : '');
+            $sql .= (!empty($filter['ID']) ? " AND ({$this->primary} IN ({$filter['ID']}) OR MOD_PARENT_ID IN ({$filter['ID']}))" : '');
         }
         return $sql;
     }
@@ -73,6 +73,7 @@ class Sys_module_model extends \EThesis\Library\Adodb
         $sql .= "FROM " . ($this->use_view !== FALSE ? "{$this->schema}.{$this->use_view}_{$this->table}" : "{$this->schema}.{$this->table}");
         $sql .= " WHERE " . $this->check_filter($filters);
         $sql .= ($order != FALSE ? "ORDER BY {$order}" : '');
+//        die($sql);
         $result = ($limit == FALSE ? $this->adodb->Execute($sql) : $this->adodb->SelectLimit($sql, $limit, $offset));
 
         return $result;

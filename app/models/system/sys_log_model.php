@@ -21,24 +21,40 @@ class Sys_log_model extends \EThesis\Library\Adodb
 
     var $sess_class;
 
+    var $LOG_TYPE = ['MSG_LOGIN' => 'A',
+        'MSG_OPEN_PAGE' => 'A',
+        'MSG_ADD_ERROR' => 'E',
+        'MSG_DELETE_USED' => 'E',
+        'MSG_DUPLICATE' => 'E',
+        'MSG_IMPORT_DUPLICATE' => 'E',
+        'MSG_IMPORT_ERROR' => 'E',
+        'MSG_IMPORT_ITEM_ERROR' => 'E',
+        'MSG_UPDATE_ERROR' => 'E',
+        'MSG_ADD_COMPLETE' => 'N',
+        'MSG_CANCEL_COMPLETE' => 'N',
+        'MSG_CHECK_ERROR_REGIS' => 'N',
+        'MSG_DELETE_COMPLETE' => 'N',
+        'MSG_IMPORT_COMPLETE' => 'N',
+        'MSG_UPDATE_COMPLETE' => 'N'];
 
-    public function initialize()
+
+    public function __construct()
     {
         parent::__construct();
 
-        $this->adodb->debug = TRUE;
+        $this->adodb->debug = false;
 
-        $this->sess_class = \EThesis\Library\DIPhalcon::get('sess');
+        $this->sess_class = new \EThesis\Library\Session();
 
         $this->date_current = $this->adodb->sysTimeStamp;
-        $this->user_access = ($this->sess_class->has('username') ? $this->sess_class->get('username') : die(AUTH_FALSE_J));
-        $this->user_group = ($this->sess_class->has('usergroup') ? $this->sess_class->get('usergroup') : die(AUTH_FALSE_J));
-        $this->user_type = ($this->sess_class->has('usertype') ? $this->sess_class->get('usertype') : die(AUTH_FALSE_J));
+        $this->user_access = ($this->sess_class->has('username') ? $this->sess_class->get('username') : '');
+        $this->user_group = ($this->sess_class->has('usergroup') ? $this->sess_class->get('usergroup') : '');
+        $this->user_type = ($this->sess_class->has('usertype') ? $this->sess_class->get('usertype') : '');
     }
 
     private function check_filter(array $filter)
     {
-        $sql = "RECORD_STATUS='N'";
+        $sql = "LOG_ID IS NOT NULL ";
         if (empty($filter)) {
 
         } else if (is_array($filter)) {
@@ -71,34 +87,37 @@ class Sys_log_model extends \EThesis\Library\Adodb
         $sql .= "FROM " . ($this->use_view !== FALSE ? "{$this->schema}.{$this->use_view}_{$this->table}" : "{$this->schema}.{$this->table}");
         $sql .= " WHERE " . $this->check_filter($filters);
         $sql .= ($order != FALSE ? "ORDER BY {$order}" : '');
+//        die($sql);
         $result = ($limit == FALSE ? $this->adodb->Execute($sql) : $this->adodb->SelectLimit($sql, $limit, $offset));
 
         return $result;
     }
 
-    public function insert($log_page, $log_process, $log_type)
+    public function set($log_process)
     {
         $arrInsert = [
-            'LOG_USER' => $this->sess_class->get('username'),
+            'LOG_USER' => $this->sess_class->get('userid'),
             'LOG_USER_TYPE' => $this->user_type,
-            'LOG_PAGE' => $log_page,
+            'LOG_PAGE' => get_url(),
             'LOG_PROCESS' => $log_process,
             'LOG_VALUE' => json_encode($this->sess_class->get()),
-            'LOG_TYPE' => $log_type,
-            'LOG_DATE' => $this->date_current,
+            'LOG_TYPE' => $this->LOG_TYPE[$log_process],
             'LOG_IP' => $this->sess_class->get('user_ip'),
             'LOG_BROWSER_INFO' => $this->sess_class->get('user_agent'),
-            'LOG_LOCAL_IP' => $_SERVER['SERVER_ADDR'] ];
+            'LOG_LOCAL_IP' => $_SERVER['SERVER_ADDR']];
         $sql_field = '';
-        $sql_value = '';
+        $sql_value = [];
         foreach ($this->field_insert as $field) {
             if (isset($arrInsert[$field])) {
-                $sql_field .= "{$field},";
-                $sql_value .= "'{$arrInsert[$field]}',";
+                $sql_field [] = "{$field}";
+                $sql_value [] = "'{$arrInsert[$field]}'";
             }
         }
-        $sql = "INSERT INTO {$this->schema}.{$this->table} ({$sql_field}) VALUES ({$sql_value})";
+        $sql_field [] = 'LOG_DATE';
+        $sql_value [] = $this->date_current;
+        $sql = "INSERT INTO {$this->schema}.{$this->table} (" . implode(',', $sql_field) . ") VALUES (" . implode(',', $sql_value) . ")";
         $sql .= ";";
+//        die($sql);
         $result = $this->adodb->Execute($sql);
         return $result;
 

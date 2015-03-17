@@ -14,10 +14,9 @@ class Lang
     private $_lang;
     private $_sess_lang;
 
-    function __construct()
+    function __construct($lang = 'th')
     {
-        $sess = new \EThesis\Library\Session();
-        $lang = ($sess->has('lang') ? $sess->get('lang') : 'th');
+        $lang = (empty($lang) ? 'th' : $lang);
         $this->_sess_lang = $lang;
         $this->_lang = require(__DIR__ . '../../lang/' . $lang . '.php');
     }

@@ -38,7 +38,7 @@ class AuthController extends \Phalcon\Mvc\Controller
         $newdata['auth'] = TRUE;
         $newdata['userid'] = $user_data['USR_CODE'];
         $newdata['name'] = ($user_data['USR_DISPLAY'] == "" ? $user_data['USR_NAME'] : $user_data['USR_DISPLAY']);
-        $newdata['username'] = $user_data['USR_NAME'];
+        $newdata['username'] = $user_data['USR_LOGIN'];
         $newdata['usertype'] = $user_data['USR_TYPE'];
         $newdata['lang'] = ($user_data['USR_LANGUAGE'] == "" ? "th" : $user_data['USR_LANGUAGE']);
         $newdata['usergroup'] = $user_data['usergroup'];
@@ -72,6 +72,8 @@ class AuthController extends \Phalcon\Mvc\Controller
             // #1 get data user in sys_user
             $user_model = new \EThesis\Models\System\Sys_user_model();
             $user_data = $user_model->select_by_username([], $user);
+
+            $user_data['USR_LOGIN'] = $user;
 
 
             $ad_info = FALSE;
@@ -176,6 +178,7 @@ class AuthController extends \Phalcon\Mvc\Controller
                     'name' => $user_data['USR_DISPLAY']
                 ];
                 echo json_encode($res);
+                $this->logs->set(LOG_LOGIN);
             }
         } else {
             echo json_encode(['error' => true, 'msg' => 'การล็อคอินไม่ถูกต้อง กรุณาโหลดหน้านี้ใหม่']);
