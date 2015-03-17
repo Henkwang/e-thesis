@@ -143,8 +143,8 @@
             <div class="col-xs-6">
                 <div class="form-group">
                     <div class="input-group">
-                        {{ labelgroup['DIVISION_ID'] }}
-                        {{ input['DIVISION_ID'] }}
+                        {{ labelgroup['HRD_FACULTY_ID'] }}
+                        {{ input['HRD_FACULTY_ID'] }}
                     </div>
                 </div>
             </div>

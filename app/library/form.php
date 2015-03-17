@@ -146,11 +146,9 @@ class Form
         $this->_formid = "__" . substr(sha1(rand(0, 1024)), 0, 10);
         $this->formname = $this->formname . $this->_formid;
         $this->_lang_class = new \EThesis\Library\Lang();
-        $this->_session_class = DIPhalcon::get(ET_SV_SESSION);
+        $this->_session_class = new \EThesis\Library\Session();
         $this->lang = $this->_session_class->get('lang');
         $this->_datamodel_class = new \EThesis\Controllers\Ajax\AutocompleteController();
-        $this->_url_prefix = \EThesis\Library\DIPhalcon::get('url')->get('');
-
         $this->add_input('pk_id', ['type' => Form::TYPE_HIDDEN, 'novalidate' => true]);
 
     }
@@ -643,7 +641,7 @@ class Form
         }
 
 
-        $url = \EThesis\Library\DIPhalcon::get('url')->get('ajax/autocomplete/autoselect2/' . $param['datamodel']);
+        $url = 'ajax/autocomplete/autoselect2/' . $param['datamodel'];
 
 
         $html = '<div ' . $this->join_attr($div_attr) . '>'
@@ -654,7 +652,7 @@ class Form
             . '$("#' . $input_name . '").select2({'
             . 'language: lang,allowClear: true,multiple: true,minimumInputLength: 1' . $maxitem . ','
             . 'ajax: {'
-            . 'url: "' . $url . '",'
+            . 'url: base_url + "' . $url . '",'
             . 'dataType: \'json\',method: \'POST\', delay: 250,data: function (params) {return {q: params.term};},'
             . 'processResults: function (data, page) {return {results: data.items};}, cache: false'
             . '}'

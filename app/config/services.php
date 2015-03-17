@@ -87,7 +87,7 @@ $di->set('modelsMetadata', function () {
  * Start the session the first time some component request the session service
  */
 
-$di->set('sess', function () {
+$di->set('session', function () {
 
     $session = new \EThesis\Library\Session();
 
