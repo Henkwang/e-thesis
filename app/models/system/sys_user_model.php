@@ -38,21 +38,21 @@ class Sys_user_model extends \EThesis\Library\Adodb
         if (empty($filter)) {
 
         } else if (is_array($filter)) {
-            $sql .= (isset($filter['USR_CODE']) ? " AND USR_CODE='{$filter['USR_CODE']}'" : '');
-            $sql .= (isset($filter['USR_USERNAME']) ? " AND USR_USERNAME='{$filter['USR_USERNAME']}'" : '');
-            $sql .= (isset($filter['USR_PASSWORD']) ? " AND USR_PASSWORD='{$filter['USR_PASSWORD']}'" : '');
+            $sql .= (!empty($filter['USR_CODE']) ? " AND USR_CODE LIKE '%{$filter['USR_CODE']}%'" : '');
+            $sql .= (!empty($filter['USR_USERNAME']) ? " AND USR_USERNAME LIKE '%{$filter['USR_USERNAME']}%'" : '');
+            $sql .= (!empty($filter['USR_PASSWORD']) ? " AND USR_PASSWORD='{$filter['USR_PASSWORD']}'" : '');
 
-            $sql .= (isset($filter['USR_EMAIL']) ? " AND USR_EMAIL LIKE '%{$filter['USR_EMAIL']}%'" : '');
-            $sql .= (isset($filter['USR_TEL']) ? " AND USR_TEL LIKE '%{$filter['USR_TEL']}%'" : '');
+            $sql .= (!empty($filter['USR_EMAIL']) ? " AND USR_EMAIL LIKE '%{$filter['USR_EMAIL']}%'" : '');
+            $sql .= (!empty($filter['USR_TEL']) ? " AND USR_TEL LIKE '%{$filter['USR_TEL']}%'" : '');
 
-            $sql .= (isset($filter['USR_TYPE']) ? " AND USR_TYPE = '{$filter['USR_TYPE']}'" : '');
-            $sql .= (isset($filter['USER_LANGUAGE']) ? " AND USER_LANGUAGE = '{$filter['USER_LANGUAGE']}'" : '');
+            $sql .= (!empty($filter['USR_TYPE']) ? " AND USR_TYPE = '{$filter['USR_TYPE']}'" : '');
+            $sql .= (!empty($filter['USER_LANGUAGE']) ? " AND USER_LANGUAGE = '{$filter['USER_LANGUAGE']}'" : '');
 
-            $sql .= (isset($filter['IN_ID']) ? " AND {$this->primary} IN ({$filter['IN_ID']})" : '');
-            $sql .= (isset($filter['NOT_IN_ID']) ? " AND {$this->primary} NOT IN ({$filter['IN_ID']})" : '');
+            $sql .= (!empty($filter['IN_ID']) ? " AND {$this->primary} IN ({$filter['IN_ID']})" : '');
+            $sql .= (!empty($filter['NOT_IN_ID']) ? " AND {$this->primary} NOT IN ({$filter['IN_ID']})" : '');
 
-            $sql .= (isset($filter['SQL']) ? " AND {$filter['SQL']}" : '');
-            $sql .= (isset($filter['AUTO']) ? " AND {$filter['AUTO']}" : '');
+            $sql .= (!empty($filter['SQL']) ? " AND {$filter['SQL']}" : '');
+            $sql .= (!empty($filter['AUTO']) ? " AND {$filter['AUTO']}" : '');
 
         }
         return $sql;
@@ -74,6 +74,7 @@ class Sys_user_model extends \EThesis\Library\Adodb
         $sql .= "FROM " . ($this->use_view !== FALSE ? "{$this->schema}.{$this->use_view}_{$this->table}" : "{$this->schema}.{$this->table}");
         $sql .= " WHERE " . $this->check_filter($filters);
         $sql .= ($order != FALSE ? "ORDER BY {$order}" : '');
+//        die($sql);
         $result = ($limit == FALSE ? $this->adodb->Execute($sql) : $this->adodb->SelectLimit($sql, $limit, $offset));
 
         return $result;

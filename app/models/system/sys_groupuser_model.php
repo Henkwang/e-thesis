@@ -45,16 +45,19 @@ class Sys_groupuser_model extends \EThesis\Library\Adodb
         if (empty($filter)) {
 
         } else if (is_array($filter)) {
-            $sql .= (isset($filter['GRP_NAME_TH']) ? " AND MOD_NAME_TH LIKE '%{$filter['MOD_NAME_TH']}%'" : '');
-            $sql .= (isset($filter['GRP_NAME_EN']) ? " AND MOD_NAME_EN LIKE '%{$filter['MOD_NAME_EN']}%'" : '');
-            $sql .= (isset($filter['GRP_TOPMENU']) ? " AND GRP_TOPMENU = '{$filter['GRP_TOPMENU']}'" : '');
-            $sql .= (isset($filter['GRP_USER_TYPE']) ? " AND GRP_USER_TYPE = '{$filter['GRP_USER_TYPE']}'" : '');
-            $sql .= (isset($filter['ENABLE']) ? " AND ENABLE = '{$filter['ENABLE']}'" : '');
+            $sql .= (!empty($filter['GRP_NAME_TH']) ? " AND GRP_NAME_TH LIKE '%{$filter['GRP_NAME_TH']}%'" : '');
+            $sql .= (!empty($filter['GRP_NAME_EN']) ? " AND GRP_NAME_EN LIKE '%{$filter['GRP_NAME_EN']}%'" : '');
+            $sql .= (!empty($filter['GRP_TOPMENU']) ? " AND GRP_TOPMENU = '{$filter['GRP_TOPMENU']}'" : '');
+            $sql .= (!empty($filter['GRP_USER_TYPE']) ? " AND GRP_USER_TYPE = '{$filter['GRP_USER_TYPE']}'" : '');
+            $sql .= (!empty($filter['ENABLE']) ? " AND ENABLE = '{$filter['ENABLE']}'" : '');
 
-            $sql .= (isset($filter['IN_ID']) ? " AND {$this->primary} IN ({$filter['IN_ID']})" : '');
-            $sql .= (isset($filter['NOT_IN_ID']) ? " AND {$this->primary} NOT IN ({$filter['IN_ID']})" : '');
+            $sql .= (!empty($filter['IN_ID']) ? " AND {$this->primary} IN ({$filter['IN_ID']})" : '');
+            $sql .= (!empty($filter['NOT_IN_ID']) ? " AND {$this->primary} NOT IN ({$filter['IN_ID']})" : '');
 
-            $sql .= (isset($filter['OR_USER_TYPE']) ? " OR GRP_USER_TYPE = '{$filter['GRP_USER_TYPE']}'" : '');
+            $sql .= (!empty($filter['OR_USER_TYPE']) ? " OR GRP_USER_TYPE = '{$filter['GRP_USER_TYPE']}'" : '');
+
+            $sql .= (!empty($filter['SQL']) ? " AND {$filter['SQL']}" : '');
+            $sql .= (!empty($filter['AUTO']) ? " AND {$filter['AUTO']}" : '');
 
         }
         return $sql;
@@ -75,7 +78,8 @@ class Sys_groupuser_model extends \EThesis\Library\Adodb
         $sql = "SELECT  {$sql_field} ";
         $sql .= "FROM " . ($this->use_view !== FALSE ? "{$this->schema}.{$this->use_view}_{$this->table}" : "{$this->schema}.{$this->table}");
         $sql .= " WHERE " . $this->check_filter($filters);
-        $sql .= ($order != FALSE ? "ORDER BY {$order}" : '');
+        $sql .= ($order != FALSE ? " ORDER BY {$order}" : '');
+//        die($sql);
         $result = ($limit == FALSE ? $this->adodb->Execute($sql) : $this->adodb->SelectLimit($sql, $limit, $offset));
 
         return $result;

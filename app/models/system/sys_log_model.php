@@ -58,14 +58,18 @@ class Sys_log_model extends \EThesis\Library\Adodb
         if (empty($filter)) {
 
         } else if (is_array($filter)) {
-            $sql .= (isset($filter['LOG_USER']) ? " AND LOG_USER LIKE '%{$filter['LOG_USER']}%'" : '');
-            $sql .= (isset($filter['LOG_USER_TYPE']) ? " AND LOG_USER_TYPE = '{$filter['LOG_USER_TYPE']}'" : '');
-            $sql .= (isset($filter['LOG_PAGE']) ? " AND LOG_PAGE LIKE '%{$filter['LOG_PAGE']}%'" : '');
-            $sql .= (isset($filter['LOG_PROCESS']) ? " AND LOG_PROCESS LIKE '%{$filter['LOG_PROCESS']}%'" : '');
-            $sql .= (isset($filter['LOG_BROWSER_INFO']) ? " AND LOG_BROWSER_INFO LIKE '%{$filter['LOG_BROWSER_INFO']}%'" : '');
+            $sql .= (!empty($filter['LOG_USER']) ? " AND LOG_USER LIKE '%{$filter['LOG_USER']}%'" : '');
+            $sql .= (!empty($filter['LOG_USER_TYPE']) ? " AND LOG_USER_TYPE = '{$filter['LOG_USER_TYPE']}'" : '');
+            $sql .= (!empty($filter['LOG_PAGE']) ? " AND LOG_PAGE LIKE '%{$filter['LOG_PAGE']}%'" : '');
+            $sql .= (!empty($filter['LOG_PROCESS']) ? " AND LOG_PROCESS LIKE '%{$filter['LOG_PROCESS']}%'" : '');
+            $sql .= (!empty($filter['LOG_BROWSER_INFO']) ? " AND LOG_BROWSER_INFO LIKE '%{$filter['LOG_BROWSER_INFO']}%'" : '');
+            $sql .= (!empty($filter['LOG_DATE']) ? " AND CONVERT(DATE, LOG_DATE)=CONVERT(DATE, '{$filter['LOG_DATE']}')" : '');
 
-            $sql .= (isset($filter['IN_ID']) ? " AND {$this->primary} IN ({$filter['IN_ID']})" : '');
-            $sql .= (isset($filter['NOT_IN_ID']) ? " AND {$this->primary} NOT IN ({$filter['IN_ID']})" : '');
+            $sql .= (!empty($filter['IN_ID']) ? " AND {$this->primary} IN ({$filter['IN_ID']})" : '');
+            $sql .= (!empty($filter['NOT_IN_ID']) ? " AND {$this->primary} NOT IN ({$filter['IN_ID']})" : '');
+
+            $sql .= (isset($filter['SQL']) ? " AND {$filter['SQL']}" : '');
+            $sql .= (isset($filter['AUTO']) ? " AND {$filter['AUTO']}" : '');
 
         }
         return $sql;

@@ -11,7 +11,7 @@ namespace EThesis\Controllers\System;
 use \EThesis\Library\Form AS Form;
 
 
-class LogsController extends \Phalcon\Mvc\Controller
+class UserdataController extends \Phalcon\Mvc\Controller
 {
 
 
@@ -29,27 +29,25 @@ class LogsController extends \Phalcon\Mvc\Controller
     {
 
         $form = new Form();
-        $form->add_input('LOG_USER', [
+        $form->add_input('USR_CODE', [
             'type' => Form::TYPE_TEXT,
         ]);
-        $form->add_input('LOG_PAGE', [
+        $form->add_input('USR_DISPLAY', [
             'type' => Form::TYPE_TEXT
         ]);
-        $form->add_input('LOG_PROCESS', [
-            'type' => Form::TYPE_SELECT,
-            'datalang' => 'LOG_PROCESS'
+        $form->add_input('USR_USERNAME', [
+            'type' => Form::TYPE_TEXT,
         ]);
 
-        $form->add_input('LOG_DATE', [
-            'type' => Form::TYPE_DATE,
-        ]);
-        $form->add_input('LOG_BROWSER_INFO', [
-            'type' => Form::TYPE_TEXT,
+
+        $form->add_input('FACULTY_ID', [
+            'type' => Form::TYPE_SELECT,
+            'datamodel' => 'MAS_FACULTY'
         ]);
 
         $this->view->setVars($form->get_form());
 
-        $this->view->pick('system/logIndex');
+        $this->view->pick('system/userIndex');
 
         $this->logs->set(LOG_OPEN_PAGE);
 
@@ -57,7 +55,7 @@ class LogsController extends \Phalcon\Mvc\Controller
 
     public function getdataAction()
     {
-        $Module_model = new \EThesis\Models\System\Sys_log_model();
+        $Module_model = new \EThesis\Models\System\Sys_user_model();
         $post = $_POST;
         $col = [];
         $i = 0;
@@ -70,9 +68,9 @@ class LogsController extends \Phalcon\Mvc\Controller
         if (!empty($post['search']['value'])) {
             $search = json_decode($post['search']['value'], JSON_OBJECT_AS_ARRAY);
             $filter = array_column($search, 'value', 'name');
-            $filter['LOG_DATE'] = datetime_to_sql($filter['LOG_DATE']);
+
         } else {
-            $filter['ENABLE'] = 'T';
+            $filter = [];
         }
 
         $order = $post['columns'][$post['order'][0]['column']]['name'] . ' ' . $post['order'][0]['dir'];

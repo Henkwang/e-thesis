@@ -18,7 +18,8 @@ class Lang
     {
         $lang = (empty($lang) ? 'th' : $lang);
         $this->_sess_lang = $lang;
-        $this->_lang = require(__DIR__ . '../../lang/' . $lang . '.php');
+        $def_lang = require(__DIR__ . '../../lang/lang.php');
+        $this->_lang = $def_lang + require(__DIR__ . '../../lang/' . $lang . '.php');
     }
 
     public function label($name = '', $more = '')

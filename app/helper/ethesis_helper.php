@@ -46,3 +46,22 @@ if (!function_exists('get_url')) {
         return substr($_SERVER['REQUEST_URI'], stripos($uri, $base_url) + strlen($base_url));
     }
 }
+
+if (!function_exists('datetime_to_sql')) {
+    function datetime_to_sql($datetime)
+    {
+        if(!empty($datetime)){
+            $tmp = explode(' ', $datetime);
+            $date = explode('/', $tmp[0]);
+            $time = '';
+            if (!empty($tmp[1])) {
+                $time = $tmp[1];
+            }
+            $y = ($date[2] > 2400 ? $date[2] - 543 : $date);
+            $sql_time = "{$y}-{$date[1]}-{$date[0]} {$time}";
+            return $sql_time;
+        }
+        return false;
+
+    }
+}

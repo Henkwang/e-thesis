@@ -6,7 +6,7 @@
  * Time: 10:24
  */
 
-$table_name = 'log_' . rand(0, 999999);
+$table_name = 'groupuser_' . rand(0, 999999);
 ?>
 <br/><br/>
 <div class="row">
@@ -16,34 +16,16 @@ $table_name = 'log_' . rand(0, 999999);
                 <div class="col-xs-6">
                     <div class="form-group">
                         <div class="input-group">
-                            <?= $labelgroup['LOG_USER'] ?>
-                            <?= $input['LOG_USER'] ?>
+                            <?= $labelgroup['GRP_NAME_TH'] ?>
+                            <?= $input['GRP_NAME_TH'] ?>
                         </div>
                     </div>
                 </div>
                 <div class="col-xs-6">
                     <div class="form-group">
                         <div class="input-group">
-                            <?= $labelgroup['LOG_PAGE'] ?>
-                            <?= $input['LOG_PAGE'] ?>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-6">
-                    <div class="form-group">
-                        <div class="input-group">
-                            <?= $labelgroup['LOG_PROCESS'] ?>
-                            <?= $input['LOG_PROCESS'] ?>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-6">
-                    <div class="form-group">
-                        <div class="input-group">
-                            <?= $labelgroup['LOG_DATE'] ?>
-                            <?= $input['LOG_DATE'] ?>
+                            <?= $labelgroup['GRP_NAME_EN'] ?>
+                            <?= $input['GRP_NAME_EN'] ?>
                         </div>
                     </div>
                 </div>
@@ -52,15 +34,16 @@ $table_name = 'log_' . rand(0, 999999);
                 <div class="col-xs-6">
                     <div class="form-group">
                         <div class="input-group">
-                            <?= $labelgroup['LOG_BROWSER_INFO'] ?>
-                            <?= $input['LOG_BROWSER_INFO'] ?>
+                            <?= $labelgroup['ENABLE'] ?>
+                            <?= $input['ENABLE'] ?>
                         </div>
                     </div>
                 </div>
                 <div class="col-xs-6">
                     <div class="form-group">
                         <div class="input-group">
-
+                            <?= $labelgroup['GRP_USER_TYPE'] ?>
+                            <?= $input['GRP_USER_TYPE'] ?>
                         </div>
                     </div>
                 </div>
@@ -89,7 +72,7 @@ $table_name = 'log_' . rand(0, 999999);
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: '<?=$di->url->get('system/logs/getdata');?>',
+                    url: '<?=$di->url->get('system/groupuser/getdata');?>',
                     type: 'POST'
                 },
                 language: (lang == 'th' ? {
@@ -102,7 +85,7 @@ $table_name = 'log_' . rand(0, 999999);
                     "sInfoPostFix": "",
                     "sSearch": "ค้นหา:",
                     "sUrl": "",
-                    "oPaginate": {"sFirst": "เิริ่มต้น", "sPrevious": "ก่อนหน้า", "sNext": "ถัดไป", "sLast": "สุดท้าย"}
+                    "oPaginate": {"sFirst": "เริ่มต้น", "sPrevious": "ก่อนหน้า", "sNext": "ถัดไป", "sLast": "สุดท้าย"}
                 } : ''),
                 dom: '<"#top">rt<"#bottom"ilp>',
                 columns: decode_json('<?php
@@ -118,13 +101,13 @@ $table_name = 'log_' . rand(0, 999999);
                  */
 
                     echo json_encode([
-                    ['name' => 'LOG_ID','data' => 'LOG_ID','orderable' => false, 'visible'=>false],
-                    ['name' => 'LOG_USER','data' => 'LOG_USER','orderable' => true,'title' => $Lang->label('LOG_USER')],
-                    ['name' => 'LOG_PAGE','data' => 'LOG_PAGE','orderable' => true,'title' => $Lang->label('LOG_PAGE')],
-                    ['name' => 'LOG_PROCESS','data' => 'LOG_PROCESS','orderable' => true,'title' => $Lang->label('LOG_PROCESS')],
-                    ['name' => 'LOG_DATE','data' =>  'LOG_DATE','orderable' => true,'title' => $Lang->label('LOG_DATE')],
-                    ['name' => 'LOG_IP','data' => 'LOG_IP','orderable' => true,'title' => $Lang->label('LOG_IP')],
-                    ['name' => 'LOG_BROWSER_INFO','data' => 'LOG_BROWSER_INFO','orderable' => false,'title' => $Lang->label('LOG_BROWSER_INFO')],
+                    ['name' => 'GRP_ID','data' => 'GRP_ID','orderable' => false, 'visible'=>false],
+                    ['name' => 'GRP_NAME_TH','data' => 'GRP_NAME_TH','orderable' => true,'title' => $Lang->label('GRP_NAME_TH')],
+                    ['name' => 'GRP_NAME_EN','data' => 'GRP_NAME_EN','orderable' => true,'title' => $Lang->label('GRP_NAME_EN')],
+                    ['name' => 'ENABLE','data' => 'ENABLE','orderable' => true,'title' => $Lang->label('ENABLE')],
+                    ['name' => 'GRP_TOPMENU','data' => 'GRP_TOPMENU','orderable' => true,'title' => $Lang->label('GRP_TOPMENU')],
+                    ['name' => 'GRP_USER_TYPE','data' =>  'GRP_USER_TYPE','orderable' => true,'title' => $Lang->label('GRP_USER_TYPE')],
+                    ['name' => 'GRP_TOPMENU','data' => 'GRP_TOPMENU','orderable' => true,'title' => $Lang->label('GRP_TOPMENU')],
                     ]);
                 ?>')
             });

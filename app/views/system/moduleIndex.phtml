@@ -50,7 +50,7 @@ $table_name = 'module_' . rand(0, 999999);
             </div>
             <div class="row">
                 <div class="col-xs-offset-5">
-                    <button type="button" class="btn btn-primary btn-raised"
+                    <button type="submit" class="btn btn-primary btn-raised"
                             onclick="O<?= $table_name ?>.search(JSON.stringify($('#<?= $formname ?>').serializeArray())).draw();">
                         <i class="md-search"></i> <?= $Lang->label('SEARCH') ?></button>
                     <button type="reset" class="btn btn-default btn-raised">

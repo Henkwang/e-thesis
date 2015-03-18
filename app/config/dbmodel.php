@@ -99,6 +99,14 @@ return [
         'filter' => [],
         'order' => 'DIVISION_CODE ASC',
     ],
+    'SYS_GROUPUSER' => [
+        'module' => 'system',
+        'model' => 'sys_groupuser_model',
+        'key' => 'GRP_ID',
+        'label' => "GRP_NAME_ML",
+        'filter' => [],
+        'order' => 'GRP_NAME_ML ASC',
+    ],
 
 
 ];
