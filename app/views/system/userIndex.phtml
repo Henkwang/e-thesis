@@ -1,0 +1,118 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: attapon.th
+ * Date: 17/3/2558
+ * Time: 10:24
+ */
+
+$table_name = 'user_' . rand(0, 999999);
+?>
+<br/><br/>
+<div class="row">
+    <div class="col-xs-8 col-xs-offset-2">
+        <form id="<?= $formname ?>" class="form-horizontal" onsubmit="return false">
+            <div class="row">
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <?= $labelgroup['USR_CODE'] ?>
+                            <?= $input['USR_CODE'] ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <?= $labelgroup['USR_DISPLAY'] ?>
+                            <?= $input['USR_DISPLAY'] ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <?= $labelgroup['USR_USERNAME'] ?>
+                            <?= $input['USR_USERNAME'] ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <?= $labelgroup['FACULTY_ID'] ?>
+                            <?= $input['FACULTY_ID'] ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-offset-5">
+                    <button type="submit" class="btn btn-primary btn-raised"
+                            onclick="O<?= $table_name ?>.search(JSON.stringify($('#<?= $formname ?>').serializeArray())).draw();">
+                        <i class="md-search"></i> <?= $Lang->label('SEARCH') ?></button>
+                    <button type="reset" class="btn btn-default btn-raised">
+                        <i class="md-refresh"></i> <?= $Lang->label('CLEAR') ?></button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+<hr/>
+<div class="row">
+    <div class="col-sm-12">
+        <table id="<?= $table_name ?>" class="display cell-border hover" cellspacing="0" width="100%"></table>
+        <script>
+            $.material.init();
+            var O<?=$table_name?> = $('#<?=$table_name?>').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '<?=$di->url->get('system/userdata/getdata');?>',
+                    type: 'POST'
+                },
+                language: (lang == 'th' ? {
+                    "sProcessing": "กำลังดำเนินการ...",
+                    "sLengthMenu": "แสดง_MENU_ แถว",
+                    "sZeroRecords": "ไม่พบข้อมูล",
+                    "sInfo": "แสดง _START_ ถึง _END_ จาก _TOTAL_ แถว",
+                    "sInfoEmpty": "แสดง 0 ถึง 0 จาก 0 แถว",
+                    "sInfoFiltered": "(กรองข้อมูล _MAX_ ทุกแถว)",
+                    "sInfoPostFix": "",
+                    "sSearch": "ค้นหา:",
+                    "sUrl": "",
+                    "oPaginate": {"sFirst": "เริ่มต้น", "sPrevious": "ก่อนหน้า", "sNext": "ถัดไป", "sLast": "สุดท้าย"}
+                } : ''),
+                dom: '<"#top">rt<"#bottom"ilp>',
+                columns: decode_json('<?php
+                /*
+                  'name' => '',
+                    'data' => [],
+                    'className' => null,
+                    'searchable' => false,
+                    'orderable' => true,
+                    'width' => null,
+                    'visible' => true,
+                    'title' => ''
+                 */
+
+                    echo json_encode([
+                    ['name' => 'USR_ID','data' => 'USR_ID','orderable' => false, 'visible'=>false],
+                    ['name' => 'USR_CODE','data' => 'USR_CODE','orderable' => true,'title' => $Lang->label('USR_CODE')],
+                    ['name' => 'USR_DISPLAY','data' => 'USR_DISPLAY','orderable' => true,'title' => $Lang->label('USR_DISPLAY')],
+                    ['name' => 'USR_USERNAME','data' => 'USR_USERNAME','orderable' => true,'title' => $Lang->label('USR_USERNAME')],
+                    ['name' => 'USR_EMAIL','data' => 'USR_EMAIL','orderable' => true,'title' => $Lang->label('USR_EMAIL')],
+                    ['name' => 'USR_TEL','data' =>  'USR_TEL','orderable' => true,'title' => $Lang->label('USR_TEL')],
+                    ['name' => 'USR_TYPE','data' => 'USR_TYPE','orderable' => true,'title' => $Lang->label('USR_TYPE')],
+                    ]);
+                ?>')
+            });
+
+
+        </script>
+    </div>
+</div>
