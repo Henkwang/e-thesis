@@ -8,70 +8,80 @@
             <h3>ประวัติอาจารย์บัณฑิตศึกษา/อาจารย์พิเศษบัณฑิตศึกษา</h3>
             <br>
         </div>
-        <div class="form-group">
-            <div class="col-xs-offset-3 col-xs-4">
-                <div class="input-group">
-                    {{ labelgroup['ACAD_YEAR'] }}
-                    {{ input['ACAD_YEAR'] }}
+
+        <div id="main_bs1">
+            <div class="form-group">
+                <div class="col-xs-offset-3 col-xs-4">
+                    <div class="input-group">
+                        {{ labelgroup['ACAD_YEAR'] }}
+                        {{ input['ACAD_YEAR'] }}
+                    </div>
+                </div>
+                <div class="col-xs-4">
+                    <div class="input-group">
+                        {{ labelgroup['ASEAN_STATUS'] }}
+                        {{ input['ASEAN_STATUS'] }}
+                    </div>
                 </div>
             </div>
-            <div class="col-xs-4">
-                <div class="input-group">
-                    {{ labelgroup['ASEAN_STATUS'] }}
-                    {{ input['ASEAN_STATUS'] }}
+
+            <div class="form-group">
+                <div class="col-xs-offset-3 col-xs-6">
+                    <div class="input-group">
+                        {{ labelgroup['ADVISER_STATUS'] }}
+                        {{ input['ADVISER_STATUS'] }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-xs-offset-3 col-xs-6">
+                    <div class="input-group">
+                        {{ labelgroup['PERSON_ID'] }}
+                        {{ input['PERSON_ID'] }}
+                        <span class="input-group-addon">(ถ้ามี)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-xs-offset-3 col-xs-6">
+                    <div class="input-group">
+                        {{ labelgroup['FACULTY_ID'] }}
+                        {{ input['FACULTY_ID'] }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-xs-offset-3 col-xs-6">
+                    <div class="input-group">
+                        {{ labelgroup['PROGRAM_ID'] }}
+                        {{ input['PROGRAM_ID'] }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-xs-offset-3 col-xs-6">
+                    <div class="input-group">
+                        {{ labelgroup['CITIZEN_ID'] }}
+                        {{ input['CITIZEN_ID'] }}
+                    </div>
                 </div>
             </div>
         </div>
-
-        <div class="form-group">
-            <div class="col-xs-offset-3 col-xs-6">
-                <div class="input-group">
-                    {{ labelgroup['ADVISER_STATUS'] }}
-                    {{ input['ADVISER_STATUS'] }}
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-xs-offset-3 col-xs-6">
-                <div class="input-group">
-                    {{ labelgroup['PERSON_ID'] }}
-                    {{ input['PERSON_ID'] }}
-                    <span class="input-group-addon">(ถ้ามี)</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-xs-offset-3 col-xs-6">
-                <div class="input-group">
-                    {{ labelgroup['FACULTY_ID'] }}
-                    {{ input['FACULTY_ID'] }}
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-xs-offset-3 col-xs-6">
-                <div class="input-group">
-                    {{ labelgroup['PROGRAM_ID'] }}
-                    {{ input['PROGRAM_ID'] }}
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-xs-offset-3 col-xs-6">
-                <div class="input-group">
-                    {{ labelgroup['CITIZEN_ID'] }}
-                    {{ input['CITIZEN_ID'] }}
-                </div>
-            </div>
-        </div>
-
 
     </div>
 </div>
+
+<p class="text-center">
+    <a href="javascript:$('#main_bs1').slideUp();$('#main_bs1_up').hide();$('#main_bs1_down').show();" id="main_bs1_up"
+       class="btn btn-fab btn-fab-mini"><i class="md-keyboard-arrow-up"></i></a>
+    <a style="display: none"
+       href="javascript:$('#main_bs1').slideDown();$('#main_bs1_down').hide();$('#main_bs1_up').show();"
+       id="main_bs1_down" class="btn btn-fab btn-fab-mini"><i class="md-keyboard-arrow-down"></i></a>
+</p>
 
 <hr/>
 
@@ -84,6 +94,9 @@
     <li class=""><a href="#bs1_004" data-toggle="tab">ผลงานทางวิชาการ</a></li>
     <li class=""><a href="#bs1_005" data-toggle="tab">งานวิจัยที่สนใจหรือตำเนินอยู่</a></li>
     <li class=""><a href="#bs1_006" data-toggle="tab">รางวัลหรือเกียรติคุณ</a></li>
+    <li class=""><a href="#bs1_0071" data-toggle="tab">สัญญาจ้าง</a></li>
+    <li class=""><a href="#bs1_0072" data-toggle="tab">คุณสมบัติ</a></li>
+    <li class=""><a href="#bs1_END" data-toggle="tab">บันทึกข้อมูล</a></li>
 </ul>
 
 
@@ -213,7 +226,6 @@
                 </div>
             </div>
         </div>
-        <br>
 
         <h5 class="text-left" style="font-weight: bold;text-decoration: underline;">คุณวุฒิสูงสุด ภาษาไทย</h5>
 
@@ -254,7 +266,6 @@
             </div>
         </div>
 
-        <br>
         <h5 class="text-left" style="font-weight: bold;text-decoration: underline;">คุณวุฒิสูงสุด ภาษาอังกฤษ</h5>
 
         <div class="row">
@@ -345,91 +356,94 @@
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-xs-4">
-                        <div class="form-group">
-                            <div class="input-group">
-                                {{ labelgroup['PRESENT_ACADEMIC_TYPE'] }}
-                                {{ input['PRESENT_ACADEMIC_TYPE'] }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xs-3">
-                        <div class="form-group">
-                            <div class="input-group">
-                                {{ labelgroup['PRESENT_ACADEMIC_YEAR'] }}
-                                {{ input['PRESENT_ACADEMIC_YEAR'] }}
-                                <span class="input-group-addon">ล่าสุด</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <div id="PRE_ACAD">
 
-                <div class="row">
-                    <div class="col-xs-12">
-                        <div class="form-group">
-                            <div class="input-group">
-                                {{ labelgroup['PRESENT_ACADEMIC_TYPE_NAME'] }}
-                                {{ input['PRESENT_ACADEMIC_TYPE_NAME'] }}
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    {{ labelgroup['PRESENT_ACADEMIC_TYPE'] }}
+                                    {{ input['PRESENT_ACADEMIC_TYPE'] }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-3">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    {{ labelgroup['PRESENT_ACADEMIC_YEAR'] }}
+                                    {{ input['PRESENT_ACADEMIC_YEAR'] }}
+                                    <span class="input-group-addon">ล่าสุด</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="row">
-                    <div class="col-xs-5">
-                        <div class="form-group">
-                            <div class="input-group">
-                                {{ labelgroup['PRESENT_ACADEMIC_PLACE_NAME'] }}
-                                {{ input['PRESENT_ACADEMIC_PLACE_NAME'] }}
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    {{ labelgroup['PRESENT_ACADEMIC_TYPE_NAME'] }}
+                                    {{ input['PRESENT_ACADEMIC_TYPE_NAME'] }}
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-xs-4">
-                        <div class="form-group">
-                            <div class="input-group">
-                                {{ labelgroup['PRESENT_ACADEMIC_PROVINCE_NAME'] }}
-                                {{ input['PRESENT_ACADEMIC_PROVINCE_NAME'] }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xs-3">
-                        <div class="form-group">
-                            <div class="input-group">
-                                {{ labelgroup['PRESENT_ACADEMIC_COUNTRY_NAME'] }}
-                                {{ input['PRESENT_ACADEMIC_COUNTRY_NAME'] }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="row">
-                    <div class="col-xs-3">
-                        <div class="form-group">
-                            <div class="input-group">
-                                {{ labelgroup['PRESENT_ACADEMIC_TITLE_ID'] }}
-                                {{ input['PRESENT_ACADEMIC_TITLE_ID'] }}
+                    <div class="row">
+                        <div class="col-xs-5">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    {{ labelgroup['PRESENT_ACADEMIC_PLACE_NAME'] }}
+                                    {{ input['PRESENT_ACADEMIC_PLACE_NAME'] }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-4">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    {{ labelgroup['PRESENT_ACADEMIC_PROVINCE_NAME'] }}
+                                    {{ input['PRESENT_ACADEMIC_PROVINCE_NAME'] }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-3">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    {{ labelgroup['PRESENT_ACADEMIC_COUNTRY_NAME'] }}
+                                    {{ input['PRESENT_ACADEMIC_COUNTRY_NAME'] }}
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-xs-5">
-                        <div class="form-group">
-                            {{ input['PRESENT_ACADEMIC_FNAME_TH'] }}
-                        </div>
-                    </div>
-                    <div class="col-xs-4">
-                        <div class="form-group">
-                            {{ input['PRESENT_ACADEMIC_LNAME_TH'] }}
-                        </div>
-                    </div>
-                </div>
 
-                <div class="row">
-                    <div class="col-xs-12">
-                        <div class="form-group">
-                            <div class="input-group">
-                                {{ labelgroup['PRESENT_ACADEMIC_NAME'] }}
-                                {{ input['PRESENT_ACADEMIC_NAME'] }}
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    {{ labelgroup['PRESENT_ACADEMIC_TITLE_ID'] }}
+                                    {{ input['PRESENT_ACADEMIC_TITLE_ID'] }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-5">
+                            <div class="form-group">
+                                {{ input['PRESENT_ACADEMIC_FNAME_TH'] }}
+                            </div>
+                        </div>
+                        <div class="col-xs-4">
+                            <div class="form-group">
+                                {{ input['PRESENT_ACADEMIC_LNAME_TH'] }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    {{ labelgroup['PRESENT_ACADEMIC_NAME'] }}
+                                    {{ input['PRESENT_ACADEMIC_NAME'] }}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -565,6 +579,276 @@
 </div>
 
 
+
+{#ข้อ 7.1#}
+<div class="tab-pane fade" id="bs1_0071">
+    <br>
+
+    <div class="col-xs-12">
+        <h4 class="text-left">บันทึกการตรวจสอบ วันเริ่มทำงาน (เฉพาะอาจารย์บัณฑิตศึกษา)</h4>
+    </div>
+    <br>
+
+    <div class="col-xs-12">
+        <div class="row">
+            <div class="col-xs-12 col-lg-10 col-lg-offset-1">
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <div class="input-group">
+                                {{ labelgroup['CK_POSITION_ID'] }}
+                                {{ input['CK_POSITION_ID'] }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <div class="input-group">
+                                {{ labelgroup['CK_START_DATE'] }}
+                                {{ input['CK_START_DATE'] }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <div class="input-group">
+                                {{ labelgroup['CK_END_DATE'] }}
+                                {{ input['CK_END_DATE'] }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+{#ข้อ 7.2#}
+<div class="tab-pane fade" id="bs1_0072">
+    <br>
+
+    <div class="col-xs-12">
+        <h4 class="text-left">บันทึกการตรวจสอบ คุณสมบัติการแต่งตั้งอาจารย์บัณฑิตศึกษา/อาจารย์พิเศษบัณฑิตศึกษา</h4>
+    </div>
+    <br>
+
+    <div class="col-xs-12">
+        <div class="row">
+            <div class="col-xs-12 col-lg-10 col-lg-offset-1">
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <div class="input-group">
+                                {{ labelgroup['POP_INS_ID'] }}
+                                {{ input['POP_INS_ID'] }}
+                            </div>
+                        </div>
+                        <p style="display: none" class="text-muted text-left" id="detail_POP_INS_ID"></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <div class="input-group">
+                                {{ labelgroup['POP_HEAD_THESIS_ID'] }}
+                                {{ input['POP_HEAD_THESIS_ID'] }}
+                            </div>
+                        </div>
+                        <p style="display: none" class="text-muted text-left" id="detail_POP_HEAD_THESIS_ID"></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <div class="input-group">
+                                {{ labelgroup['POP_COM_THESIS_ID'] }}
+                                {{ input['POP_COM_THESIS_ID'] }}
+                            </div>
+                        </div>
+                        <p style="display: none" class="text-muted text-left" id="detail_POP_COM_THESIS_ID"></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <div class="input-group">
+                                {{ labelgroup['POP_INS_IS_ID'] }}
+                                {{ input['POP_INS_IS_ID'] }}
+                            </div>
+                        </div>
+                        <p style="display: none" class="text-muted text-left" id="detail_POP_INS_IS_ID"></p>
+                    </div>
+                </div>
+                {#<div class="row">#}
+                {#<div class="col-xs-12">#}
+                {#<p style="display: none" class="text-muted text-left" id="pop_POP_THESIS_ID"></p>#}
+
+                {#<div class="form-group">#}
+                {#<div class="input-group">#}
+                {#{{ labelgroup['POP_THESIS_ID'] }}#}
+                {#{{ input['POP_THESIS_ID'] }}#}
+                {#</div>#}
+                {#</div>#}
+                {#</div>#}
+                {#</div>#}
+                <script>
+                    //                    $('[data-toggle="tooltip"]').tooltip();
+                    var pop_thesis_detail = [
+                        'มีคุณวุติไม่ตำกว่าปริญญาโทหรือเทียบเท่า หรือเป็นผู้ตำรงตำแหน่งทางวิชาการไม่ต่ำกว่าผู้ช่วยศาสตร์จารย์ และมีประสบการณ์ด้านการสอนและการทำวิจัยที่มิใช่ส่วนหนึ่งของการศึกษาเพื่อรับปริญญา',
+                        'มีคุณวุติไม่ตำกว่าปริญญาเอกหรือเทียบเท่า และยังไม่มีผลงานวิจัยหลังสำเร็จการศึกษา',
+                        'มีคุณวุติไม่ตำกว่าปริญญาเอกหรือเทียบเท่า หรือเป็นผู้ตำรงตำแหน่งทางวิชาการไม่ต่ำกว่าผู้ช่วยศาสตร์จารย์ และมีประสบการณ์ด้านการสอนและการทำวิจัยที่มิใช่ส่วนหนึ่งของการศึกษาเพื่อรับปริญญา',
+                        'เป็นอาจารย์ประจำมหาวิทยาลัยพะเยา มีคุณวุติไม่ตำกว่าปริญญาเอกหรือเทียบเท่า หรือเป็นผู้ตำรงตำแหน่งทางวิชาการไม่ต่ำกว่าผู้ช่วยศาสตร์จารย์ และมีประสบการณ์ด้านการสอนและการทำวิจัยที่มิใช่ส่วนหนึ่งของการศึกษาเพื่อรับปริญญา',
+                        'เป็นผู้เชี่ยวชาญเฉพาะ ที่เป็นอาจารย์ประจำมหาวิทยาลัยพะเยา มีความรู้ ความเชี่ยวชาญปละประสบการณ์สูงในสาขาวิชานั้นๆ เป็นที่ยอมรับในหน่วยงานหรือระดับกระทรวงหรือวงการด้านวิชาชืพนั้นๆ เทียบได้ไม่ต่ำกว่าระดับ 9 ตามหลักเกณฑ์และวิธีการที่สำนักงานคณะกรรมการข้าราชการพลเรือนและหน่วยงานที่เกี่ยวข้องกำหนด'
+                    ];
+                    $.each($('#{{ formname }} input[name="POP_THESIS_ID[]"]'), function (k, v) {
+                        var ar = '';
+                        switch ($(v).val()) {
+                            case '1' :
+                                ar = '[0,1]';
+                                break;
+                            case '2' :
+                                ar = '[2]';
+                                break;
+                            case '3' :
+                                ar = '[3,4]';
+                                break;
+                            case '4' :
+                                ar = '[3,4]';
+                                break;
+                            case '5' :
+                                ar = '[3,4]';
+                                break;
+                            case '6' :
+                                ar = '[3,4]';
+                                break;
+                            case '7' :
+                                ar = '[3,4]';
+                                break;
+                            case '8' :
+                                ar = '[2]';
+                                break;
+
+                        }
+
+                        var ht = ' <a class="text-info" href="javascript:call_detail_pop(' + ar + ')"><i class="md-chat"></i></a>';
+                        $(v).parent().after(ht + '<br/>');
+                    });
+                    function call_detail_pop(arr) {
+                        var e = $('#{{ formname }} #pop_POP_THESIS_ID');
+                        e.html('');
+                        var html = [];
+                        for (var i = 0; i < arr.length; i++) {
+                            html.push(' - ' + pop_thesis_detail[arr[i]]);
+                        }
+                        e.html(html.join('<br>'));
+                        e.show();
+                    }
+
+                    $(document).ready(function () {
+                        $('#{{ formname }} #POP_INS_ID').change(function () {
+                            var e = $('#{{ formname }} #detail_POP_INS_ID');
+                            e.show();
+                            switch ($(this).val()) {
+                                case '1' :
+                                    e.html('คุณสมบัติ : มีคุณวุติไม่ตำกว่าปริญญาโทหรือเทียบเท่า หรือเป็นผู้ตำรงตำแหน่งทางวิชาการไม่ต่ำกว่าผู้ช่วยศาสตร์จารย์ และมีประสบการณ์ด้านการสอนและการทำวิจัยที่มิใช่ส่วนหนึ่งของการศึกษาเพื่อรับปริญญา');
+                                    break;
+                                case '2' :
+                                    e.html('คุณสมบัติ : มีคุณวุติไม่ตำกว่าปริญญาเอกหรือเทียบเท่า และยังไม่มีผลงานวิจัยหลังสำเร็จการศึกษา');
+                                    break;
+                                case '3' :
+                                    e.html('คุณสมบัติ : มีคุณวุติไม่ตำกว่าปริญญาเอกหรือเทียบเท่า หรือเป็นผู้ตำรงตำแหน่งทางวิชาการไม่ต่ำกว่าผู้ช่วยศาสตร์จารย์ และมีประสบการณ์ด้านการสอนและการทำวิจัยที่มิใช่ส่วนหนึ่งของการศึกษาเพื่อรับปริญญา');
+                                    break;
+                                default:
+                                    e.hide();
+                                    e.html('');
+                                    break;
+                            }
+                        });
+                        $('#{{ formname }} #POP_HEAD_THESIS_ID').change(function () {
+                            var e = $('#{{ formname }} #detail_POP_HEAD_THESIS_ID');
+                            e.show();
+                            switch ($(this).val()) {
+                                case '1' :
+                                    e.html('คุณสมบัติ : เป็นอาจารย์ประจำมหาวิทยาลัยพะเยา มีคุณวุติไม่ตำกว่าปริญญาเอกหรือเทียบเท่า หรือเป็นผู้ตำรงตำแหน่งทางวิชาการไม่ต่ำกว่าผู้ช่วยศาสตร์จารย์ ' +
+                                    'และมีประสบการณ์ด้านการสอนและการทำวิจัยที่มิใช่ส่วนหนึ่งของการศึกษาเพื่อรับปริญญา');
+                                    break;
+                                case '2' :
+                                    e.html('คุณสมบัติ : เป็นผู้เชี่ยวชาญเฉพาะ ที่เป็นอาจารย์ประจำมหาวิทยาลัยพะเยา มีความรู้ ความเชี่ยวชาญปละประสบการณ์สูงในสาขาวิชานั้นๆ ' +
+                                    'เป็นที่ยอมรับในหน่วยงานหรือระดับกระทรวงหรือวงการด้านวิชาชืพนั้นๆ เทียบได้ไม่ต่ำกว่าระดับ 9 ตามหลักเกณฑ์และวิธีการที่สำนักงานคณะกรรมการข้าราชการพลเรือนและหน่วยงานที่เกี่ยวข้องกำหนด');
+                                    break;
+                                default:
+                                    e.hide();
+                                    e.html('');
+                                    break;
+                            }
+                        });
+                        $('#{{ formname }} #POP_COM_THESIS_ID').change(function () {
+                            var e = $('#{{ formname }} #detail_POP_COM_THESIS_ID');
+                            e.show();
+                            switch ($(this).val()) {
+                                case '1' :
+                                    e.html('คุณสมบัติ : เป็นอาจารย์ประจำมหาวิทยาลัยพะเยา มีคุณวุติไม่ตำกว่าปริญญาเอกหรือเทียบเท่า หรือเป็นผู้ตำรงตำแหน่งทางวิชาการไม่ต่ำกว่าผู้ช่วยศาสตร์จารย์ ' +
+                                    'และมีประสบการณ์ด้านการสอนและการทำวิจัยที่มิใช่ส่วนหนึ่งของการศึกษาเพื่อรับปริญญา');
+                                    break;
+                                case '2' :
+                                    e.html('คุณสมบัติ : เป็นผู้เชี่ยวชาญเฉพาะ ที่เป็นอาจารย์ประจำมหาวิทยาลัยพะเยา มีความรู้ ความเชี่ยวชาญปละประสบการณ์สูงในสาขาวิชานั้นๆ ' +
+                                    'เป็นที่ยอมรับในหน่วยงานหรือระดับกระทรวงหรือวงการด้านวิชาชืพนั้นๆ เทียบได้ไม่ต่ำกว่าระดับ 9 ตามหลักเกณฑ์และวิธีการที่สำนักงานคณะกรรมการข้าราชการพลเรือนและหน่วยงานที่เกี่ยวข้องกำหนด');
+                                    break;
+                                default:
+                                    e.hide();
+                                    e.html('');
+                                    break;
+                            }
+                        });
+                        $('#{{ formname }} #POP_INS_IS_ID').change(function () {
+                            var e = $('#{{ formname }} #detail_POP_INS_IS_ID');
+                            e.show();
+                            switch ($(this).val()) {
+                                case '1' :
+                                    e.html('คุณสมบัติ : เป็นอาจารย์ประจำมหาวิทยาลัยพะเยา มีคุณวุติไม่ตำกว่าปริญญาเอกหรือเทียบเท่า หรือเป็นผู้ตำรงตำแหน่งทางวิชาการไม่ต่ำกว่าผู้ช่วยศาสตร์จารย์ ' +
+                                    'และมีประสบการณ์ด้านการสอนและการทำวิจัยที่มิใช่ส่วนหนึ่งของการศึกษาเพื่อรับปริญญา');
+                                    break;
+                                default:
+                                    e.hide();
+                                    e.html('');
+                                    break;
+                            }
+                        });
+                    });
+                </script>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{#ข้อ END#}
+<div class="tab-pane fade" id="bs1_END">
+    <br>
+
+    <div class="col-xs-12">
+        <h4 class="text-left">บันทึกข้อมูล</h4>
+    </div>
+    <br>
+
+    <div class="form-group">
+        <div class="col-xs-offset-5 col-xs-4">
+            {{ input['OK'] }}{{ input['RESET'] }}
+        </div>
+    </div>
+</div>
+
+
 </div>
 </div>
 </div>{#div .row#}
@@ -572,20 +856,44 @@
 
 <br><br>
 <hr>
-<div class="form-group">
-    <div class="col-xs-offset-5 col-xs-4">
-        {{ input['OK'] }}{{ input['RESET'] }}
-    </div>
-</div>
 
 </form>
 
 
 <script>
     var num_moreinput = {};
+    $(':input').change(function(){
+        $('#{{ formname }} #OK').removeClass('disable');
+    });
+
+
     $(document).ready(function () {
-        {{ valid }}
         $.material.init();
+        {{ valid }}
+
+
+        $("#{{ formname }}")
+                .on('err.form.fv', function (e) {
+                    e.preventDefault();
+                    alert('กรอกข้อมูลไม่ครบถ้วน กรุณาตรวจสอบ');
+                })
+                .on('success.form.fv', function (e) {
+                    // Prevent form submission
+                    e.preventDefault();
+
+                    var $form = $(e.target);
+                    var fv = $form.data('formValidation');
+
+                    // Use Ajax to submit form data
+                    $.ajax({
+                        url: $form.attr('action'),
+                        type: 'POST',
+                        data: $form.serialize(),
+                        success: function (result) {
+                            // ... Process the result ...
+                        }
+                    });
+                });
 
 
         $('#PERSON_ID').on('select2:select', function (e) {
@@ -596,7 +904,7 @@
                 dataType: 'json',
                 data: "id=" + e.params.data.id,
                 success: function (result) {
-                    clog(result);
+//                    clog(result);
                     $.each(result, function (k, v) {
                         $('#' + k).val(v).change();
                     });
@@ -605,8 +913,6 @@
 
             });
         });
-
-
 
 
         $("#AWARD_NAME_STATUS_vF").change(function () {
@@ -631,6 +937,16 @@
             var inputnum = (typeof num_moreinput['MORE_RESEARCH_NAME'] == 'undefined' ? 1 : num_moreinput['MORE_RESEARCH_NAME']);
             for (var i = 0; i < inputnum; i++) {
                 $('#{{ formname }} ' + '#row_MORE_RESEARCH_NAME_' + i).show();
+            }
+        });
+
+        // ผลงานวิจัยที่พิมพ์เผยแพร่หลังสำเร็จ
+        $('#{{ formname }} input[name="PRESENT_ACADEMIC_FOR_GRADUATE"]').change(function () {
+//            console.log(jQuery('#PRESENT_ACADEMIC_YEAR',this));
+            if ($(this).val() == 'T') {
+                jQuery('#{{ formname }} #PRE_ACAD').show();
+            } else {
+                jQuery('#{{ formname }} #PRE_ACAD').hide();
             }
         });
 

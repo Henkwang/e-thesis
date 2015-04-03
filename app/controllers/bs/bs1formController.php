@@ -83,6 +83,7 @@ class bs1formController extends \Phalcon\Mvc\Controller
                 'POS_ACADEMIC_ID' => $row['POS_ACAD_ID'],
                 'POS_EXECUTIVE_ID' => $row['POS_EXEC_ID'],
                 'TEL_PERSONNEL' => $row['MOBILE_PHONE'],
+                'CK_POSITION_ID' => $row['POS_ID'],
             ];
 
             $result = $his_education_model->select_by_filter([], ['PERSON_ID' => $pk_id, 'HIGHEST_DEGREE' => 'T']);
@@ -111,13 +112,19 @@ class bs1formController extends \Phalcon\Mvc\Controller
         }
     }
 
+    public function setdataAction(){
+        print_r($_POST);
+    }
+
     private function _get_config()
     {
         $form = new Form();
         $form->param_default['col'] = 12;
 
-        $form->set_urlset($this->url->get('bs/bs1/setdata/'));
+        $form->set_urlset($this->url->get('bs/bs1form/setdata/'));
         $form->set_model(new \EThesis\Models\Bs\Bs1_model());
+
+        $form->param_default['required'] = false;
 
 
         $form->add_input('OK', [
@@ -207,11 +214,12 @@ class bs1formController extends \Phalcon\Mvc\Controller
         $form->add_input('TEL_WORK', [
             'type' => Form::TYPE_TEXT,
             'minlength' => 4,
-            'value' => '054466666'
+            'required' => false,
         ]);
         $form->add_input('TEL_WORK_NEXT', [
             'type' => Form::TYPE_TEXT,
-            'minlength' => 4
+            'minlength' => 4,
+            'required' => false,
         ]);
         /*
          * 2.  ข้อมูลคถณวุฒิสูงสุด
@@ -269,44 +277,54 @@ class bs1formController extends \Phalcon\Mvc\Controller
         $form->add_input('PRESENT_ACADEMIC_TYPE', [
             'type' => Form::TYPE_CHECKBOX,
             'data' => ['M' => 'ตีพิมพ์ในวารสาร', 'A' => 'เสนอต่อที่ประชุมวิชาการ'],
+            'novalidate' => true,
         ]);
         $form->add_input('PRESENT_ACADEMIC_YEAR', [
             'type' => Form::TYPE_NUMBER,
             'maxlength' => 4,
             'minlength' => 4,
+            'novalidate' => true,
         ]);
         $form->add_input('PRESENT_ACADEMIC_TYPE_NAME', [
             'type' => Form::TYPE_TEXT,
+            'novalidate' => true,
             'label' => 'ชื่อวารสาร/การประชุมวิชาการ'
         ]);
         $form->add_input('PRESENT_ACADEMIC_PLACE_NAME', [
             'type' => Form::TYPE_TEXT,
+            'novalidate' => true,
             'label' => 'สถานที่'
         ]);
         $form->add_input('PRESENT_ACADEMIC_PROVINCE_NAME', [
             'type' => Form::TYPE_TEXT,
+            'novalidate' => true,
             'label' => $this->lang_class->label('PROVINCE')
         ]);
         $form->add_input('PRESENT_ACADEMIC_COUNTRY_NAME', [
             'type' => Form::TYPE_TEXT,
+            'novalidate' => true,
             'label' => $this->lang_class->label('COUNTRY')
         ]);
         $form->add_input('PRESENT_ACADEMIC_TITLE_ID', [
             'type' => Form::TYPE_SELECT,
             'datamodel' => 'MAS_TITLE',
+            'novalidate' => true,
             'label' => 'ชื่อ - สกุล เจ้าของผลงาน',
         ]);
         $form->add_input('PRESENT_ACADEMIC_FNAME_TH', [
             'type' => Form::TYPE_TEXT,
+            'novalidate' => true,
             'holder' => $this->lang_class->label_manual('ชื่อ', 'First Name')
         ]);
         $form->add_input('PRESENT_ACADEMIC_LNAME_TH', [
             'type' => Form::TYPE_TEXT,
+            'novalidate' => true,
             'holder' => $this->lang_class->label_manual('สกุล', 'Last Name')
 
         ]);
         $form->add_input('PRESENT_ACADEMIC_NAME', [
             'type' => Form::TYPE_TEXT,
+            'novalidate' => true,
             'label' => $this->lang_class->label_manual('ชื่อเรื่อง')
 
         ]);
@@ -319,6 +337,7 @@ class bs1formController extends \Phalcon\Mvc\Controller
             'type' => Form::TYPE_NUMBER,
             'maxlength' => 4,
             'minlength' => 4,
+            'novalidate' => true,
             'label' => 'ระบุครั้งล่าสุด พ.ศ.'
         ]);
 
@@ -381,6 +400,55 @@ class bs1formController extends \Phalcon\Mvc\Controller
             'data' => ['F' => 'ไม่มี', 'T' => 'มี'],
         ]);
 
+
+
+        $form->add_input('CK_POSITION_ID', [
+            'type' => Form::TYPE_SELECT,
+            'label' => 'ตรวจสอบแล้วเป็นพนังงานมหาวิทยาลัยตามสัญญาจ้างตำแหน่ง ',
+            'datamodel' => 'HRD_POSITION'
+        ]);
+        $form->add_input('CK_START_DATE', [
+            'type' => Form::TYPE_DATE,
+            'label' => 'ตั้งแต่วันที่'
+        ]);
+        $form->add_input('CK_END_DATE', [
+            'type' => Form::TYPE_DATE,
+            'label' => 'ถึงวันที่'
+        ]);
+
+
+        $form->add_input('CK_POSITION_ID', [
+            'type' => Form::TYPE_SELECT,
+            'label' => 'ตรวจสอบแล้วเป็นพนังงานมหาวิทยาลัยตามสัญญาจ้างตำแหน่ง ',
+            'datamodel' => 'HRD_POSITION'
+        ]);
+
+
+        $form->add_input('POP_INS_ID', [
+            'type' => Form::TYPE_SELECT,
+            'datalang' => 'POP_INS_ID',
+            'required' => false,
+        ]);
+        $form->add_input('POP_HEAD_THESIS_ID', [
+            'type' => Form::TYPE_SELECT,
+            'required' => false,
+            'datalang' => 'POP_HEAD_THESIS_ID'
+        ]);
+        $form->add_input('POP_COM_THESIS_ID', [
+            'type' => Form::TYPE_SELECT,
+            'required' => false,
+            'datalang' => 'POP_COM_THESIS_ID'
+        ]);
+        $form->add_input('POP_INS_IS_ID', [
+            'type' => Form::TYPE_SELECT,
+            'required' => false,
+            'datalang' => 'POP_INS_IS_ID'
+        ]);
+        $form->add_input('POP_THESIS_ID', [
+            'type' => Form::TYPE_CHECKBOX,
+            'required' => false,
+            'datalang' => 'POP_THESIS_ID'
+        ]);
 
         return $form;
 

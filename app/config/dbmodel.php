@@ -59,6 +59,14 @@ return [
         'filter' => ['NOT_STATUSLIST_ID' => '17,18,19,20,21,22', 'WORKLINE_ID' => 1],
         'order' => 'NAME_ML ASC',
     ],
+    'HRD_POSITION' => [
+        'module' => 'hrd',
+        'model' => 'Hrd_position_model',
+        'key' => 'POS_ID',
+        'label' => "POS_NAME_ML",
+        'filter' => [],
+        'order' => 'POS_NAME_ML ASC',
+    ],
     'HRD_POS_ACAD' => [
         'module' => 'hrd',
         'model' => 'Hrd_position_acad_model',

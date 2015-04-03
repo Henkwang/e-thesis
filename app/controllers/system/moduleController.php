@@ -19,12 +19,55 @@ class ModuleController extends \Phalcon\Mvc\Controller
 
     public function indexAction()
     {
-        $this->logs->set(LOG_OPEN_PAGE);
+
 
         $form = new Form();
+
         $form->add_input('MOD_PARENT_ID', [
             'type' => Form::TYPE_NUMBER,
             'label' => 'รหัสโหนดแม่',
+        ]);
+        $form->add_input('MOD_LEVEL', [
+            'type' => Form::TYPE_NUMBER,
+            'label' => 'รหัสโหนดแม่',
+        ]);
+
+        $form->add_input('MOD_NAME_TH', [
+            'type' => Form::TYPE_TEXT
+        ]);
+        $form->add_input('MOD_NAME_EN', [
+            'type' => Form::TYPE_TEXT
+        ]);
+        $form->add_input('MOD_URL', [
+            'type' => Form::TYPE_TEXT
+        ]);
+        $form->add_input('ENABLE', [
+            'type' => Form::TYPE_SELECT,
+            'datalang' => 'ENABLE',
+            'value' => 'T',
+        ]);
+
+
+        $this->view->setVars($form->get_form());
+
+        $this->view->setVar('burl', $this->url->get('system/module/'));
+
+        $this->logs->set(LOG_OPEN_PAGE);
+        $this->view->pick('system/moduleIndex');
+
+    }
+
+    private function config(){
+        $form = new Form();
+        $form->set_model(new \EThesis\Models\System\Sys_module_model());
+        $form->set_urlset($this->url->get('system/module/setdata'));
+
+        $form->add_input('MOD_PARENT_ID', [
+            'type' => Form::TYPE_NUMBER,
+            'label' => 'รหัสโหนดแม่',
+        ]);
+        $form->add_input('MOD_ORDER', [
+            'type' => Form::TYPE_NUMBER,
         ]);
         $form->add_input('MOD_NAME_TH', [
             'type' => Form::TYPE_TEXT
@@ -32,18 +75,42 @@ class ModuleController extends \Phalcon\Mvc\Controller
         $form->add_input('MOD_NAME_EN', [
             'type' => Form::TYPE_TEXT
         ]);
-
+        $form->add_input('MOD_LEVEL', [
+            'type' => Form::TYPE_NUMBER,
+        ]);
+        $form->add_input('MOD_URL', [
+            'type' => Form::TYPE_TEXT,
+        ]);
         $form->add_input('ENABLE', [
             'type' => Form::TYPE_SELECT,
             'datalang' => 'ENABLE',
             'value' => 'T',
         ]);
 
-        $this->view->setVars($form->get_form());
-
-        $this->view->pick('system/moduleIndex');
-
+        return $form;
     }
+
+
+    public function getformAction($manage, array $data = [])
+    {
+        $form = $this->config();
+        $form->url_set .= '/' . $manage;
+        $this->view->disable();
+        if ($manage == 'EDIT') {
+            $form->get_formedit($_POST['pk_id']);
+        }
+        echo $form->get_inputgroup_complate($_POST['tablename']);
+    }
+
+    public function setdataAction($set)
+    {
+        $form = $this->config();
+        if (!empty($set)) {
+            $msg = $form->set_data($set);
+            echo $msg;
+        }
+    }
+
 
     public function getdataAction()
     {
@@ -53,16 +120,20 @@ class ModuleController extends \Phalcon\Mvc\Controller
         $i = 0;
         while (isset($post['columns'][$i])) {
             if ($post['columns'][$i]['name'] !== 'MANAGE') {
-                $col[$i] = $post['columns'][$i]['name'];
+                if ($post['columns'][$i]['name'] == 'pk_id') {
+                    $col[$i] = $Module_model->primary . ' [pk_id]';
+                } else {
+                    $col[$i] = $post['columns'][$i]['name'];
+                }
             }
             $i++;
         }
-        $col[] = "'' AS [MANAGE]";
         if (!empty($post['search']['value'])) {
             $search = json_decode($post['search']['value'], JSON_OBJECT_AS_ARRAY);
             $filter = array_column($search, 'value', 'name');
+
         } else {
-            $filter['ENABLE'] = 'T';
+            $filter = ['ENABLE' => 'T'];
         }
 
         $order = $post['columns'][$post['order'][0]['column']]['name'] . ' ' . $post['order'][0]['dir'];

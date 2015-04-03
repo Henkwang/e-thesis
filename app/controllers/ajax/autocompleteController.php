@@ -185,5 +185,9 @@ class AutocompleteController
         echo json_encode($data);
     }
 
+    public function uploadtmpAction(){
+
+    }
+
 
 }

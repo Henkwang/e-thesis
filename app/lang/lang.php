@@ -23,5 +23,12 @@ return [
         'MSG_IMPORT_ERROR' => 'MSG_IMPORT_ERROR',
         'MSG_IMPORT_ITEM_ERROR' => 'MSG_IMPORT_ITEM_ERROR'
     ],
+    'USER_TYPE' => [
+        'label' => 'USER TYPE',
+        'A' => 'A : Admin',
+        'T' => 'T : Teacher',
+        'U' => 'U : Staff',
+        'S' => 'S : Student',
+    ],
 
 ];

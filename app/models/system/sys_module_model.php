@@ -12,8 +12,8 @@ class Sys_module_model extends \EThesis\Library\Adodb
 
     var $use_view = FALSE;
 
-    var $field_insert = ['MOD_PARENT_ID', 'MOD_NAME_TH', 'MOD_NAME_EN', 'MOD_LEVLE', 'MOD_ORDER', 'ENABLE', 'MOD_URL'];
-    var $field_update = ['MOD_PARENT_ID', 'MOD_NAME_TH', 'MOD_NAME_EN', 'MOD_LEVLE', 'MOD_ORDER', 'ENABLE', 'MOD_URL'];
+    var $field_insert = ['MOD_PARENT_ID', 'MOD_NAME_TH', 'MOD_NAME_EN', 'MOD_LEVEL', 'MOD_ORDER', 'ENABLE', 'MOD_URL'];
+    var $field_update = ['MOD_PARENT_ID', 'MOD_NAME_TH', 'MOD_NAME_EN', 'MOD_LEVEL', 'MOD_ORDER', 'ENABLE', 'MOD_URL'];
 
     var $date_current;
     var $user_access;
@@ -21,11 +21,11 @@ class Sys_module_model extends \EThesis\Library\Adodb
     var $user_type;
 
 
-    public function initialize()
+    public function __construct()
     {
         parent::__construct();
 
-        $this->adodb->debug = TRUE;
+//        $this->adodb->debug = TRUE;
 
         $sess = new \EThesis\Library\Session();
 
@@ -90,9 +90,10 @@ class Sys_module_model extends \EThesis\Library\Adodb
             }
         }
         $sql_field .= "RECORD_STATUS, CREATE_DATE, CREATE_USER, CREATE_USER_TYPE, LAST_DATE, LAST_USER, LAST_USER_TYPE";
-        $sql_value .= "'N','{$this->date_current}','{$this->user_access}','{$this->user_type}','{$this->date_current}','{$this->user_access}','{$this->user_type}'";
+        $sql_value .= "'N',{$this->date_current},'{$this->user_access}','{$this->user_type}',{$this->date_current},'{$this->user_access}','{$this->user_type}'";
         $sql = "INSERT INTO {$this->schema}.{$this->table} ({$sql_field}) VALUES ({$sql_value})";
         $sql .= ";";
+//        die($sql);
         $result = $this->adodb->Execute($sql);
         return $result;
 
@@ -108,8 +109,8 @@ class Sys_module_model extends \EThesis\Library\Adodb
                 $sql .= "{$field}='',";
             }
         }
-        $sql .= "LAST_DATE='{$this->date_current}', LAST_USER='{$this->user_access}', LAST_USER_TYPE='{$this->user_type}'";
-        $sql .= "WHERE {$this->primary}='$id'";
+        $sql .= " LAST_DATE={$this->date_current}, LAST_USER='{$this->user_access}', LAST_USER_TYPE='{$this->user_type}'";
+        $sql .= " WHERE {$this->primary}='$id'";
         $sql .= ";";
 
         $result = $this->adodb->Execute($sql);
@@ -118,7 +119,7 @@ class Sys_module_model extends \EThesis\Library\Adodb
 
     public function delete($id){
         $sql = "UPDATE  {$this->schema}.{$this->table} SET RECORD_STATUS='D' ";
-        $sql .= "LAST_DATE='{$this->date_current}', LAST_USER='{$this->user_access}', LAST_USER_TYPE='{$this->user_type}'";
+        $sql .= "LAST_DATE={$this->date_current}, LAST_USER='{$this->user_access}', LAST_USER_TYPE='{$this->user_type}'";
         $result = $this->adodb->Execute($sql);
         return $result;
     }

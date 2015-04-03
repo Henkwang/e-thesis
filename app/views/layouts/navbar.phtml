@@ -63,10 +63,6 @@ if ($di->session->get('auth') === true && is_numeric($di->session->get('grouplog
             background-color: rgba(255, 255, 255, .2) !important;
         }
 
-        select.form-control {
-            margin-top: 5px;
-        }
-
         span.input-group-addon {
             font-weight: 600;
             color: #0c0c0c;
@@ -79,7 +75,13 @@ if ($di->session->get('auth') === true && is_numeric($di->session->get('grouplog
         .radio label {
             padding-left: 30px;
         }
+        .checkbox label {
+            padding-left: 10px;
 
+        }
+        .checkbox label span {
+            padding-right: 5px;
+        }
 
     </style>
 
@@ -111,8 +113,16 @@ if ($di->session->get('auth') === true && is_numeric($di->session->get('grouplog
             tab_link.children().last().children().first().click();
             return {
                 tab: tab_link.children().last().children().first(),
-                content: $('#' + ID + '_content[data-number="' + num_tab + '"]')
+                content: $('#' + ID + '_content[data-number="' + num_tab + '"]'),
+                num_tab: num_tab
             }
+        }
+
+        function close_active(ID) {
+            var id = $("#" + ID + " ul li[class=active]").children('a').first().attr('href');
+            var sp = id.split('-');
+            var num_tab = sp[1];
+            close_tab(ID, num_tab);
         }
 
         function close_tab(ID, num_tab) {

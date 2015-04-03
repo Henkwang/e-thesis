@@ -96,7 +96,34 @@ class Form
         'between' => [],
         'choice' => false,
         'maxitem' => false,
+        'filetype' => false,
+        'filesize' => false,
+
+
         //-------------
+        'formsearch' => true,
+        'formedit' => true,
+
+    ];
+
+    var $file_ext = [
+        'msoffice' => [
+            'doc' => 'application/msword',
+            'xls' => 'application/vnd.ms-excel',
+            'ppt' => 'application/vnd.ms-powerpoint'
+        ],
+        'pdf' => [
+            'pdf' => 'application/pdf'
+        ],
+        'image' => [
+            'gif' => 'image/gif',
+            'jpeg' => 'image/jpeg',
+            'jpg' => 'image/jpeg',
+            'png' => 'image/png',
+            'tif' => 'image/tiff',
+            'tiff' => 'image/tiff',
+            'bmp' => 'image/x-ms-bmp'
+        ]
     ];
 
 
@@ -162,7 +189,8 @@ class Form
     {
 //        print_r($param);
         $this->_input_array[] = $name;
-        $this->_param_array[$name] = Form::array_marge($this->param_default, $param);
+        $this->_param_array[$name] = $this->array_marge($this->param_default, $param);
+//        print_r($this->_param_array[$name]);
 
     }
 
@@ -189,6 +217,7 @@ class Form
             $this->_create_validate();
         }
         $data = [
+            'formclass' => $this,
             'formname' => $this->formname,
             'formid' => $this->_formid,
             'action' => $this->url_set,
@@ -203,14 +232,76 @@ class Form
         return $data;
     }
 
+    public function get_inputgroup_complate($table_name, $set = true, $num_group = 2)
+    {
+        $data = $this->get_form();
+        $numinput = count($data['input']);
+        $html = '<form id="' . $data['formname'] . '" action="' . $data['action'] . '" role="form" class="form-horizontal" method="post" ' . ($set ? '' : ' onsubmit="return false"') . ' >';
+        $html .= '<div class="row"><div class="col-xs-12 col-lg-10 col-lg-offset-1"">';
+        $html .= $data['input']['pk_id'];
+        unset($data['input']['pk_id']);
+        $arr_name = array_keys($data['input']);
+        $numinput--;
+
+        for ($i = 0; $i < $numinput; $i += $num_group) {
+            $xs = floor(12 / $num_group);
+            $html .= '<div class="row">';
+            for ($j = 0; $j < $num_group && ($i + $j) < $numinput; $j++) {
+                $html .= '<div class="col-xs-' . $xs . '">';
+                $html .= '<div class="form-group">';
+                $html .= '<div class="input-group">';
+                $html .= $data['labelgroup'][$arr_name[$i + $j]];
+                $html .= $data['input'][$arr_name[$i + $j]];
+                $html .= '</div>';
+                $html .= '</div>';
+                $html .= '</div>';
+            }
+            $html .= '</div>';
+        }
+        if ($set == true) {
+            $html .= '<div class="row">';
+            $html .= '<div class="col-xs-offset-5">';
+            $html .= '<button type="submit" class="btn btn-success" name="OK"><i class="md-done"></i> ' . $this->_lang_class->label('OK') . '</button>';
+            $html .= '</div></div>';
+
+            $html .= '<script>';
+            $html .= $data['valid'];
+            $html .= '.on(\'success.form.fv\', function(e) {
+                e.preventDefault();
+                var $form = $(e.target);
+                var bv = $form.data(\'formValidation\');
+                $.post($form.attr(\'action\'), $form.serialize(),  function(result){
+                     alert(result.msg);
+                    $(\'#' . $table_name . '_wrapper #top #EDIT\').add(\'#' . $table_name . '_wrapper #top #DELETE\').addClass(\'disabled\');
+                    O' . $table_name . '.ajax.reload();
+                    close_active(\'main_tab\');
+                }, \'json\');
+            });';
+            $html .= ' $.material.init()';
+            $html .= '</script>';
+        } else {
+            $html .= '<div class="row"><div class="col-xs-offset-5">';
+            $html .= ' <button type="submit" class="btn btn-primary btn-raised" ';
+            $html .= 'onclick="O' . $table_name . '.search(JSON.stringify($(\'#' . $this->formname . '\').serializeArray())).draw();"><i class="md-search"></i>' . $this->_lang_class->label('SEARCH') . '</button>';
+            $html .= '<button type="reset" class="btn btn-default btn-raised">    <i class="md-refresh"></i> ' . $this->_lang_class->label('CLEAR') . '</button>';
+            $html .= '</div></div>';
+        }
+        $html .= '</div></div>';
+        $html .= '</form>';
+        return $html;
+
+    }
+
     public function get_formedit($pk_id)
     {
         $field = $this->_input_array;
+        $field[array_search('pk_id', $field)] = $this->_set_model->primary . ' [pk_id]';
         $filter = ['IN_ID' => $pk_id];
         $result = $this->_set_model->select_by_filter($field, $filter);
+//        print_r($field);
         if (is_object($result) && $result->RecordCount() > 0) {
             $row = $result->FetchRow();
-            foreach ($field as $val) {
+            foreach ($this->_input_array as $val) {
                 $this->_param_array[$val]['value'] = $row[$val];
             }
             $this->_complete = false;
@@ -219,16 +310,17 @@ class Form
     }
 
 
-    public function set_data($set = null, $pk_id = null)
+    public function set_data($set = null)
     {
         $set = strtolower($set);
         $post = $_POST;
         $data = [];
+        $pk_id = $post['pk_id'];
         if ($set <> 'delete') {
             foreach ($this->_param_array as $name => $param) {
                 if (!$param['disable']) {
                     if (is_array($post[$name])) {
-                        $data[$name] = implode($post[$name]);
+                        $data[$name] = implode(',', $post[$name]);
                     } else if (isset($post[$name])) {
                         $data[$name] = $post[$name];
                     }
@@ -237,25 +329,26 @@ class Form
         }
         if ($set == 'add') {
             $result = $this->_set_model->insert($data);
-            $msg = ($result === true ? 'เพิ่มข้อมูลสำเร็จ' : 'ผิดพลาด! ไม่สามารถเพิ่มข้อมูลได้');
+            $msg = ($result ? 'เพิ่มข้อมูลสำเร็จ' : 'ผิดพลาด! ไม่สามารถเพิ่มข้อมูลได้');
         } else if ($set == 'edit') {
             if (empty($pk_id)) {
                 $msg = 'ผิดพลาด! ไม่สามารถแก้ไขข้อมูลได้';
             } else {
                 $result = $this->_set_model->update($data, $pk_id);
-                $msg = ($result === true ? 'แก้ไขข้อมูลสำเร็จ' : 'ผิดพลาด! ไม่สามารถแก้ไขข้อมูลได้');
+//                print_r($result);
+                $msg = ($result ? 'แก้ไขข้อมูลสำเร็จ' : 'ผิดพลาด! ไม่สามารถแก้ไขข้อมูลได้');
             }
         } else if ($set == 'delete') {
             if (empty($pk_id)) {
                 $msg = 'ผิดพลาด! ไม่สามารถแก้ไขข้อมูลได้';
             } else {
                 $result = $this->_set_model->delete($pk_id);
-                $msg = ($result === true ? 'ลบข้อมูลสำเร็จ' : 'ผิดพลาด! ไม่สามารถลบข้อมูลได้');
+                $msg = ($result ? 'ลบข้อมูลสำเร็จ' : 'ผิดพลาด! ไม่สามารถลบข้อมูลได้');
             }
         } else {
             $msg = 'การเข้าถึงไม่ถูกต้อง หรือคุณอาจไม่ได้รับนุญาติใจการจัดการข้อมูล';
         }
-        return $msg;
+        return json_encode(['success' => !empty($result), 'msg' => $msg]);
     }
 
 
@@ -300,6 +393,8 @@ class Form
                     $this->_cp_input[$name] = $this->_input_button($name, $param);
                 } else if (in_array($param['type'], [Form::TYPE_AUTOCOMPLETE])) {
                     $this->_cp_input[$name] = $this->_input_autocomplete($name, $param);
+                } else if (in_array($param['type'], [Form::TYPE_FILE])) {
+                    $this->_cp_input[$name] = $this->_input_file($name, $param);
                 }
             }
         }
@@ -327,7 +422,7 @@ class Form
                             feedback: 'form-control-feedback'
                         },
                         fields: decode_json('" . json_encode($this->_input_validate) . "'),
-                    });";
+                    })";
     }
 
 
@@ -369,6 +464,19 @@ class Form
         if ($vilid['choice'] !== FALSE && is_array($vilid['choice']) && count($vilid['choice']) >= 2) {
             $attr['choice']['max'] = max($vilid['choice']);
             $attr['choice']['min'] = min($vilid['choice']);
+        }
+        if ($vilid['type'] == Form::TYPE_FILE) {
+//            print_r($vilid);
+//            die();
+            if (!empty($vilid['filetype']) && !empty($this->file_ext[$vilid['filetype']])) {
+//                die('true');
+                $ext = array_keys($this->file_ext[$vilid['filetype']]);
+                $type = array_values($this->file_ext[$vilid['filetype']]);
+                $attr['file'] = ['extension' => implode(',', $ext), 'type' => implode(',', $type)];
+            }
+            if (!empty($vilid['filesize'])) {
+                $attr['file']['maxSize'] = $vilid['filesize'] * (1024 * 1024);
+            }
         }
 //        print_r($attr);
 
@@ -415,6 +523,33 @@ class Form
         return $html;
     }
 
+    private function _input_file($input_name, array $param = array())
+    {
+//        print_r($this->check_validation($param));
+//        print_r($param);
+        $div_attr['class'] = ['col-xs-' . $param['col'], 'col-xs-offset-' . $param['offset'], 'padding-mini'];
+        $attr = $param['attr'];
+        $attr['type'] = Form::TYPE_TEXT;
+        $attr['id'] = $input_name;
+        $attr['name'] = 'textfile_' . $input_name;
+        $attr['readonly'] = true;
+        $attr['placeholder'] = (empty($attr['placeholder']) ? 'ไฟล์' : $attr['placeholder']);
+        $attr['value'] = $param['value'];
+        $attr['class'] = [$param['class_default'], $param['class'], 'floating-label'];
+
+        $html = '<div ' . $this->join_attr($div_attr) . '>'
+            . '<input ' . $this->join_attr($attr) . '/>'
+            . '<input type="file" id="' . $input_name . '" name="' . $input_name . '" ' . ($attr['multiple'] ? 'multiple=""' : '') . ' style="cursor:pointer">'
+            . '</div>'
+//            . '<script>'
+//            . '$(\'#' . $input_name . '\').bind(\'change\', function(){'
+
+//            . '});</script>'
+        ;
+
+        $this->check_validation($input_name, $param);
+        return $html;
+    }
 
     private function _input_datetime($input_name, array $param = array())
     {
@@ -432,7 +567,7 @@ class Form
         } else {
             $attr['style'] = ['cursor:pointer', $param['style']];
         }
-        if($param['type']== Form::TYPE_DATE){
+        if ($param['type'] == Form::TYPE_DATE) {
             $html = "\n" . '<div ' . $this->join_attr($div_attr) . '>'
                 . '<div class="input-group date" id="' . $input_name . '_datetime">'
                 . '<input ' . $this->join_attr($attr) . '/>'
@@ -445,7 +580,7 @@ class Form
                 . '$("#' . $input_name . '").click(function(){$(\'#' . $this->formname . ' #' . $input_name . '_datetime .input-group-addon i\').click();});'
                 . '});'
                 . '</script>';
-        }else if($param['type'] == Form::TYPE_TIME){
+        } else if ($param['type'] == Form::TYPE_TIME) {
             $attr['id'] = $input_name;
             $attr['name'] = $input_name;
             $attr['type'] = Form::TYPE_TIME;
@@ -476,7 +611,8 @@ class Form
         if ($param['datamodel']) {
             $data = $this->_datamodel_class->get_dataModel($param['datamodel']);
         } else if ($param['datalang']) {
-            $data = $this->_lang_class->lang($input_name);
+            $data = $this->_lang_class->lang($param['datalang']);
+//            print_r($data);
             unset($data['label']);
         } else {
             $data = $param['data'];
@@ -537,7 +673,7 @@ class Form
         if ($param['datamodel']) {
             $data = $this->_datamodel_class->get_dataModel($param['datamodel']);
         } else if ($param['datalang']) {
-            $data = $this->_lang_class->lang($input_name);
+            $data = $this->_lang_class->lang($param['datalang']);
             unset($data['label']);
         } else {
             $data = $param['data'];
@@ -577,7 +713,7 @@ class Form
         if ($param['datamodel']) {
             $data = $this->_datamodel_class->get_dataModel($param['datamodel']);
         } else if ($param['datalang']) {
-            $data = $this->_lang_class->lang($input_name);
+            $data = $this->_lang_class->lang($param['datalang']);
             if (isset($data['label']))
                 unset($data['label']);
         } else {
@@ -663,6 +799,7 @@ class Form
         return $html;
     }
 
+
     private function _input_button($input_name, array $param = [])
     {
         $div_attr['class'] = ['col-xs-' . $param['col'], 'col-xs-offset-' . $param['offset'], 'padding-mini'];
@@ -681,6 +818,7 @@ class Form
         return $html;
     }
 
+
     /**
      * @param string $url_set
      */
@@ -696,6 +834,7 @@ class Form
                 $base_array[$key] = $val;
             }
         }
+//        print_r($base_array);
         return $base_array;
     }
 

@@ -11,13 +11,11 @@ class AuthController extends \Phalcon\Mvc\Controller
 
     private $_ad;
 
-    private $sess;
 
     protected function initialize()
     {
         \Phalcon\Tag::setTitle('Authentication');
         $this->ldap = new \EThesis\Library\adLDAP();
-        $this->sess = $this->session;
     }
 
     public function indexAction()
@@ -50,8 +48,9 @@ class AuthController extends \Phalcon\Mvc\Controller
 
         }
 
-        //print_r($newdata);
-        $this->sess->multi_set($newdata);
+
+        $this->session->multi_set($newdata);
+//        print_r($_SESSION);
     }
 
     function loginAction()
@@ -171,6 +170,7 @@ class AuthController extends \Phalcon\Mvc\Controller
             // #5 get group permission
             if ($ad_authen || $dbms_authen) {
                 $this->set_login($user_data);
+//                print_r($_SESSION);
                 $res = [
                     'group' => $user_data['usergroup'],
                     'error' => false,
@@ -179,6 +179,7 @@ class AuthController extends \Phalcon\Mvc\Controller
                 ];
                 echo json_encode($res);
                 $this->logs->set(LOG_LOGIN);
+
             }
         } else {
             echo json_encode(['error' => true, 'msg' => 'การล็อคอินไม่ถูกต้อง กรุณาโหลดหน้านี้ใหม่']);
@@ -188,14 +189,13 @@ class AuthController extends \Phalcon\Mvc\Controller
     public function  logingroupAction()
     {
         $response = ['error' => TRUE];
-//        print_r($this->sess->get());
-        if ($this->sess->get('auth') !== FALSE) {
+        if ($this->session->get('auth') !== FALSE) {
             $group_permis_model = new \EThesis\Models\System\Sys_grouppermis_model();
             $group_model = new \EThesis\Models\System\Sys_groupuser_model();
             $user_model = new \EThesis\Models\System\Sys_user_model();
-            $utype = $this->sess->get('usertype');
-            $ugroup = $this->sess->get('usergroup');
-            $username = $this->sess->get('username');
+            $utype = $this->session->get('usertype');
+            $ugroup = $this->session->get('usergroup');
+            $username = $this->session->get('username');
 
             if (!empty($ugroup) && !empty($utype)) {
                 $g = $user_model->select_by_username([], $username);
@@ -213,7 +213,7 @@ class AuthController extends \Phalcon\Mvc\Controller
                     $response['reurl'] = $this->url->get('main');
                     $response['error'] = FALSE;
                     //set Session
-                    $this->sess->set('grouplogin', $response['gid']);
+                    $this->session->set('grouplogin', $response['gid']);
 
                 } else {
                     $response['msg'] = 'คุณไม่ได้รับสิทธิ์ให้ใช้งานกลุ่มผู้ใช้งานนี้';
@@ -222,6 +222,7 @@ class AuthController extends \Phalcon\Mvc\Controller
         } else {
             $response['msg'] = 'หมดเวลาการเข้าใช้งานระบบ กรุณาลงชื่อเข้าใช้งานใหม่';
         }
+//        print_r($_SESSION);
         echo json_encode($response);
     }
 
@@ -248,17 +249,20 @@ class AuthController extends \Phalcon\Mvc\Controller
 
     function logoutAction($redirect = "")
     {
-        if ($this->sess->get('auth') == TRUE) {
-            $this->sess->destroy();
-            $this->sess->set('auth', FALSE);
+        if ($this->session->get('auth') == TRUE) {
+            $lang = $this->session->get('lang');
+            $this->session->destroy();
+            $this->session->set('auth', FALSE);
+            $this->session->set('lang', $lang);
         }
         echo json_encode(['auth' => FALSE]);
     }
 
-    function get_loginAction()    {
+    function get_loginAction()
+    {
         $response = ['auth' => FALSE];
-        if ($this->sess->get('auth') == TRUE) {
-            $response['auth'] =  TRUE;
+        if ($this->session->get('auth') == TRUE) {
+            $response['auth'] = TRUE;
         }
         echo json_encode($response);
     }

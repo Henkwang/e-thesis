@@ -14,6 +14,7 @@ class Session
 {
 
     const SESSION_NAME = 'EThesisUP';
+    public static  $DI_SESSION = FALSE;
 
     private $phalcon_session = FALSE;
 
@@ -25,6 +26,13 @@ class Session
 
         $this->session_config = $config['session'];
 
+        if(Session::$DI_SESSION == FALSE){
+            $this->phalcon_session = new SessionAdapter(['uniqueId' => Session::SESSION_NAME]);
+            $this->phalcon_session->start();
+            Session::$DI_SESSION = $this->phalcon_session;
+        }else{
+            $this->phalcon_session = Session::$DI_SESSION;
+        }
         $this->create_session();
 
     }
@@ -32,17 +40,18 @@ class Session
     private function create_session()
     {
         $now = date(DATE_ISO8601);
-        $this->phalcon_session = new SessionAdapter(['uniqueId' => Session::SESSION_NAME]);
-        $this->phalcon_session->start();
+
         $nnow = strtotime('now');
         $nlat = strtotime($this->get('last_active'));
 
         if ($this->has('last_active')) {
             $deff_time = $nnow - $nlat;
             if (!empty($this->session_config['lifetime']) && $deff_time > $this->session_config['lifetime']) {
+                $lang = $this->get('lang');
                 $this->destroy();
+                $this->set('lang', $lang);
                 $this->set('auth', false);
-                return FALSE;
+//                return FALSE;
             }
         }
         $this->has_set('key', sha1(rand(1, 999999)));
@@ -51,6 +60,7 @@ class Session
         $this->set('user_ip', $this->get_userip());
         $this->set('last_active', $now);
         $this->has('user_agent') || $this->set('user_agent', get_browser(null, true)['comment']);
+        $this->has_set('lang', 'th');
 
 
         return true;
@@ -101,10 +111,9 @@ class Session
 
     public function multi_set(array $array_set)
     {
-
         if (is_array($array_set)) {
             foreach ($array_set as $key => $val) {
-                $this->phalcon_session->set($key, $val);
+                $this->set($key, $val);
             }
         }
         return TRUE;

@@ -11,54 +11,7 @@ $table_name = 'module_' . rand(0, 999999);
 <br/><br/>
 <div class="row">
     <div class="col-xs-8 col-xs-offset-2">
-        <form id="<?= $formname ?>" class="form-horizontal" onsubmit="return false">
-            <div class="row">
-                <div class="col-xs-6">
-                    <div class="form-group">
-                        <div class="input-group">
-                            <?= $labelgroup['MOD_PARENT_ID'] ?>
-                            <?= $input['MOD_PARENT_ID'] ?>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-6">
-                    <div class="form-group">
-                        <div class="input-group">
-                            <?= $labelgroup['ENABLE'] ?>
-                            <?= $input['ENABLE'] ?>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-6">
-                    <div class="form-group">
-                        <div class="input-group">
-                            <?= $labelgroup['MOD_NAME_TH'] ?>
-                            <?= $input['MOD_NAME_TH'] ?>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-6">
-                    <div class="form-group">
-                        <div class="input-group">
-                            <?= $labelgroup['MOD_NAME_EN'] ?>
-                            <?= $input['MOD_NAME_EN'] ?>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-offset-5">
-                    <button type="submit" class="btn btn-primary btn-raised"
-                            onclick="O<?= $table_name ?>.search(JSON.stringify($('#<?= $formname ?>').serializeArray())).draw();">
-                        <i class="md-search"></i> <?= $Lang->label('SEARCH') ?></button>
-                    <button type="reset" class="btn btn-default btn-raised">
-                        <i class="md-refresh"></i> <?= $Lang->label('CLEAR') ?></button>
-                </div>
-            </div>
-        </form>
-
+        <?= $formclass->get_inputgroup_complate($table_name, false) ?>
     </div>
 </div>
 <hr/>
@@ -68,36 +21,97 @@ $table_name = 'module_' . rand(0, 999999);
         <script>
             $.material.init();
             var O<?=$table_name?> = $('#<?=$table_name?>').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: '<?=$di->url->get('system/module/getdata');?>',
-                    type: 'POST'
-                },
-                language: (lang == 'th' ? {"sProcessing":"กำลังดำเนินการ...","sLengthMenu":"แสดง_MENU_ แถว","sZeroRecords":"ไม่พบข้อมูล","sInfo":"แสดง _START_ ถึง _END_ จาก _TOTAL_ แถว","sInfoEmpty":"แสดง 0 ถึง 0 จาก 0 แถว","sInfoFiltered":"(กรองข้อมูล _MAX_ ทุกแถว)","sInfoPostFix":"","sSearch":"ค้นหา:","sUrl":"","oPaginate":{"sFirst":"เิริ่มต้น","sPrevious":"ก่อนหน้า","sNext":"ถัดไป","sLast":"สุดท้าย"}}: ''),
-                dom: '<"#top">rt<"#bottom"ilp>',
-                columns: decode_json('<?php
-                /*
-                  'name' => '',
-                    'data' => [],
-                    'className' => null,
-                    'searchable' => false,
-                    'orderable' => true,
-                    'width' => null,
-                    'visible' => true,
-                    'title' => ''
-                 */
+                    processing: true,
+                    serverSide: true,
+                    ajax: {
+                        url: '<?=$burl.'getdata';?>',
+                        type: 'POST'
+                    },
+                    language: (lang == 'th' ? {
+                        "sProcessing": "กำลังดำเนินการ...",
+                        "sLengthMenu": "แสดง_MENU_ แถว",
+                        "sZeroRecords": "ไม่พบข้อมูล",
+                        "sInfo": "แสดง _START_ ถึง _END_ จาก _TOTAL_ แถว",
+                        "sInfoEmpty": "แสดง 0 ถึง 0 จาก 0 แถว",
+                        "sInfoFiltered": "(กรองข้อมูล _MAX_ ทุกแถว)",
+                        "sInfoPostFix": "",
+                        "sSearch": "ค้นหา:",
+                        "sUrl": "",
+                        "oPaginate": {
+                            "sFirst": "เิริ่มต้น",
+                            "sPrevious": "ก่อนหน้า",
+                            "sNext": "ถัดไป",
+                            "sLast": "สุดท้าย"
+                        }
+                    } : ''),
+                    dom: '<"#top">rt<"#bottom"ilp>',
+                    columns: decode_json('<?php
 
                     echo json_encode([
+                    ['name' => 'pk_id','data' => 'pk_id','orderable' => false, 'visible'=>false],
                     ['name' => 'MOD_ID','data' => 'MOD_ID','orderable' => false,'title' => 'รหัส'],
                     ['name' => 'MOD_PARENT_ID','data' => 'MOD_PARENT_ID','orderable' => true,'title' => $Lang->label('MOD_PARENT_ID')],
                     ['name' => 'MOD_ORDER','data' => 'MOD_ORDER','orderable' => true,'title' => $Lang->label('MOD_ORDER')],
                     ['name' => 'MOD_NAME_TH','data' => 'MOD_NAME_TH','orderable' => true,'title' => $Lang->label('MOD_NAME_TH')],
                     ['name' => 'MOD_NAME_EN','data' =>  'MOD_NAME_EN','orderable' => true,'title' => $Lang->label('MOD_NAME_EN')],
-                    ['name' => 'MOD_LEVEL','data' => 'MOD_LEVEL','orderable' => true,'title' => $Lang->label('MOD_LEVEL')],
-                    ['name' => 'MANAGE','data' => 'MANAGE','orderable' => false,'title' => $Lang->label('MANAGE')],
+                    ['name' => 'MOD_URL','data' => 'MOD_URL','orderable' => true,'title' => $Lang->label('MOD_URL')],
+//                    ['name' => 'MANAGE','data' => 'MANAGE','orderable' => false,'title' => $Lang->label('MANAGE')],
                     ]);
                 ?>')
+                }).on('init.dt', function () {
+                    $('#<?=$table_name?>_wrapper #top').html('')
+                        .append('<button type="button" id="ADD" class="btn btn-sm btn-primary"><i class="md-add"></i> <?=$Lang->label('ADD')?></button>')
+                        .append('<button type="button" id="EDIT" class="btn btn-sm btn-warning disabled"><i class="md-edit"></i> <?=$Lang->label('EDIT')?></button>')
+                        .append('<button type="button" id="DELETE" class="btn btn-sm btn-danger disabled"><i class="md-remove"></i> <?=$Lang->label('DELETE')?></button>');
+                    $('#<?=$table_name?>_wrapper #top').children().click(function () {
+                        var ID = 'main_tab';
+                        var manage = $(this).attr('id');
+                        var la = $(this).html();
+                        var murl = '';
+                        if (manage == 'DELETE') {
+                            murl = '<?=$burl?>setdata/' + manage;
+                        } else {
+                            murl = '<?=$burl?>getform/' + manage;
+                        }
+                        jQuery.ajax({
+                            type: "POST",
+                            url: murl,
+                            data: 'tablename=<?=$table_name?>&pk_id=' + (O<?=$table_name?>.row('.selected').length > 0 ? O<?=$table_name?>.row('.selected').data().pk_id : '' ),
+                            success: function (result) {
+                                if (manage == 'ADD' || manage == 'EDIT') {
+                                    if (manage == 'EDIT') {
+                                        //Set Label Tab
+                                        la += ' [' + O<?=$table_name?>.row('.selected').data().MOD_NAME_TH + ']';
+                                    }
+                                    var elm = add_tab(ID);
+                                    elm.tab.html(la);
+                                    elm.content.html(result);
+                                } else if (manage == 'DELETE') {
+                                    var res = decode_json(result);
+//                                        clog(res);
+                                    if (res.msg) {
+                                        alert(res.msg);
+                                    } else {
+                                        alert('ผิดพลาด!');
+                                    }
+                                    $('#<?=$table_name?>_wrapper #top #EDIT').add('#<?=$table_name?>_wrapper #top #DELETE').addClass('disabled');
+                                    O<?=$table_name?>.ajax.reload();
+                                }
+                            }
+                        });
+                    });
+                })
+                ;
+
+            $('#<?=$table_name?> tbody').on('click', 'tr', function () {
+                if ($(this).hasClass('selected')) {
+                    $(this).removeClass('selected');
+                    $('#<?=$table_name?>_wrapper #top #EDIT').add('#<?=$table_name?>_wrapper #top #DELETE').addClass('disabled');
+                } else {
+                    O<?=$table_name?>.$('tr.selected').removeClass('selected');
+                    $(this).addClass('selected');
+                    $('#<?=$table_name?>_wrapper #top #EDIT').add('#<?=$table_name?>_wrapper #top #DELETE').removeClass('disabled');
+                }
             });
 
 

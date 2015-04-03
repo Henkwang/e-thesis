@@ -23,20 +23,21 @@ class Sys_groupuser_model extends \EThesis\Library\Adodb
     var $lang = 'TH';
 
 
-    public function initialize()
+    public function __construct()
     {
         parent::__construct();
 
-        $this->adodb->debug = TRUE;
+        $this->adodb->debug = false;
 
-        $sess = \EThesis\Library\DIPhalcon::get('sess');
+        $sess = new \EThesis\Library\Session();
 
         $this->lang = strtoupper($sess->get('lang'));
 
         $this->date_current = $this->adodb->sysTimeStamp;
-        $this->user_access = ($sess->has('username') ? $sess->get('username') : '');
-        $this->user_group = ($sess->has('usergroup') ? $sess->get('usergroup') : '');
-        $this->user_type = ($sess->has('usertype') ? $sess->get('usertype') : '');
+        $this->user_access = $sess->get('username');
+        $this->user_type = $sess->get('usertype');
+
+//        print_r($this->user_access);
     }
 
     private function check_filter(array $filter)
@@ -112,7 +113,7 @@ class Sys_groupuser_model extends \EThesis\Library\Adodb
             }
         }
         $sql_field .= "RECORD_STATUS, CREATE_DATE, CREATE_USER, CREATE_USER_TYPE, LAST_DATE, LAST_USER, LAST_USER_TYPE";
-        $sql_value .= "'N','{$this->date_current}','{$this->user_access}','{$this->user_type}','{$this->date_current}','{$this->user_access}','{$this->user_type}'";
+        $sql_value .= "'N',{$this->date_current},'{$this->user_access}','{$this->user_type}',{$this->date_current},'{$this->user_access}','{$this->user_type}'";
         $sql = "INSERT INTO {$this->schema}.{$this->table} ({$sql_field}) VALUES ({$sql_value})";
         $sql .= ";";
         $result = $this->adodb->Execute($sql);
@@ -130,7 +131,7 @@ class Sys_groupuser_model extends \EThesis\Library\Adodb
                 $sql .= "{$field}='',";
             }
         }
-        $sql .= "LAST_DATE='{$this->date_current}', LAST_USER='{$this->user_access}', LAST_USER_TYPE='{$this->user_type}'";
+        $sql .= "LAST_DATE={$this->date_current}, LAST_USER='{$this->user_access}', LAST_USER_TYPE='{$this->user_type}'";
         $sql .= "WHERE {$this->primary}='$id'";
         $sql .= ";";
 
@@ -138,9 +139,11 @@ class Sys_groupuser_model extends \EThesis\Library\Adodb
         return $result;
     }
 
-    public function delete($id){
+    public function delete($id)
+    {
         $sql = "UPDATE  {$this->schema}.{$this->table} SET RECORD_STATUS='D' ";
-        $sql .= "LAST_DATE='{$this->date_current}', LAST_USER='{$this->user_access}', LAST_USER_TYPE='{$this->user_type}'";
+        $sql .= ",LAST_DATE={$this->date_current}, LAST_USER='{$this->user_access}', LAST_USER_TYPE='{$this->user_type}'";
+        $sql .= " WHERE {$this->primary}='$id'";
         $result = $this->adodb->Execute($sql);
         return $result;
     }
