@@ -65,3 +65,16 @@ if (!function_exists('datetime_to_sql')) {
 
     }
 }
+
+if (!function_exists('array_is_numeric')) {
+    function array_is_numeric(array $arr)
+    {
+       foreach($arr as $val){
+           if(!is_numeric($val)){
+               return false;
+           }
+       }
+        return true;
+
+    }
+}

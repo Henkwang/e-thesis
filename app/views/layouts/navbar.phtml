@@ -75,10 +75,12 @@ if ($di->session->get('auth') === true && is_numeric($di->session->get('grouplog
         .radio label {
             padding-left: 30px;
         }
+
         .checkbox label {
             padding-left: 10px;
 
         }
+
         .checkbox label span {
             padding-right: 5px;
         }
@@ -89,6 +91,26 @@ if ($di->session->get('auth') === true && is_numeric($di->session->get('grouplog
     </div>
 
     <script>
+
+        setInterval(function () {
+            $.ajax({
+                type: "POST",
+                url: "<?= $di->url->get('main/auth/get_checklogin/'.$di->session->get('key'));?>",
+                dataType: 'json',
+                success: function (result) {
+                    if (result.auth !== true) {
+                        alert('หมดเวลาการเข้าใช้งานระบบ (Session Time Out!!!)');
+                        window.location = '<?=$di->url->get()?>';
+                    }
+                },
+                error: function () {
+                    alert('หมดเวลาการเข้าใช้งานระบบ (Session Time Out!!!)');
+                    window.location = '<?=$di->url->get()?>';
+                }
+            });
+
+        }, (10 * 60 * 1000));
+
         function count_tab(ID) {
             var count = jQuery("#" + ID + " > ul > li").length;
             return count;
@@ -173,10 +195,13 @@ if ($di->session->get('auth') === true && is_numeric($di->session->get('grouplog
 
         window.onbeforeunload = function (e) {
             e = e || window.event;
-            if (e) {
-                e.returnValue = 'คุณแน่ใจว่าต้องการออกจากหน้านี้?';
+            if (count_tab('main_tab') > 0) {
+                if (e) {
+                    e.returnValue = 'คุณแน่ใจว่าต้องการออกจากหน้านี้?';
+                }
+                return 'คุณแน่ใจว่าต้องการออกจากหน้านี้?';
             }
-            return 'คุณแน่ใจว่าต้องการออกจากหน้านี้?';
+
         };
 
         function clog(print) {
@@ -228,7 +253,7 @@ if ($di->session->get('auth') === true && is_numeric($di->session->get('grouplog
 <?php
 } else {
     echo '<script>';
-    echo 'alert("หมดเวลาการเข้าใช้งานระบบ กรุณาลงชื่อเข้าใช้งานใหม่");';
+    echo 'alert("หมดเวลาการเข้าใช้งานระบบ (Session Time Out!!!");';
     echo 'window.location = "' . $di->url->get() . '"';
     echo '</script>';
 }

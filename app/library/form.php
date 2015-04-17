@@ -177,6 +177,7 @@ class Form
         $this->lang = $this->_session_class->get('lang');
         $this->_datamodel_class = new \EThesis\Controllers\Ajax\AutocompleteController();
         $this->add_input('pk_id', ['type' => Form::TYPE_HIDDEN, 'novalidate' => true]);
+        $this->_log_model = new \EThesis\Models\System\Sys_log_model();
 
     }
 
@@ -329,26 +330,79 @@ class Form
         }
         if ($set == 'add') {
             $result = $this->_set_model->insert($data);
-            $msg = ($result ? 'เพิ่มข้อมูลสำเร็จ' : 'ผิดพลาด! ไม่สามารถเพิ่มข้อมูลได้');
+            if ($result) {
+                $msg = 'เพิ่มข้อมูลสำเร็จ';
+                $this->_log_model->set(LOG_ADD_COMPLETE);
+            } else {
+                $msg = 'ผิดพลาด! ไม่สามารถเพิ่มข้อมูลได้';
+                $this->_log_model->set(LOG_ADD_ERROR);
+            }
+
         } else if ($set == 'edit') {
             if (empty($pk_id)) {
+                $this->_log_model->set(LOG_UPDATE_ERROR);
                 $msg = 'ผิดพลาด! ไม่สามารถแก้ไขข้อมูลได้';
             } else {
                 $result = $this->_set_model->update($data, $pk_id);
-//                print_r($result);
-                $msg = ($result ? 'แก้ไขข้อมูลสำเร็จ' : 'ผิดพลาด! ไม่สามารถแก้ไขข้อมูลได้');
+                if ($result) {
+                    $msg = 'แก้ไขข้อมูลสำเร็จ';
+                    $this->_log_model->set(LOG_UPDATE_COMPLETE);
+                } else {
+                    $msg = 'ผิดพลาด! ไม่สามารถแก้ไขข้อมูลได้';
+                    $this->_log_model->set(LOG_UPDATE_ERROR);
+                }
             }
         } else if ($set == 'delete') {
             if (empty($pk_id)) {
+                $this->_log_model->set(LOG_DELETE_USED);
                 $msg = 'ผิดพลาด! ไม่สามารถแก้ไขข้อมูลได้';
             } else {
                 $result = $this->_set_model->delete($pk_id);
-                $msg = ($result ? 'ลบข้อมูลสำเร็จ' : 'ผิดพลาด! ไม่สามารถลบข้อมูลได้');
+                if ($result) {
+                    $msg = 'แก้ไขข้อมูลสำเร็จ';
+                    $this->_log_model->set(LOG_DELETE_COMPLETE);
+                } else {
+                    $msg = 'ผิดพลาด! ไม่สามารถลบข้อมูลได้';
+                    $this->_log_model->set(LOG_DELETE_USED);
+                }
             }
         } else {
-            $msg = 'การเข้าถึงไม่ถูกต้อง หรือคุณอาจไม่ได้รับนุญาติใจการจัดการข้อมูล';
+            $msg = 'การเข้าถึงไม่ถูกต้อง หรือคุณอาจไม่ได้รับอนุญาติใจการจัดการข้อมูล';
         }
         return json_encode(['success' => !empty($result), 'msg' => $msg]);
+    }
+
+    public function set_responce($set, $ok)
+    {
+        if ($set == 'add') {
+            if ($ok) {
+                $msg = 'เพิ่มข้อมูลสำเร็จ';
+                $this->_log_model->set(LOG_ADD_COMPLETE);
+            } else {
+                $msg = 'ผิดพลาด! ไม่สามารถเพิ่มข้อมูลได้';
+                $this->_log_model->set(LOG_ADD_ERROR);
+            }
+        } else if ($set == 'edit') {
+            if ($ok) {
+                $msg = 'แก้ไขข้อมูลสำเร็จ';
+                $this->_log_model->set(LOG_UPDATE_COMPLETE);
+            } else {
+                $msg = 'ผิดพลาด! ไม่สามารถแก้ไขข้อมูลได้';
+                $this->_log_model->set(LOG_UPDATE_ERROR);
+            }
+        } else if ($set == 'delete') {
+            if ($ok) {
+                $msg = 'แก้ไขข้อมูลสำเร็จ';
+                $this->_log_model->set(LOG_DELETE_COMPLETE);
+            } else {
+                $msg = 'ผิดพลาด! ไม่สามารถลบข้อมูลได้';
+                $this->_log_model->set(LOG_DELETE_USED);
+            }
+        } else {
+            $ok = false;
+            $msg = 'ไม่มีการกระทำเกิดขึ้น';
+        }
+        return json_encode(['success' => $ok, 'msg' => $msg]);
     }
 
 
@@ -530,16 +584,20 @@ class Form
         $div_attr['class'] = ['col-xs-' . $param['col'], 'col-xs-offset-' . $param['offset'], 'padding-mini'];
         $attr = $param['attr'];
         $attr['type'] = Form::TYPE_TEXT;
-        $attr['id'] = $input_name;
+        $attr['id'] = 'textfile_' . $input_name;
         $attr['name'] = 'textfile_' . $input_name;
         $attr['readonly'] = true;
         $attr['placeholder'] = (empty($attr['placeholder']) ? 'ไฟล์' : $attr['placeholder']);
         $attr['value'] = $param['value'];
         $attr['class'] = [$param['class_default'], $param['class'], 'floating-label'];
-
+        $type_upload = array_values($this->file_ext[$param['filetype']]);
+        $accept = '';
+        if (!empty($type_upload)) {
+            $accept = 'accept="' . implode(',', $type_upload) . '"';
+        }
         $html = '<div ' . $this->join_attr($div_attr) . '>'
             . '<input ' . $this->join_attr($attr) . '/>'
-            . '<input type="file" id="' . $input_name . '" name="' . $input_name . '" ' . ($attr['multiple'] ? 'multiple=""' : '') . ' style="cursor:pointer">'
+            . '<input type="file" ' . $accept . ' id="' . $input_name . '" name="' . $input_name . '" ' . ($attr['multiple'] ? 'multiple=""' : '') . ' style="cursor:pointer">'
             . '</div>'
 //            . '<script>'
 //            . '$(\'#' . $input_name . '\').bind(\'change\', function(){'
@@ -550,6 +608,7 @@ class Form
         $this->check_validation($input_name, $param);
         return $html;
     }
+
 
     private function _input_datetime($input_name, array $param = array())
     {

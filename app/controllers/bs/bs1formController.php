@@ -20,13 +20,14 @@ class bs1formController extends \Phalcon\Mvc\Controller
     private $_lang = 'th';
 
 
-    public function initialize(){
+    public function initialize()
+    {
         $this->lang_class = new \EThesis\Library\Lang();
         $this->_lang = $this->session->get('lang');
-        if($this->session->get('auth') !== TRUE){
+        if ($this->session->get('auth') !== TRUE) {
             die('false');
         }
-                //print_r($this->init_class[sess]->get());
+        //print_r($this->init_class[sess]->get());
     }
 
     public function indexAction()
@@ -43,23 +44,6 @@ class bs1formController extends \Phalcon\Mvc\Controller
         $this->view->pick('/bs/bs1_form_00');
         $this->logs->set(LOG_OPEN_PAGE);
 
-    }
-
-
-    public function setdata($manage = false, $pk_id = false)
-    {
-        if ($manage <> FALSE) {
-            if ($manage == 'add') {
-
-            } else if ($manage == 'edit') {
-
-            }else if($manage == 'delete'){
-
-            }
-
-        } else {
-            echo Libcontrol::BACKEND_RESPONCE(['set' => FALSE]);
-        }
     }
 
 
@@ -112,19 +96,76 @@ class bs1formController extends \Phalcon\Mvc\Controller
         }
     }
 
-    public function setdataAction(){
-        print_r($_POST);
+    public function setdataAction($set = '')
+    {
+//        print_r($_POST);return;
+        if (!empty($set)) {
+            $data = $_POST;
+            $bs1_master = [];
+            $bs1_award = [];
+            $bs1_research = [];
+            $form = $this->_get_config();
+
+            //Set Data
+            //Data Model Bs1_Master
+            foreach ($data as $key => $val) {
+                if (!in_array($key, ['MORE_RESEARCH_NAME', 'AWARD_NAME', 'AWARD_YEAR'])) {
+                    if (is_array($val)) {
+                        $bs1_master[$key] = implode(',', $val);
+                    } else {
+                        $bs1_master[$key] = $val;
+
+                    }
+                }
+            }
+//            print_r($bs1_master);
+            if ($set == 'add') {
+//                print_r(implode(',',array_keys($bs1_master)));
+                $bs1_model = new \EThesis\Models\Bs\Bs1_master_model();
+//                $bs1_model->adodb->debug = true;
+                $bs1_model->adodb->BeginTrans();
+                $result = $bs1_model->insert($bs1_master);
+//                print_r($result);
+                $ok = $result && true;
+                if ($ok) {
+                    $bs1_id = $bs1_model->get_last_id();
+//                    print_r($bs1_id);
+                    //Data Model BS1_Research
+                    $research_model = new \EThesis\Models\Bs\Bs1_research_model();
+                    foreach ($data['MORE_RESEARCH_NAME'] as $val) {
+                        $ok = $ok && $research_model->insert([
+                                'BS1_ID' => $bs1_id,
+                                'BS1_RESEARCH_NAME_TH' => $val,
+                                'BS1_RESEARCH_NAME_EN' => $val
+                            ]);
+                    }
+                    //Data Model BS1_Award
+                    $award_model = new \EThesis\Models\Bs\Bs1_award_model();
+                    foreach ($data['AWARD_NAME'] as $i => $val) {
+                        $ok = $ok && $award_model->insert([
+                                'BS1_ID' => $bs1_id,
+                                'BS1_AWARD_NAME_TH' => $val,
+                                'BS1_AWARD_NAME_EN' => $val,
+                                'BS1_AWARD_YEAR' => $data['AWARD_YEAR'][$i]
+                            ]);
+                    }
+                }
+                $bs1_model->adodb->CommitTrans($ok);
+                echo $form->set_responce($set, $ok);
+            }
+        }
     }
+
 
     private function _get_config()
     {
         $form = new Form();
         $form->param_default['col'] = 12;
 
-        $form->set_urlset($this->url->get('bs/bs1form/setdata/'));
-        $form->set_model(new \EThesis\Models\Bs\Bs1_model());
+        $form->set_urlset($this->url->get('bs/bs1form/setdata/add/'));
+        $form->set_model(new \EThesis\Models\Bs\Bs1_master_model());
 
-        $form->param_default['required'] = false;
+        $form->param_default['required'] = true;
 
 
         $form->add_input('OK', [
@@ -137,6 +178,12 @@ class bs1formController extends \Phalcon\Mvc\Controller
         /*
          * ประวัติส่วนหัว
          */
+        $form->add_input('PERSON_IMAGE', [
+            'type' => Form::TYPE_FILE,
+            'filesize' => 2,
+            'filetype' => 'image',
+//            'novalidate' => true,
+        ]);
 
         $form->add_input('ACAD_YEAR', [
             'type' => Form::TYPE_NUMBER,
@@ -278,6 +325,7 @@ class bs1formController extends \Phalcon\Mvc\Controller
             'type' => Form::TYPE_CHECKBOX,
             'data' => ['M' => 'ตีพิมพ์ในวารสาร', 'A' => 'เสนอต่อที่ประชุมวิชาการ'],
             'novalidate' => true,
+            'required' => false,
         ]);
         $form->add_input('PRESENT_ACADEMIC_YEAR', [
             'type' => Form::TYPE_NUMBER,
@@ -401,46 +449,53 @@ class bs1formController extends \Phalcon\Mvc\Controller
         ]);
 
 
-
+        $form->add_input('ADVISER_TYPE_ID', [
+            'type' => Form::TYPE_RADIO,
+            'datalang' => 'ADVISER_TYPE_ID'
+        ]);
         $form->add_input('CK_POSITION_ID', [
             'type' => Form::TYPE_SELECT,
             'label' => 'ตรวจสอบแล้วเป็นพนังงานมหาวิทยาลัยตามสัญญาจ้างตำแหน่ง ',
+            'required' => false,
             'datamodel' => 'HRD_POSITION'
         ]);
+
         $form->add_input('CK_START_DATE', [
             'type' => Form::TYPE_DATE,
+            'required' => false,
             'label' => 'ตั้งแต่วันที่'
         ]);
         $form->add_input('CK_END_DATE', [
             'type' => Form::TYPE_DATE,
+            'required' => false,
             'label' => 'ถึงวันที่'
         ]);
-
-
-        $form->add_input('CK_POSITION_ID', [
-            'type' => Form::TYPE_SELECT,
-            'label' => 'ตรวจสอบแล้วเป็นพนังงานมหาวิทยาลัยตามสัญญาจ้างตำแหน่ง ',
-            'datamodel' => 'HRD_POSITION'
+        $form->add_input('PERSON_CONTRACT_FILE', [
+            'type' => Form::TYPE_FILE,
+            'filesize' => 10,
+            'filetype' => 'pdf',
+            'label' => 'ไฟล์สัญญาจ้าง (PDF)'
         ]);
+
 
 
         $form->add_input('POP_INS_ID', [
-            'type' => Form::TYPE_SELECT,
+            'type' => Form::TYPE_RADIO,
             'datalang' => 'POP_INS_ID',
             'required' => false,
         ]);
         $form->add_input('POP_HEAD_THESIS_ID', [
-            'type' => Form::TYPE_SELECT,
+            'type' => Form::TYPE_RADIO,
             'required' => false,
             'datalang' => 'POP_HEAD_THESIS_ID'
         ]);
         $form->add_input('POP_COM_THESIS_ID', [
-            'type' => Form::TYPE_SELECT,
+            'type' => Form::TYPE_RADIO,
             'required' => false,
             'datalang' => 'POP_COM_THESIS_ID'
         ]);
         $form->add_input('POP_INS_IS_ID', [
-            'type' => Form::TYPE_SELECT,
+            'type' => Form::TYPE_RADIO,
             'required' => false,
             'datalang' => 'POP_INS_IS_ID'
         ]);

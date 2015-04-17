@@ -9,7 +9,31 @@
             <br>
         </div>
 
-        <div id="main_bs1">
+        <div class="row" id="main_bs1">
+            <div class="row-picture" style="position: absolute" id="picprofile">
+                <img style="height: 200px;width: auto;border: 1px solid #a4b4bc"/>
+
+                <div class="form-group">
+                    <div class="col-xs-12">
+                        {{ input['PERSON_IMAGE'] }}
+                    </div>
+                </div>
+
+            </div>
+            <script>
+                var url_noimg = base_url + 'public/resource/img/no_image.png';
+                $('#{{ formname }} #picprofile img').attr('src', url_noimg);
+
+                $('#{{ formname }} #PERSON_IMAGE').change(function () {
+                    var oFReader = new FileReader();
+                    oFReader.readAsDataURL(document.getElementById("PERSON_IMAGE").files[0]);
+                    oFReader.onload = function (oFREvent) {
+                        $('#{{ formname }} #picprofile img').attr('src', oFREvent.target.result);
+                    };
+
+                });
+            </script>
+
             <div class="form-group">
                 <div class="col-xs-offset-3 col-xs-4">
                     <div class="input-group">
@@ -17,7 +41,7 @@
                         {{ input['ACAD_YEAR'] }}
                     </div>
                 </div>
-                <div class="col-xs-4">
+                <div class="col-xs-offset-3 col-xs-4">
                     <div class="input-group">
                         {{ labelgroup['ASEAN_STATUS'] }}
                         {{ input['ASEAN_STATUS'] }}
@@ -33,6 +57,19 @@
                     </div>
                 </div>
             </div>
+            <script>
+                $('#{{ formname }} input[name=ADVISER_STATUS]').change(function () {
+                    if ($(this).val() == 'A') {
+                        $('#{{ formname }} a[href="#bs1_0071"]').parent().show();
+                    } else {
+                        $('#{{ formname }} a[href="#bs1_0071"]').parent().hide();
+                        if ($('#{{ formname }} a[href="#bs1_0071"]').parent().attr('class') == 'active') {
+                            $('#{{ formname }} a[href="#bs1_001"]').click();
+                        }
+                    }
+                });
+            </script>
+
 
             <div class="form-group">
                 <div class="col-xs-offset-3 col-xs-6">
@@ -94,7 +131,7 @@
     <li class=""><a href="#bs1_004" data-toggle="tab">ผลงานทางวิชาการ</a></li>
     <li class=""><a href="#bs1_005" data-toggle="tab">งานวิจัยที่สนใจหรือตำเนินอยู่</a></li>
     <li class=""><a href="#bs1_006" data-toggle="tab">รางวัลหรือเกียรติคุณ</a></li>
-    <li class=""><a href="#bs1_0071" data-toggle="tab">สัญญาจ้าง</a></li>
+    <li class="" style="display: none"><a href="#bs1_0071" data-toggle="tab">สัญญาจ้าง</a></li>
     <li class=""><a href="#bs1_0072" data-toggle="tab">คุณสมบัติ</a></li>
     <li class=""><a href="#bs1_END" data-toggle="tab">บันทึกข้อมูล</a></li>
 </ul>
@@ -356,7 +393,7 @@
                     </div>
                 </div>
 
-                <div id="PRE_ACAD">
+                <div id="PRE_ACAD" style="display: none">
 
                     <div class="row">
                         <div class="col-xs-4">
@@ -466,7 +503,7 @@
                 </div>
             </div>
             <div class="col-xs-4">
-                <div class="form-group">
+                <div class="form-group" id="PRE_EXPERIENCE" style="display: none">
                     <div class="input-group">
                         {{ labelgroup['PRESENT_ACADEMIC_IS_EXPERIENCE_YEAR'] }}
                         {{ input['PRESENT_ACADEMIC_IS_EXPERIENCE_YEAR'] }}
@@ -500,14 +537,14 @@
                         </div>
                     </div>
                 </div>
-                <div class="row" id="row_MORE_RESEARCH_NAME_0">
+                <div class="row" id="row_MORE_RESEARCH_NAME_0" style="display: none">
                     <div class="col-xs-12">
                         <div class="form-group">
                             <div class="input-group">
                                 {{ labelgroup['MORE_RESEARCH_NAME[]'] }}
                                 {{ input['MORE_RESEARCH_NAME[]'] }}
                                 <span class="input-group-addon">
-                                    <a class="btn  btn-success btn-link"
+                                    <a class="btn btn-success btn-flat"
                                        href="javascript:man_input(0 ,'MORE_RESEARCH_NAME')">
                                         <i class="md-add-circle"></i>
                                     </a>
@@ -549,7 +586,7 @@
                     </div>
                 </div>
 
-                <div class="row" id="row_AWARD_0">
+                <div class="row" id="row_AWARD_0" style="display: none">
                     <div class="col-xs-8">
                         <div class="form-group">
                             <div class="input-group">
@@ -564,7 +601,7 @@
                                 {{ labelgroup['AWARD_YEAR[]'] }}
                                 {{ input['AWARD_YEAR[]'] }}
                                 <span class="input-group-addon">
-                                    <a class="btn btn-success btn-link" href="javascript:man_input(0 ,'AWARD')">
+                                    <a class="btn btn-success btn-flat" href="javascript:man_input(0 ,'AWARD')">
                                         <i class="md-add-circle"></i>
                                     </a>
                                 </span>
@@ -592,37 +629,66 @@
     <div class="col-xs-12">
         <div class="row">
             <div class="col-xs-12 col-lg-10 col-lg-offset-1">
-
                 <div class="row">
                     <div class="col-xs-12">
                         <div class="form-group">
                             <div class="input-group">
-                                {{ labelgroup['CK_POSITION_ID'] }}
-                                {{ input['CK_POSITION_ID'] }}
+                                {{ labelgroup['ADVISER_TYPE_ID'] }}
+                                {{ input['ADVISER_TYPE_ID'] }}
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <div class="row">
-                    <div class="col-xs-6">
-                        <div class="form-group">
-                            <div class="input-group">
-                                {{ labelgroup['CK_START_DATE'] }}
-                                {{ input['CK_START_DATE'] }}
+                <script>
+                    $('#{{ formname }} input[name=ADVISER_TYPE_ID]').change(function () {
+                        if ($(this).val() == 1) {
+                            $('#{{ formname }} #CK_AVD').hide();
+                        } else {
+                            $('#{{ formname }} #CK_AVD').show();
+                        }
+                    });
+                </script>
+                <div id="CK_AVD" style="display: none">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    {{ labelgroup['CK_POSITION_ID'] }}
+                                    {{ input['CK_POSITION_ID'] }}
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-xs-6">
-                        <div class="form-group">
-                            <div class="input-group">
-                                {{ labelgroup['CK_END_DATE'] }}
-                                {{ input['CK_END_DATE'] }}
+
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    {{ labelgroup['CK_START_DATE'] }}
+                                    {{ input['CK_START_DATE'] }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-6">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    {{ labelgroup['CK_END_DATE'] }}
+                                    {{ input['CK_END_DATE'] }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    {{ labelgroup['PERSON_CONTRACT_FILE'] }}
+                                    {{ input['PERSON_CONTRACT_FILE'] }}
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -652,7 +718,7 @@
                                 {{ input['POP_INS_ID'] }}
                             </div>
                         </div>
-                        <p style="display: none" class="text-muted text-left" id="detail_POP_INS_ID"></p>
+                        <p style="display: none" class="text-primary text-left" id="detail_POP_INS_ID"></p>
                     </div>
                 </div>
                 <div class="row">
@@ -663,7 +729,7 @@
                                 {{ input['POP_HEAD_THESIS_ID'] }}
                             </div>
                         </div>
-                        <p style="display: none" class="text-muted text-left" id="detail_POP_HEAD_THESIS_ID"></p>
+                        <p style="display: none" class="text-primary text-left" id="detail_POP_HEAD_THESIS_ID"></p>
                     </div>
                 </div>
                 <div class="row">
@@ -674,7 +740,7 @@
                                 {{ input['POP_COM_THESIS_ID'] }}
                             </div>
                         </div>
-                        <p style="display: none" class="text-muted text-left" id="detail_POP_COM_THESIS_ID"></p>
+                        <p style="display: none" class="text-primary text-left" id="detail_POP_COM_THESIS_ID"></p>
                     </div>
                 </div>
                 <div class="row">
@@ -685,7 +751,7 @@
                                 {{ input['POP_INS_IS_ID'] }}
                             </div>
                         </div>
-                        <p style="display: none" class="text-muted text-left" id="detail_POP_INS_IS_ID"></p>
+                        <p style="display: none" class="text-primary text-left" id="detail_POP_INS_IS_ID"></p>
                     </div>
                 </div>
                 {#<div class="row">#}
@@ -754,7 +820,7 @@
                     }
 
                     $(document).ready(function () {
-                        $('#{{ formname }} #POP_INS_ID').change(function () {
+                        $('#{{ formname }} input[name="POP_INS_ID"]').change(function () {
                             var e = $('#{{ formname }} #detail_POP_INS_ID');
                             e.show();
                             switch ($(this).val()) {
@@ -773,7 +839,7 @@
                                     break;
                             }
                         });
-                        $('#{{ formname }} #POP_HEAD_THESIS_ID').change(function () {
+                        $('#{{ formname }} input[name="POP_HEAD_THESIS_ID"]').change(function () {
                             var e = $('#{{ formname }} #detail_POP_HEAD_THESIS_ID');
                             e.show();
                             switch ($(this).val()) {
@@ -791,7 +857,7 @@
                                     break;
                             }
                         });
-                        $('#{{ formname }} #POP_COM_THESIS_ID').change(function () {
+                        $('#{{ formname }} input[name="POP_COM_THESIS_ID"]').change(function () {
                             var e = $('#{{ formname }} #detail_POP_COM_THESIS_ID');
                             e.show();
                             switch ($(this).val()) {
@@ -809,7 +875,7 @@
                                     break;
                             }
                         });
-                        $('#{{ formname }} #POP_INS_IS_ID').change(function () {
+                        $('#{{ formname }} input[name="POP_INS_IS_ID"]').change(function () {
                             var e = $('#{{ formname }} #detail_POP_INS_IS_ID');
                             e.show();
                             switch ($(this).val()) {
@@ -862,7 +928,7 @@
 
 <script>
     var num_moreinput = {};
-    $(':input').change(function(){
+    $(':input').change(function () {
         $('#{{ formname }} #OK').removeClass('disable');
     });
 
@@ -889,8 +955,18 @@
                         url: $form.attr('action'),
                         type: 'POST',
                         data: $form.serialize(),
+                        dataType: 'json',
                         success: function (result) {
                             // ... Process the result ...
+                            if (result.success) {
+                                alert(result.msg);
+                            } else {
+                                alert(result.msg);
+                            }
+                        },
+                        error: function ($msg) {
+                            alert('ผิดพลาด! การกระทำนี้ไม่ถูกต้อง');
+                            window.location = base_url + 'main';
                         }
                     });
                 });
@@ -949,6 +1025,14 @@
                 jQuery('#{{ formname }} #PRE_ACAD').hide();
             }
         });
+        // ผลงานวิจัยที่พิมพ์เผยแพร่หลังสำเร็จ
+        $('#{{ formname }} input[name="PRESENT_ACADEMIC_IS_EXPERIENCE"]').change(function () {
+            if ($(this).val() == 'T') {
+                jQuery('#{{ formname }} #PRE_EXPERIENCE').show();
+            } else {
+                jQuery('#{{ formname }} #PRE_EXPERIENCE').hide();
+            }
+        });
 
     });
 
@@ -960,6 +1044,7 @@
             elm.attr('id', 'row_' + id + '_' + inputnum.toString());
             elm.find('a').first().attr('href', "javascript:man_input(" + inputnum.toString() + ",'" + id + "');").removeClass('btn-success').addClass('btn-danger');
             elm.find('a').first().find('i').first().attr('class', 'md-remove-circle');
+            elm.find('input').val('');
             var elmsp = elm.find('div span[class="input-group-addon"]').first();
             elmsp.html((parseFloat(elmsp.text()) + (parseFloat(inputnum) / 10.0)).toFixed(1).toString());
             inputnum++;

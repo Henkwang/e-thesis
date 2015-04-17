@@ -3,17 +3,19 @@
 namespace EThesis\Models\Bs;
 
 
-class Bs1_model extends \EThesis\Library\Adodb
+class Bs1_award_model extends \EThesis\Library\Adodb
 {
 
-    var $schema = 'system';
-    var $table = 'SYS_GROUP_PERMIS';
-    var $primary = 'PMS_ID';
+    var $schema = 'dbo';
+    var $table = 'BS1_AWARD';
+    var $primary = 'BS1_AWARD_ID';
 
     var $use_view = FALSE;
 
-    var $field_insert = ['GRD_ID', 'MOD_ID', 'PMD_ADD', 'PMD_EDIT', 'PMD_DELETE'];
-    var $field_update = ['GRD_ID', 'MOD_ID', 'PMD_ADD', 'PMD_EDIT', 'PMD_DELETE'];
+    var $field_insert = ['BS1_ID','BS1_AWARD_NAME_TH','BS1_AWARD_NAME_EN','BS1_AWARD_YEAR'];
+    var $field_update = ['BS1_ID','BS1_AWARD_NAME_TH','BS1_AWARD_NAME_EN','BS1_AWARD_YEAR'];
+
+    var $select_and_field = ['BS1_ID','BS1_AWARD_NAME_TH','BS1_AWARD_NAME_EN','BS1_AWARD_YEAR'];
 
     var $date_current;
     var $user_access;
@@ -21,7 +23,7 @@ class Bs1_model extends \EThesis\Library\Adodb
     var $user_type;
 
 
-    public function initialize()
+    public function __construct()
     {
         parent::__construct();
 
@@ -37,18 +39,20 @@ class Bs1_model extends \EThesis\Library\Adodb
 
     private function check_filter(array $filter)
     {
-        $sql = "RECORD_STATUS='N'";
+        $sql = "RECORD_STATUS ='N'";
         if (empty($filter)) {
 
         } else if (is_array($filter)) {
-            $sql .= (isset($filter['GRD_ID']) ? " AND GRD_ID IN ({$filter['GRD_ID']})" : '');
-            $sql .= (isset($filter['MOD_ID']) ? " AND MOD_ID IN ({$filter['MOD_ID']})" : '');
-            $sql .= (isset($filter['PMD_ADD']) ? " AND PMD_ADD = '{$filter['PMD_ADD']}'" : '');
-            $sql .= (isset($filter['PMD_EDIT']) ? " AND PMD_EDIT = '{$filter['PMD_EDIT']}'" : '');
-            $sql .= (isset($filter['PMD_DELETE']) ? " AND PMD_DELETE = '{$filter['PMD_DELETE']}'" : '');
-
+            foreach ($this->select_and_field as $val) {
+                if (!empty($filter[$val])) {
+                    $sql .= " AND {$val}='{$filter[$val]}'";
+                }
+            }
             $sql .= (isset($filter['IN_ID']) ? " AND {$this->primary} IN ({$filter['IN_ID']})" : '');
             $sql .= (isset($filter['NOT_IN_ID']) ? " AND {$this->primary} NOT IN ({$filter['IN_ID']})" : '');
+
+            $sql .= (!empty($filter['SQL']) ? " AND {$filter['SQL']}" : '');
+            $sql .= (!empty($filter['AUTO']) ? " AND {$filter['AUTO']}" : '');
 
         }
         return $sql;
@@ -75,6 +79,13 @@ class Bs1_model extends \EThesis\Library\Adodb
         return $result;
     }
 
+    public function get_last_id()
+    {
+        $sql = "SELECT IDENT_CURRENT('{$this->schema}.{$this->table}')";
+        return $this->adodb->GetOne($sql);
+    }
+
+
     public function insert(array $arrInsert)
     {
         $sql_field = '';
@@ -82,11 +93,11 @@ class Bs1_model extends \EThesis\Library\Adodb
         foreach ($this->field_insert as $field) {
             if (isset($arrInsert[$field])) {
                 $sql_field .= "{$field},";
-                $sql_value .= "'{$arrInsert[$field]}',";
+                $sql_value .= "'" . str_replace("'", "''", $arrInsert[$field]) . "',";
             }
         }
-        $sql_field .= "RECORD_STATUS, CREATE_DATE, CREATE_USER, CREATE_GROUP, LAST_DATE, LAST_USER, LAST_GROUP";
-        $sql_value .= "'N','{$this->date_current}','{$this->user_access}','{$this->user_group}','{$this->date_current}','{$this->user_access}','{$this->user_group}'";
+        $sql_field .= "RECORD_STATUS, LAST_DATE";
+        $sql_value .= "'N',{$this->date_current}";
         $sql = "INSERT INTO {$this->schema}.{$this->table} ({$sql_field}) VALUES ({$sql_value})";
         $sql .= ";";
         $result = $this->adodb->Execute($sql);
@@ -99,12 +110,12 @@ class Bs1_model extends \EThesis\Library\Adodb
         $sql = "UPDATE {$this->schema}.{$this->table} SET ";
         foreach ($this->field_update as $field) {
             if (isset($arrUpdate[$field])) {
-                $sql .= "{$field}='{$arrUpdate[$field]}',";
+                $sql .= "{$field}='" . str_replace("'", "''", $arrUpdate[$field]) . "',";
             } else {
                 $sql .= "{$field}='',";
             }
         }
-        $sql .= "LAST_DATE='{$this->date_current}', LAST_USER='{$this->user_access}', LAST_GROUP='{$this->user_group}'";
+        $sql .= "LAST_DATE={$this->date_current}";
         $sql .= "WHERE {$this->primary}='$id'";
         $sql .= ";";
 
@@ -112,9 +123,10 @@ class Bs1_model extends \EThesis\Library\Adodb
         return $result;
     }
 
-    public function delete($id){
+    public function delete($id)
+    {
         $sql = "UPDATE  {$this->schema}.{$this->table} SET RECORD_STATUS='D' ";
-        $sql .= "LAST_DATE='{$this->date_current}', LAST_USER='{$this->user_access}', LAST_USER_TYPE='{$this->user_type}'";
+        $sql .= "LAST_DATE={$this->date_current}";
         $result = $this->adodb->Execute($sql);
         return $result;
     }

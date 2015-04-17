@@ -258,11 +258,13 @@ class AuthController extends \Phalcon\Mvc\Controller
         echo json_encode(['auth' => FALSE]);
     }
 
-    function get_loginAction()
+    function get_checkloginAction($skey = '')
     {
         $response = ['auth' => FALSE];
-        if ($this->session->get('auth') == TRUE) {
-            $response['auth'] = TRUE;
+        if($skey == $this->session->get('key')){
+            if ($this->session->get('auth') == TRUE) {
+                $response['auth'] = TRUE;
+            }
         }
         echo json_encode($response);
     }
