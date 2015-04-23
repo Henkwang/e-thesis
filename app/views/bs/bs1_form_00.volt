@@ -23,7 +23,6 @@
             <script>
                 var url_noimg = base_url + 'public/resource/img/no_image.png';
                 $('#{{ formname }} #picprofile img').attr('src', url_noimg);
-
                 $('#{{ formname }} #PERSON_IMAGE').change(function () {
                     var oFReader = new FileReader();
                     oFReader.readAsDataURL(document.getElementById("PERSON_IMAGE").files[0]);
@@ -35,10 +34,11 @@
             </script>
 
             <div class="form-group">
-                <div class="col-xs-offset-3 col-xs-4">
+                <div class="col-xs-offset-3 col-xs-6">
                     <div class="input-group">
                         {{ labelgroup['ACAD_YEAR'] }}
                         {{ input['ACAD_YEAR'] }}
+                        {{ input['pk_id'] }}
                     </div>
                 </div>
                 <div class="col-xs-offset-3 col-xs-4">
@@ -113,10 +113,10 @@
 </div>
 
 <p class="text-center">
-    <a href="javascript:$('#main_bs1').slideUp();$('#main_bs1_up').hide();$('#main_bs1_down').show();" id="main_bs1_up"
+    <a onclick="$('#main_bs1').slideUp();$('#main_bs1_up').hide();$('#main_bs1_down').show();" id="main_bs1_up"
        class="btn btn-fab btn-fab-mini"><i class="md-keyboard-arrow-up"></i></a>
     <a style="display: none"
-       href="javascript:$('#main_bs1').slideDown();$('#main_bs1_down').hide();$('#main_bs1_up').show();"
+       onclick="$('#main_bs1').slideDown();$('#main_bs1_down').hide();$('#main_bs1_up').show();"
        id="main_bs1_down" class="btn btn-fab btn-fab-mini"><i class="md-keyboard-arrow-down"></i></a>
 </p>
 
@@ -959,6 +959,7 @@
                         success: function (result) {
                             // ... Process the result ...
                             if (result.success) {
+                                $('#{{ formname }} #pk_id').val(result.pk_id);
                                 alert(result.msg);
                             } else {
                                 alert(result.msg);
@@ -983,6 +984,7 @@
 //                    clog(result);
                     $.each(result, function (k, v) {
                         $('#' + k).val(v).change();
+                        $('#{{ formname }}').formValidation('revalidateField', k);
                     });
                     $('#{{ formname }} #MAX_DEGREE_ID_v' + result.MAX_DEGREE_ID).click();//                    clog(result);
                 }

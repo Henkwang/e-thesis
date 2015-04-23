@@ -35,6 +35,8 @@ class TestController extends \Phalcon\Mvc\Controller
             'filetype' => 'image'
         ]);
 
+        $form->url_set = ($this->url->get('bs/test/setdata'));
+
         $this->view->enable();
         $this->view->setVar('di', $this);
         $this->view->setVars($form->get_form());
@@ -43,6 +45,15 @@ class TestController extends \Phalcon\Mvc\Controller
 
         $this->logs->set(LOG_OPEN_PAGE);
 
+    }
+
+    public function setdataAction()
+    {
+        print_r($_POST);
+        $form = new Form();
+//        $upload = $form->upload_file($_FILES[0], 'bs1');
+//        print_r($upload);
+        print_r($_FILES);
     }
 
 

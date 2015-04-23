@@ -1,20 +1,54 @@
-<form id="{{ formname }}" action="{{ action }}" role="form" class="form-horizontal" method="post">
+<form id="{{ formname }}" action="{{ action }}" role="form" method="post" class="form-horizontal"
+      enctype="multipart/form-data"
+      method="post">
     {{ input['pk_id'] }}
     <div class="row">
-        <div class="form-group">
-            <div class="col-xs-12 col-lg-10 col-lg-offset-1">
-                {{ input['UPLOAD'] }}
+        <div class="col-xs-offset-4 col-xs-4">
+            <div class="row">
+                <div class="row-picture" id="picprofile">
+                    <img style="height: 200px;width: auto;border: 1px solid #a4b4bc"/>
+
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            {{ input['UPLOAD'] }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <button type="submit" name="add">Add</button>
             </div>
         </div>
     </div>
+
+    <script>
+        var url_noimg = base_url + 'public/resource/img/no_image.png';
+        $('#{{ formname }} #picprofile img').attr('src', url_noimg);
+        $('#{{ formname }} #UPLOAD').change(function () {
+            var oFReader = new FileReader();
+            oFReader.readAsDataURL(document.getElementById("UPLOAD").files[0]);
+            oFReader.onload = function (oFREvent) {
+                $('#{{ formname }} #picprofile img').attr('src', oFREvent.target.result);
+            };
+        });
+    </script>
 </form>
 
 <script>
     $.material.init();
     {{ valid }}
 
-    $('#{{ formname }} #UPLOAD').bind('change', function () {
-//        alert('hhh');
-        {#$('#{{ formname }}').formValidation('revalidateField', 'UPLOAD');#}
+    $("#{{ formname }}")
+            .on('err.form.fv', function (e) {
+                e.preventDefault();
+                alert('กรอกข้อมูลไม่ครบถ้วน กรุณาตรวจสอบ');
+            });
+
+    $('#{{ formname }}').ajaxForm({
+        complete: function () {
+            alert('สำเร็จ');
+        }
     });
+
+
 </script>

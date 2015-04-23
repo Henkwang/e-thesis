@@ -151,7 +151,10 @@ class bs1formController extends \Phalcon\Mvc\Controller
                     }
                 }
                 $bs1_model->adodb->CommitTrans($ok);
-                echo $form->set_responce($set, $ok);
+
+                $response =  $form->set_responce($set, $ok);
+                $response['pk_id'] = $bs1_id;
+                echo json_decode($response);
             }
         }
     }
