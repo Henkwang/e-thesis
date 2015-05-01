@@ -108,6 +108,9 @@ class bs1formController extends \Phalcon\Mvc\Controller
 
             //Set Data
             //Data Model Bs1_Master
+            $data['MAX_GRADUATE_DATE'] = datetime_to_sql($data['MAX_GRADUATE_DATE']);
+            $data['CK_START_DATE'] = datetime_to_sql($data['CK_START_DATE']);
+            $data['CK_END_DATE'] = datetime_to_sql($data['CK_END_DATE']);
             foreach ($data as $key => $val) {
                 if (!in_array($key, ['MORE_RESEARCH_NAME', 'AWARD_NAME', 'AWARD_YEAR'])) {
                     if (is_array($val)) {
@@ -120,43 +123,234 @@ class bs1formController extends \Phalcon\Mvc\Controller
             }
 //            print_r($bs1_master);
             if ($set == 'add') {
-//                print_r(implode(',',array_keys($bs1_master)));
-                $bs1_model = new \EThesis\Models\Bs\Bs1_master_model();
-//                $bs1_model->adodb->debug = true;
-                $bs1_model->adodb->BeginTrans();
-                $result = $bs1_model->insert($bs1_master);
-//                print_r($result);
-                $ok = $result && true;
-                if ($ok) {
-                    $bs1_id = $bs1_model->get_last_id();
-//                    print_r($bs1_id);
-                    //Data Model BS1_Research
-                    $research_model = new \EThesis\Models\Bs\Bs1_research_model();
-                    foreach ($data['MORE_RESEARCH_NAME'] as $val) {
-                        $ok = $ok && $research_model->insert([
-                                'BS1_ID' => $bs1_id,
-                                'BS1_RESEARCH_NAME_TH' => $val,
-                                'BS1_RESEARCH_NAME_EN' => $val
-                            ]);
-                    }
-                    //Data Model BS1_Award
-                    $award_model = new \EThesis\Models\Bs\Bs1_award_model();
-                    foreach ($data['AWARD_NAME'] as $i => $val) {
-                        $ok = $ok && $award_model->insert([
-                                'BS1_ID' => $bs1_id,
-                                'BS1_AWARD_NAME_TH' => $val,
-                                'BS1_AWARD_NAME_EN' => $val,
-                                'BS1_AWARD_YEAR' => $data['AWARD_YEAR'][$i]
-                            ]);
+                /****************************************/
+                /*             ADD  BS1                 */
+                /****************************************/
+                $ok = false;
+                /* Upload Picture Person */
+                if (isset($_FILES['PERSON_IMAGE']) && $_FILES['PERSON_IMAGE']['error'] == UPLOAD_ERR_OK) {
+                    $pic_file = $_FILES['PERSON_IMAGE'];
+                    $base_dir = $_SERVER['DOCUMENT_ROOT'] . $this->url->get();
+                    $folder = 'public/uploads/bs1/pic_person/';
+                    $pname = get_private_name();
+                    $ext = get_ext_file($pic_file['name']);
+                    if (move_uploaded_file($pic_file['tmp_name'], $base_dir . $folder . $pname . $ext)) {
+                        $ok = true;
+                        $bs1_master['PERSON_IMAGE'] = $pname . $ext;
                     }
                 }
-                $bs1_model->adodb->CommitTrans($ok);
+                /* END */
+                /* Upload PDF Contract Person */
+                if ($ok && isset($_FILES['PERSON_CONTRACT_FILE']) && $_FILES['PERSON_CONTRACT_FILE']['error'] == UPLOAD_ERR_OK) {
+                    $pic_file = $_FILES['PERSON_CONTRACT_FILE'];
+                    $base_dir = $_SERVER['DOCUMENT_ROOT'] . $this->url->get();
+                    $folder = 'public/uploads/bs1/contract_person/';
+                    $pname = get_private_name();
+                    $ext = get_ext_file($pic_file['name']);
+                    if (move_uploaded_file($pic_file['tmp_name'], $base_dir . $folder . $pname . $ext)) {
+                        $ok = true;
+                        $bs1_master['PERSON_CONTRACT_FILE'] = $pname . $ext;
+                    }
+                }
+                /* END */
 
-                $response =  $form->set_responce($set, $ok);
+                /* INSERT SQL "bs1_master"  */
+                $bs1_model = new \EThesis\Models\Bs\Bs1_master_model();
+                $bs1_model->adodb->BeginTrans();
+                $result = $bs1_model->insert($bs1_master);
+                /* END */
+                $ok = $result && $ok;
+                if ($ok) {
+                    /*  GET Last ID MSSQL "bs1_master" */
+                    $bs1_id = $bs1_model->get_last_id();
+                    /* END */
+                    /* INSERT SQL "bs1_research" */
+                    if (!empty($data['MORE_RESEARCH_NAME']) && !empty($data['MORE_RESEARCH_NAME'][0])) {
+                        $research_model = new \EThesis\Models\Bs\Bs1_research_model();
+                        foreach ($data['MORE_RESEARCH_NAME'] as $val) {
+                            $ok = $ok && $research_model->insert([
+                                    'BS1_ID' => $bs1_id,
+                                    'BS1_RESEARCH_NAME_TH' => $val,
+                                    'BS1_RESEARCH_NAME_EN' => $val
+                                ]);
+                        }
+                    }
+                    /* END */
+                    /* INSERT SQL "bs1_award" */
+                    if (!empty($data['AWARD_NAME']) && !empty($data['AWARD_NAME'][0])) {
+                        $award_model = new \EThesis\Models\Bs\Bs1_award_model();
+                        foreach ($data['AWARD_NAME'] as $i => $val) {
+                            $ok = $ok && $award_model->insert([
+                                    'BS1_ID' => $bs1_id,
+                                    'BS1_AWARD_NAME_TH' => $val,
+                                    'BS1_AWARD_NAME_EN' => $val,
+                                    'BS1_AWARD_YEAR' => $data['AWARD_YEAR'][$i]
+                                ]);
+                        }
+                    }
+                    /* END */
+                }
+                $bs1_model->adodb->CommitTrans($ok);
+                if (!$ok) {
+                    unlink($base_dir . 'public/uploads/bs1/pic_person/' . $bs1_master['PERSON_IMAGE']);
+                    unlink($base_dir . 'public/uploads/bs1/contract_person/' . $bs1_master['PERSON_CONTRACT_FILE']);
+                }
+
+                $response = $form->set_responce($set, $ok);
                 $response['pk_id'] = $bs1_id;
-                echo json_decode($response);
+                goto END;
+            } else if ($set == 'edit' && !empty($_POST['pk_id'])) {
+
+                /****************************************/
+                /*            EDIT  BS1                 */
+                /****************************************/
+                $ok = false;
+                $ck_upload = false;
+                $data = $_POST;
+                $pk_id = $data['pk_id'];
+                $bs1_model = new \EThesis\Models\Bs\Bs1_master_model();
+                $research_model = new \EThesis\Models\Bs\Bs1_research_model();
+                $award_model = new \EThesis\Models\Bs\Bs1_award_model();
+
+                $result = $bs1_model->select_by_filter($bs1_model->field_insert, ['IN_ID' => $pk_id]);
+                if (is_object($result) && $result->RecordCount() > 0) {
+                    $row = $result->FetchRow();
+                    /* Upload Picture Person */
+                    if (!empty($_FILES['PERSON_IMAGE']) && $_FILES['PERSON_IMAGE']['error'] == UPLOAD_ERR_OK) {
+                        $pic_file = $_FILES['PERSON_IMAGE'];
+                        $base_dir = $_SERVER['DOCUMENT_ROOT'] . $this->url->get();
+                        $folder = 'public/uploads/bs1/pic_person/';
+                        $pname = get_private_name();
+                        $ext = get_ext_file($pic_file['name']);
+                        if (move_uploaded_file($pic_file['tmp_name'], $base_dir . $folder . $pname . $ext)) {
+                            $ok = true;
+                            $data['PERSON_IMAGE'] = $pname . $ext;
+                            unlink($base_dir . 'public/uploads/bs1/pic_person/' . $row['PERSON_IMAGE']);
+                            $ck_upload = true;
+                        }
+                    } else {
+                        $data['PERSON_IMAGE'] = $row['PERSON_IMAGE'];
+                        $ok = true;
+                    }
+                    /* END */
+                    /* Upload PDF Contract Person */
+                    if ($ok && !empty($_FILES['PERSON_CONTRACT_FILE']) && $_FILES['PERSON_CONTRACT_FILE']['error'] == UPLOAD_ERR_OK) {
+                        $pic_file = $_FILES['PERSON_CONTRACT_FILE'];
+                        $base_dir = $_SERVER['DOCUMENT_ROOT'] . $this->url->get();
+                        $folder = 'public/uploads/bs1/contract_person/';
+                        $pname = get_private_name();
+                        $ext = get_ext_file($pic_file['name']);
+                        if (move_uploaded_file($pic_file['tmp_name'], $base_dir . $folder . $pname . $ext)) {
+                            $ok = true;
+                            $data['PERSON_CONTRACT_FILE'] = $pname . $ext;
+                            unlink($base_dir . 'public/uploads/bs1/contract_person/' . $row['PERSON_CONTRACT_FILE']);
+                            $ck_upload = true;
+                        }
+                    }else {
+                        $data['PERSON_CONTRACT_FILE'] = $row['PERSON_CONTRACT_FILE'];
+                        $ok = true;
+                    }
+
+                    if ($ok) {
+                        $data['MAX_GRADUATE_DATE'] = datetime_to_sql($data['MAX_GRADUATE_DATE']);
+                        $data['CK_START_DATE'] = datetime_to_sql($data['CK_START_DATE']);
+                        $data['CK_END_DATE'] = datetime_to_sql($data['CK_END_DATE']);
+                        /*  Tran Section */
+                        $bs1_model->adodb->BeginTrans();
+                        $ok = $bs1_model->update($data, $pk_id);
+
+                        /* INSERT SQL "bs1_research" */
+                        if (!empty($data['MORE_RESEARCH_NAME']) && !empty($data['MORE_RESEARCH_NAME'][0]) && $research_model->delete_by_bs1($pk_id)) {
+
+                            foreach ($data['MORE_RESEARCH_NAME'] as $val) {
+                                $ok = $ok && $research_model->insert([
+                                        'BS1_ID' => $pk_id,
+                                        'BS1_RESEARCH_NAME_TH' => $val,
+                                        'BS1_RESEARCH_NAME_EN' => $val
+                                    ]);
+                            }
+                        }
+                        /* END */
+                        /* INSERT SQL "bs1_award" */
+                        if (!empty($data['AWARD_NAME']) && !empty($data['AWARD_NAME'][0]) && $award_model->delete_by_bs1($pk_id)) {
+                            foreach ($data['AWARD_NAME'] as $i => $val) {
+                                $ok = $ok && $award_model->insert([
+                                        'BS1_ID' => $pk_id,
+                                        'BS1_AWARD_NAME_TH' => $val,
+                                        'BS1_AWARD_NAME_EN' => $val,
+                                        'BS1_AWARD_YEAR' => $data['AWARD_YEAR'][$i]
+                                    ]);
+                            }
+                        }
+                        /* END */
+                        $bs1_model->adodb->CommitTrans($ok);
+                    }
+                    if (!$ok && $ck_upload) {
+                        unlink($base_dir . 'public/uploads/bs1/pic_person/' . $data['PERSON_IMAGE']);
+                        unlink($base_dir . 'public/uploads/bs1/contract_person/' . $data['PERSON_CONTRACT_FILE']);
+                    }
+                    $response['success'] = true;
+                    $response['msg'] = 'แก้ไขข้อมูลสำเร็จ';
+                    $response['pk_id'] = $pk_id;
+                    goto END;
+                }
             }
         }
+        $response['success'] = false;
+        $response['msg'] = 'การเข้าถึงไม่ถูกต้อง';
+        END:
+        echo json_encode($response);
+    }
+
+    public function getdataformAction($pk_id = FALSE)
+    {
+        $bs1_model = new \EThesis\Models\Bs\Bs1_master_model();
+        $research_model = new \EThesis\Models\Bs\Bs1_research_model();
+        $award_model = new \EThesis\Models\Bs\Bs1_award_model();
+        $success = FALSE;
+        $msg = 'ไม่มีข้อมูลนี้อยู่ หรือ มีข้อผิดพลาดเกิดขึ้น';
+        $data = [];
+
+        if (!empty($pk_id)) {
+            $result = $bs1_model->select_by_filter($bs1_model->field_insert, ['IN_ID' => $pk_id]);
+            if (is_object($result) && $result->RecordCount() > 0) {
+                $data = $result->FetchRow();
+                $data['pk_id'] = $pk_id;
+                $data['MAX_GRADUATE_DATE'] = sql_to_date($data['MAX_GRADUATE_DATE']);
+                $data['CK_START_DATE'] = sql_to_date($data['CK_START_DATE']);
+                $data['CK_END_DATE'] = sql_to_date($data['CK_END_DATE']);
+                /* SELECT "bs1_research" */
+                $result = $research_model->select_by_filter(['BS1_RESEARCH_ID', 'BS1_RESEARCH_NAME_TH'], ['BS1_ID' => $pk_id]);
+                if (is_object($result) && $result->RecordCount() > 0) {
+                    while ($row = $result->FetchRow()) {
+                        $data['research'][] = [
+                            'BS1_RESEARCH_ID' => $row['BS1_RESEARCH_ID'],
+                            'BS1_RESEARCH_NAME_TH' => $row['BS1_RESEARCH_NAME_TH']
+                        ];
+                    }
+                }
+                /* END */
+                /* SELECT "bs1_research" */
+                $result = $award_model->select_by_filter(['BS1_AWARD_ID', 'BS1_AWARD_NAME_TH', 'BS1_AWARD_YEAR'], ['BS1_ID' => $pk_id]);
+                if (is_object($result) && $result->RecordCount() > 0) {
+                    while ($row = $result->FetchRow()) {
+                        $data['award'][] = [
+                            'BS1_AWARD_ID' => $row['BS1_AWARD_ID'],
+                            'BS1_AWARD_NAME_TH' => $row['BS1_AWARD_NAME_TH'],
+                            'BS1_AWARD_YEAR' => $row['BS1_AWARD_YEAR'],
+                        ];
+                    }
+                }
+                /* END */
+
+                $success = TRUE;
+                $msg = 'ดึงข้อมูลสำเร็จ';
+            }
+            goto END_OUT;
+        }
+        END_OUT:
+        echo json_encode(['success' => $success, 'msg' => $msg, 'data' => $data]);
+
     }
 
 
@@ -165,7 +359,7 @@ class bs1formController extends \Phalcon\Mvc\Controller
         $form = new Form();
         $form->param_default['col'] = 12;
 
-        $form->set_urlset($this->url->get('bs/bs1form/setdata/add/'));
+        $form->set_urlset($this->url->get('bs/bs1form/setdata/add'));
         $form->set_model(new \EThesis\Models\Bs\Bs1_master_model());
 
         $form->param_default['required'] = true;
@@ -185,7 +379,7 @@ class bs1formController extends \Phalcon\Mvc\Controller
             'type' => Form::TYPE_FILE,
             'filesize' => 2,
             'filetype' => 'image',
-//            'novalidate' => true,
+            'required' => false,
         ]);
 
         $form->add_input('ACAD_YEAR', [
@@ -247,7 +441,8 @@ class bs1formController extends \Phalcon\Mvc\Controller
         ]);
         $form->add_input('POS_ACADEMIC_ID', [
             'type' => Form::TYPE_SELECT,
-            'datamodel' => 'HRD_POS_ACAD'
+            'datamodel' => 'HRD_POS_ACAD',
+            'required' => false,
         ]);
         $form->add_input('HRD_FACULTY_ID', [
             'type' => Form::TYPE_SELECT,
@@ -325,8 +520,8 @@ class bs1formController extends \Phalcon\Mvc\Controller
             'label' => 'และที่มิใช่ส่วนหนึ่งของการศึกษาเพื่อรับปริญญา',
         ]);
         $form->add_input('PRESENT_ACADEMIC_TYPE', [
-            'type' => Form::TYPE_CHECKBOX,
-            'data' => ['M' => 'ตีพิมพ์ในวารสาร', 'A' => 'เสนอต่อที่ประชุมวิชาการ'],
+            'type' => Form::TYPE_RADIO,
+            'datalang' => 'PRESENT_ACADEMIC_TYPE',
             'novalidate' => true,
             'required' => false,
         ]);
@@ -358,7 +553,7 @@ class bs1formController extends \Phalcon\Mvc\Controller
         ]);
         $form->add_input('PRESENT_ACADEMIC_TITLE_ID', [
             'type' => Form::TYPE_SELECT,
-            'datamodel' => 'MAS_TITLE',
+            'datamodel' => 'HRD_TITLE',
             'novalidate' => true,
             'label' => 'ชื่อ - สกุล เจ้าของผลงาน',
         ]);
@@ -454,6 +649,7 @@ class bs1formController extends \Phalcon\Mvc\Controller
 
         $form->add_input('ADVISER_TYPE_ID', [
             'type' => Form::TYPE_RADIO,
+            'required' => false,
             'datalang' => 'ADVISER_TYPE_ID'
         ]);
         $form->add_input('CK_POSITION_ID', [
@@ -477,9 +673,9 @@ class bs1formController extends \Phalcon\Mvc\Controller
             'type' => Form::TYPE_FILE,
             'filesize' => 10,
             'filetype' => 'pdf',
+            'required' => false,
             'label' => 'ไฟล์สัญญาจ้าง (PDF)'
         ]);
-
 
 
         $form->add_input('POP_INS_ID', [
@@ -513,4 +709,4 @@ class bs1formController extends \Phalcon\Mvc\Controller
 
     }
 
-} 
+}

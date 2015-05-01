@@ -44,14 +44,21 @@ class Lang
         }
     }
 
-    public function lang($name = '')
+    public function lang($name = '', $id = false)
     {
         if (isset($this->_lang[$name])) {
-            return $this->_lang[$name];
+            if(empty($id)){
+                return $this->_lang[$name];
+            }else if(isset($this->_lang[$name][$id])){
+                return $this->_lang[$name][$id];
+            }else{
+                return false;
+            }
         } else {
             return $name;
         }
     }
+
 
     public function label_manual($th, $en = false)
     {

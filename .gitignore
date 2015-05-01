@@ -2,3 +2,4 @@
 app/cache/
 nbproject/
 app/config/database.php
+public/uploads/

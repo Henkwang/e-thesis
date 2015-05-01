@@ -13,15 +13,16 @@ class AutocompleteController
     var $lang = 'th';
     private $_dbmodel;
 
-    protected  function initialize()
+    protected function initialize()
     {
 
     }
 
-    public function __construct(){
+    public function __construct()
+    {
         $session = new \EThesis\Library\Session();
         $this->lang = ($session->has('lang') ? $session->get('lang') : 'TH');
-        $this->_dbmodel = require( __DIR__ . "/../../config/dbmodel.php");
+        $this->_dbmodel = require(__DIR__ . "/../../config/dbmodel.php");
     }
 
     public function  dbmodelAction($db_model_name)
@@ -141,6 +142,40 @@ class AutocompleteController
         return $data;
     }
 
+    public function get_datamodel_by_id($db_model_name, $id)
+    {
+        /*
+       * เตรียมข้อมูล
+       */
+        if (!isset($this->_dbmodel[$db_model_name])) {
+            return [];
+        }
+        $cfe = $this->_dbmodel[$db_model_name];
+        $module = ucfirst($cfe['module']);
+        $model = ucfirst($cfe['model']);
+        $label = $cfe['label'];
+        $pkid = $cfe['key'];
+        $filter = ['AUTO' => "$pkid='$id'"];
+        $order = (isset($cfe['order']) ? $cfe['order'] : '');
+
+
+        /*
+         * ดึงข้อมูล
+         */
+        $class = "EThesis\\Models\\{$module}\\$model";
+        $md_class = new $class();
+        $label = str_replace('_ML', '_' . strtoupper($this->lang), $label);
+        $order = str_replace('_ML', '_' . strtoupper($this->lang), $order);
+        $field = [($pkid) . ' AS [key]', $label . ' AS [label]'];
+
+        $result = $md_class->select_by_filter($field, $filter, $order);
+        $data = [];
+        if ($result && $result->RecordCount() > 0) {
+            $row = $result->FetchRow();
+            return $row['label'];
+        }
+    }
+
 
     public function autoselect2Action($db_model = '')
     {
@@ -176,17 +211,13 @@ class AutocompleteController
             if ($result && $result->RecordCount() > 0) {
                 $data['total_count'] = $result->RecordCount();
                 while ($row = $result->FetchRow()) {
-                    $data['items'][] = ['id' => $row['key'],'text' => $row['label']];
+                    $data['items'][] = ['id' => $row['key'], 'text' => $row['label']];
                 }
             }
 
         }
 
         echo json_encode($data);
-    }
-
-    public function uploadtmpAction(){
-
     }
 
 

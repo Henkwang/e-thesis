@@ -8,19 +8,26 @@ error_reporting(E_ALL & ~E_STRICT & ~E_NOTICE);
 
 date_default_timezone_set('Asia/Bangkok');
 
+define('__BASE_DIR__', __DIR__ . "/../");
 
-//try {
+try {
 
     /*
      * Helper
      */
-    include __DIR__. "/../app/helper/define_varible.php";
-    include __DIR__. "/../app/helper/ethesis_helper.php";
+    include __DIR__ . "/../app/helper/define_varible.php";
+    include __DIR__ . "/../app/helper/ethesis_helper.php";
+    include __DIR__ . "/../app/helper/datetime_helper.php";
 
     /**
      * Read the configuration
      */
     $config = include __DIR__ . "/../app/config/config.php";
+
+    /*
+     * Define Base Url Site
+     */
+    define('__BASE_URL__', $config['application']['baseUri']);
 
     /**
      * Read auto-loader
@@ -39,6 +46,6 @@ date_default_timezone_set('Asia/Bangkok');
 
     echo $application->handle()->getContent();
 
-//} catch (\Exception $e) {
-//    echo $e->getMessage();
-//}
+} catch (\Exception $e) {
+    echo $e->getMessage();
+}

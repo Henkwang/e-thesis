@@ -1,0 +1,1 @@
+$fontname = $pdf->addTTFfont(APPPATH.'third_party/tcpdf/fonts/TH Niramit AS.ttf', 'TrueTypeUnicode', '', 32); 

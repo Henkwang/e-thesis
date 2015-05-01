@@ -47,34 +47,47 @@ if (!function_exists('get_url')) {
     }
 }
 
-if (!function_exists('datetime_to_sql')) {
-    function datetime_to_sql($datetime)
-    {
-        if(!empty($datetime)){
-            $tmp = explode(' ', $datetime);
-            $date = explode('/', $tmp[0]);
-            $time = '';
-            if (!empty($tmp[1])) {
-                $time = $tmp[1];
-            }
-            $y = ($date[2] > 2400 ? $date[2] - 543 : $date);
-            $sql_time = "{$y}-{$date[1]}-{$date[0]} {$time}";
-            return $sql_time;
-        }
-        return false;
-
-    }
-}
 
 if (!function_exists('array_is_numeric')) {
     function array_is_numeric(array $arr)
     {
-       foreach($arr as $val){
-           if(!is_numeric($val)){
-               return false;
-           }
-       }
+        foreach ($arr as $val) {
+            if (!is_numeric($val)) {
+                return false;
+            }
+        }
         return true;
 
+    }
+}
+
+if (!function_exists('get_private_name')) {
+    function get_private_name()
+    {
+        return date('YmdHi') . str_replace('.', '', microtime(true));
+    }
+}
+
+if (!function_exists('get_ext_file')) {
+    function get_ext_file($filename)
+    {
+        return substr($filename, strrpos($filename, '.'));
+    }
+}
+
+
+if (!function_exists('text_encode')) {
+    function text_encode($text)
+    {
+        return urlencode(base64_encode($text));
+    }
+}
+
+
+
+if (!function_exists('text_decode')) {
+    function text_decode($text)
+    {
+        return base64_decode(urldecode($text));
     }
 }

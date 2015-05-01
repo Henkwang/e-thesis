@@ -1,5 +1,6 @@
 <?php
 
+
 return new \Phalcon\Config(array(
 
      /*
@@ -12,8 +13,10 @@ return new \Phalcon\Config(array(
         'pluginsDir' => __DIR__ . '/../../app/plugins/',
         'libraryDir' => __DIR__ . '/../../app/library/',
         'cacheDir' => __DIR__ . '/../../app/cache/',
-        'baseUri' => '/e-thesis/',
+//        'baseUri' => '/e-thesis/',
+        'baseUri' => stripos($_SERVER['SERVER_PROTOCOL'],'https') === true ? 'https://' : 'http://'.$_SERVER['SERVER_NAME'].'/e-thesis/',
     ),
+
     /*
      * Module In Project
      * Ex. 'test'

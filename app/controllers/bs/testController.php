@@ -49,11 +49,18 @@ class TestController extends \Phalcon\Mvc\Controller
 
     public function setdataAction()
     {
-        print_r($_POST);
-        $form = new Form();
-//        $upload = $form->upload_file($_FILES[0], 'bs1');
-//        print_r($upload);
-        print_r($_FILES);
+//        print_r($_POST);
+        $pic = $_FILES['UPLOAD'];
+
+        $base_dir = $_SERVER['DOCUMENT_ROOT'] . $this->url->get() . 'public/uploads/bs1/';
+        $pname = get_private_name();
+        $ext = get_ext_file($pic['name']);
+        if (move_uploaded_file($_FILES['UPLOAD']['tmp_name'], $base_dir . $pname . $ext)) {
+            echo json_encode(['success' => TRUE, 'msg' => 'การอัพโหลดเสร็จสิ้น']);
+        }
+
+//        echo $base_dir . $pname . $ext . PHP_EOL;
+//        print_r($_FILES);
     }
 
 

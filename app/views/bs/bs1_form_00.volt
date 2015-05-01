@@ -1,4 +1,5 @@
-<form id="{{ formname }}" action="{{ action }}" role="form" class="form-horizontal" method="post">
+<form id="{{ formname }}" action="{{ action }}" role="form" class="form-horizontal" method="post"
+      enctype="multipart/form-data">
 {{ input['pk_id'] }}
 <div class="row">
     <div class="col-xs-12 col-lg-10 col-lg-offset-1">
@@ -21,7 +22,7 @@
 
             </div>
             <script>
-                var url_noimg = base_url + 'public/resource/img/no_image.png';
+                var url_noimg = base_url + 'public/resource/img/blank.jpg';
                 $('#{{ formname }} #picprofile img').attr('src', url_noimg);
                 $('#{{ formname }} #PERSON_IMAGE').change(function () {
                     var oFReader = new FileReader();
@@ -137,7 +138,7 @@
 </ul>
 
 
-<div id="tab_bs1_content" class="tab-content">
+<div id="tab_bs1_content" class="tab-content" style="min-height: 450px">
 
 
 {#ข้อ 1#}
@@ -394,9 +395,8 @@
                 </div>
 
                 <div id="PRE_ACAD" style="display: none">
-
                     <div class="row">
-                        <div class="col-xs-4">
+                        <div class="col-xs-6">
                             <div class="form-group">
                                 <div class="input-group">
                                     {{ labelgroup['PRESENT_ACADEMIC_TYPE'] }}
@@ -659,7 +659,16 @@
                             </div>
                         </div>
                     </div>
-
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    {{ labelgroup['PERSON_CONTRACT_FILE'] }}
+                                    {{ input['PERSON_CONTRACT_FILE'] }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-xs-6">
                             <div class="form-group">
@@ -678,16 +687,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <div class="form-group">
-                                <div class="input-group">
-                                    {{ labelgroup['PERSON_CONTRACT_FILE'] }}
-                                    {{ input['PERSON_CONTRACT_FILE'] }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <br/><br/><br/><br/>
+
                 </div>
             </div>
         </div>
@@ -919,15 +920,36 @@
 </div>
 </div>{#div .row#}
 
-
-<br><br>
 <hr>
 
 </form>
 
+<div class="msg_show_lock">
+    <div class="msg_data">
+        <div style="background-color: #EFF8FB;border-color: #5bc0de;padding: 20px;width: 95%; margin: auto auto;margin-top:20%;border-left: 3px solid #44c5ed;">
+            <div class="progress" style="margin: 0;">
+                <div id="loadProgress" class="progress-bar" style="width: 20%"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .msg_show_lock {
+        background: #000;
+        width: 100%;
+        height: 100%;
+        z-index: 80000;
+        top: 0px;
+        left: 0px;
+        position: fixed;
+        display: none;
+        opacity: .8;
 
+    }
+</style>
 <script>
     var num_moreinput = {};
+    var $form = document.getElementById('{{ formname }}');
     $(':input').change(function () {
         $('#{{ formname }} #OK').removeClass('disable');
     });
@@ -938,40 +960,55 @@
         {{ valid }}
 
 
-        $("#{{ formname }}")
-                .on('err.form.fv', function (e) {
-                    e.preventDefault();
-                    alert('กรอกข้อมูลไม่ครบถ้วน กรุณาตรวจสอบ');
-                })
-                .on('success.form.fv', function (e) {
-                    // Prevent form submission
-                    e.preventDefault();
+        $("#{{ formname }}").on('err.form.fv', function (e) {
+            e.preventDefault();
+            alert('กรอกข้อมูลไม่ครบถ้วน กรุณาตรวจสอบ');
+        }).on('success.form.fv', function (e) {
+            e.preventDefault();
 
-                    var $form = $(e.target);
-                    var fv = $form.data('formValidation');
+            var fv = $(e.target).data('formValidation');
 
-                    // Use Ajax to submit form data
-                    $.ajax({
-                        url: $form.attr('action'),
-                        type: 'POST',
-                        data: $form.serialize(),
-                        dataType: 'json',
-                        success: function (result) {
-                            // ... Process the result ...
-                            if (result.success) {
-                                $('#{{ formname }} #pk_id').val(result.pk_id);
-                                alert(result.msg);
-                            } else {
-                                alert(result.msg);
-                            }
-                        },
-                        error: function ($msg) {
-                            alert('ผิดพลาด! การกระทำนี้ไม่ถูกต้อง');
-                            window.location = base_url + 'main';
+
+            /* Process File upload By jQuery Form Plugin*/
+            $('#{{ formname }}').ajaxForm({
+                dataType: 'json',
+                beforeSend: function () {
+                    $('.msg_show_lock').show();
+                    $('#loadProgress').css('width', '0%');
+                },
+                uploadProgress: function (event, position, total, percentComplete) {
+                    var percentVal = percentComplete + '%';
+                    $('#loadProgress').css('width', percentVal);
+                },
+                success: function () {
+                    var percentVal = '100%';
+                    $('#loadProgress').css('width', percentVal);
+                },
+                complete: function (response) {
+                    var res = decode_json(response.responseText);
+                    $('.msg_show_lock').hide();
+                    if (jQuery.isEmptyObject(res) == false) {
+                        if (res.success === true) {
+                            alert(res.msg);
+                            $('#{{ formname }} #pk_id').val(res.pk_id);
+                            reload_form(res.pk_id);
+                        } else {
+                            alert(res.msg);
                         }
-                    });
-                });
 
+                    } else {
+                        alert('ผิดพลาด! การทำรายการไม่ถูกต้อง');
+                    }
+                },
+                error: function () {
+                    alert('ผิดพลาด! การทำรายการไม่ถูกต้อง');
+                }
+            });
+            /* END*/
+
+            fv.defaultSubmit();
+
+        });
 
         $('#PERSON_ID').on('select2:select', function (e) {
             {#console.log('{{ preurl }}');#}
@@ -1060,4 +1097,96 @@
     }
 
 
+</script>
+
+<script>
+    var tmp;
+    /* Reload Data */
+    function reload_form(pk_id) {
+        if (pk_id != null) {
+            $.ajax({
+                url: base_url + 'bs/bs1form/getdataform/' + pk_id,
+                data: '',
+                dataType: 'json',
+                success: function (res) {
+                    if (res.success == true) {
+                        $.each(res.data, function (k, v) {
+                            if (typeof(v) != 'object') {
+                                var e = $('#{{ formname }} [name=' + k + ']');
+                                if (e.length > 0) {
+                                    if (e.prop('type') == 'checkbox') {
+                                        for (var i = 0; i < e.length; i++) {
+                                            if (e[i].value == v) {
+                                                e[i].click();
+                                            }
+                                        }
+                                        $('#{{ formname }}').formValidation('revalidateField', k);
+                                    } else if (e.prop('type') == 'radio') {
+                                        for (var i = 0; i < e.length; i++) {
+                                            if (e[i].value == v) {
+                                                e[i].click();
+                                            }
+                                        }
+                                        $('#{{ formname }}').formValidation('revalidateField', k);
+                                    } else if (e.prop('type') == 'text') {
+                                        e.val(v);
+                                        $('#{{ formname }}').formValidation('revalidateField', k);
+                                    } else if (e.prop('type') == 'file') {
+                                        e.val('');
+                                        $('#{{ formname }} #textfile_' + k).val(v);
+                                    } else {
+                                        e.val(v).change();
+                                        $('#{{ formname }}').formValidation('revalidateField', k);
+                                    }
+                                }
+                            }
+                        });
+                        /* for more */
+                        $('#{{ formname }} #picprofile img').attr('src', base_url + 'public/uploads/bs1/pic_person/' + res.data['PERSON_IMAGE']);
+                        if (res.data['MORE_RESEARCH_STATUS'] == 'T' && res.data['research'].length > 0) {
+                            var tmp = res.data['research'];
+                            if (num_moreinput['MORE_RESEARCH_NAME'] > 1) {
+                                while(num_moreinput['MORE_RESEARCH_NAME'] > 1){
+                                    man_input(1, 'MORE_RESEARCH_NAME');
+                                }
+                            }
+                            for (var i in tmp) {
+                                {#console.log($('#{{ formname }} #row_MORE_RESEARCH_NAME_' + i + ' input[name="MORE_RESEARCH_NAME[]"]'));#}
+                                $('#{{ formname }} #row_MORE_RESEARCH_NAME_' + i + ' input[name="MORE_RESEARCH_NAME[]"]').val(tmp[i]['BS1_RESEARCH_NAME_TH']);
+                                if (i < (tmp.length - 1)) {
+                                    man_input(0, 'MORE_RESEARCH_NAME');
+                                }
+                            }
+                        }
+                        if (res.data['AWARD_NAME_STATUS'] == 'T' && res.data['award'].length > 0) {
+                            var tmp = res.data['award'];
+                            if (num_moreinput['AWARD'] > 1) {
+                                while(num_moreinput['AWARD'] > 1){
+                                    man_input(1, 'AWARD');
+                                }
+                            }
+                            for (var i in tmp) {
+                                {#console.log($('#{{ formname }} #row_MORE_RESEARCH_NAME_' + i + ' input[name="MORE_RESEARCH_NAME[]"]'));#}
+                                $('#{{ formname }} #row_AWARD_' + i + ' input[name="AWARD_NAME[]"]').val(tmp[i]['BS1_AWARD_NAME_TH']);
+                                $('#{{ formname }} #row_AWARD_' + i + ' input[name="AWARD_YEAR[]"]').val(tmp[i]['BS1_AWARD_YEAR']);
+                                if (i < (tmp.length - 1)) {
+                                    man_input(0, 'AWARD');
+                                }
+                            }
+                        }
+                        /* END */
+                        var action = $form.action;
+                        action = action.substr(0, action.search('setdata')) + 'setdata/edit';
+                        $form.action = action;
+                    } else {
+                        alert(res.msg);
+                    }
+                },
+                error: function () {
+                    alert('ผิดพลาด!');
+                }
+            });
+        }
+    }
+    /* END */
 </script>

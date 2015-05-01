@@ -427,30 +427,6 @@ class Form
 
     }
 
-    public function upload_file($file, $folder = '', $filename = false)
-    {
-        $base = 'uploads/';
-        $ext = substr($file['name'], strrpos($file['name'], '.'));
-        if (empty($filename)) {
-            $filename = date('YmdHi') . str_replace('.', '', microtime(true)) . $ext;
-        }
-        $url = \Phalcon\DI\FactoryDefault::getDefault()['url'];
-        if (move_uploaded_file($file['tmp_name'], $base . $folder . $filename)) {
-            $upload = [
-                'base_folder' => $base,
-                'file_folder' => $folder,
-                'file_name' => $filename,
-                'full_filename' => $base . $folder . $filename,
-                'url' => $url->get($base . $folder . $filename),
-                'ext' => $ext,
-                'size' => $file['size']
-            ];
-            return $upload;
-        } else {
-            return false;
-        }
-    }
-
     private function _create_input()
     {
         foreach ($this->_param_array as $name => $param) {

@@ -126,10 +126,20 @@ class Bs1_award_model extends \EThesis\Library\Adodb
     public function delete($id)
     {
         $sql = "UPDATE  {$this->schema}.{$this->table} SET RECORD_STATUS='D' ";
-        $sql .= "LAST_DATE={$this->date_current}";
+        $sql .= "LAST_DATE={$this->date_current} ";
+        $sql .= "WHERE {$this->primary}='$id'";
+        $sql .= ";";
         $result = $this->adodb->Execute($sql);
         return $result;
     }
 
+    public function delete_by_bs1($bs1_id)
+    {
+        $sql = "DELETE FROM  {$this->schema}.{$this->table} ";
+        $sql .= "WHERE BS1_ID='$bs1_id'";
+        $sql .= ";";
+        $result = $this->adodb->Execute($sql);
+        return $result;
+    }
 
 }

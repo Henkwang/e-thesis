@@ -22,10 +22,18 @@ $di->set('router', function () use ($config) {
     return require __DIR__ . '/routes.php';
 }, true);
 
+
 $di->set('logs', function ()  {
     $log = new \EThesis\Models\System\Sys_log_model();
     return $log;
 }, true);
+
+
+$di->set('lang', function ()  {
+    $lang = new \EThesis\Library\Lang();
+    return $lang;
+}, true);
+
 /**
  * The URL component is used to generate all kind of urls in the application
  */
