@@ -15,6 +15,7 @@ return new \Phalcon\Config(array(
         'cacheDir' => __DIR__ . '/../../app/cache/',
 //        'baseUri' => '/e-thesis/',
         'baseUri' => stripos($_SERVER['SERVER_PROTOCOL'],'https') === true ? 'https://' : 'http://'.$_SERVER['SERVER_NAME'].'/e-thesis/',
+        'dirRoot' => '/e-thesis/',
     ),
 
     /*

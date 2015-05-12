@@ -22,7 +22,7 @@
 
             </div>
             <script>
-                var url_noimg = base_url + 'public/resource/img/blank.jpg';
+                var url_noimg = base_url + 'ajax/getfile/get_bankperson';
                 $('#{{ formname }} #picprofile img').attr('src', url_noimg);
                 $('#{{ formname }} #PERSON_IMAGE').change(function () {
                     var oFReader = new FileReader();
@@ -502,16 +502,31 @@
                     </div>
                 </div>
             </div>
-            <div class="col-xs-4">
-                <div class="form-group" id="PRE_EXPERIENCE" style="display: none">
+        </div>
+        <div class="row" id="PRE_EXPERIENCE" style="display: none">
+            <div class="col-xs-3 col-xs-offset-1">
+                <div class="form-group">
                     <div class="input-group">
                         {{ labelgroup['PRESENT_ACADEMIC_IS_EXPERIENCE_YEAR'] }}
                         {{ input['PRESENT_ACADEMIC_IS_EXPERIENCE_YEAR'] }}
                     </div>
                 </div>
             </div>
+            <div class="col-xs-6">
+                <div class="form-group">
+                    <div class="input-group">
+                        {{ labelgroup['IS_CONTRACT_FILE'] }}
+                        {{ input['IS_CONTRACT_FILE'] }}
+                        <a href="#" target="_blank" id="linkfile_IS_CONTRACT_FILE" style="display: none">เปิด</a>
+                    </div>
+                </div>
+            </div>
         </div>
+
+
     </div>
+
+
 </div>
 
 
@@ -665,6 +680,8 @@
                                 <div class="input-group">
                                     {{ labelgroup['PERSON_CONTRACT_FILE'] }}
                                     {{ input['PERSON_CONTRACT_FILE'] }}
+                                    <a href="#" target="_blank" id="linkfile_PERSON_CONTRACT_FILE"
+                                       style="display: none">เปิด</a>
                                 </div>
                             </div>
                         </div>
@@ -991,13 +1008,15 @@
                         if (res.success === true) {
                             alert(res.msg);
                             $('#{{ formname }} #pk_id').val(res.pk_id);
-                            reload_form(res.pk_id);
+//                            reload_form(res.pk_id);
+                            close_active('main_tab');
+                            O{{ table_name }}.ajax.reload();
                         } else {
                             alert(res.msg);
                         }
 
                     } else {
-                        alert('ผิดพลาด! การทำรายการไม่ถูกต้อง');
+//                        alert('ผิดพลาด! การทำรายการไม่ถูกต้อง');
                     }
                 },
                 error: function () {
@@ -1100,6 +1119,14 @@
 </script>
 
 <script>
+    $(document).ready(function () {
+        var manage = '{{ manage }}';
+        if (manage == 'EDIT') {
+            reload_form({{ edit_id }});
+        }
+    });
+
+
     var tmp;
     /* Reload Data */
     function reload_form(pk_id) {
@@ -1142,11 +1169,11 @@
                             }
                         });
                         /* for more */
-                        $('#{{ formname }} #picprofile img').attr('src', base_url + 'public/uploads/bs1/pic_person/' + res.data['PERSON_IMAGE']);
+                        $('#{{ formname }} #picprofile img').attr('src', base_url + 'ajax/getfile/get_image/' + res.data['url_PERSON_IMAGE']);
                         if (res.data['MORE_RESEARCH_STATUS'] == 'T' && res.data['research'].length > 0) {
                             var tmp = res.data['research'];
                             if (num_moreinput['MORE_RESEARCH_NAME'] > 1) {
-                                while(num_moreinput['MORE_RESEARCH_NAME'] > 1){
+                                while (num_moreinput['MORE_RESEARCH_NAME'] > 1) {
                                     man_input(1, 'MORE_RESEARCH_NAME');
                                 }
                             }
@@ -1158,10 +1185,21 @@
                                 }
                             }
                         }
+                        if (res.data['IS_CONTRACT_FILE'] == '') {
+                            $('#{{ formname }} #linkfile_IS_CONTRACT_FILE').hide();
+                        } else {
+                            $('#{{ formname }} #linkfile_IS_CONTRACT_FILE').show().attr('href', base_url + 'ajax/getfile/get_pdf/' + res.data['url_IS_CONTRACT_FILE']);
+                        }
+                        if (res.data['PERSON_CONTRACT_FILE'] == '') {
+                            $('#{{ formname }} #linkfile_PERSON_CONTRACT_FILE').hide();
+                        } else {
+                            $('#{{ formname }} #linkfile_PERSON_CONTRACT_FILE').show().attr('href', base_url + 'ajax/getfile/get_pdf/' + res.data['url_PERSON_CONTRACT_FILE']);
+                        }
+
                         if (res.data['AWARD_NAME_STATUS'] == 'T' && res.data['award'].length > 0) {
                             var tmp = res.data['award'];
                             if (num_moreinput['AWARD'] > 1) {
-                                while(num_moreinput['AWARD'] > 1){
+                                while (num_moreinput['AWARD'] > 1) {
                                     man_input(1, 'AWARD');
                                 }
                             }

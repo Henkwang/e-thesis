@@ -52,7 +52,6 @@ class ModuleController extends \Phalcon\Mvc\Controller
 
         $this->view->setVar('burl', $this->url->get('system/module/'));
 
-        $this->logs->set(LOG_OPEN_PAGE);
         $this->view->pick('system/moduleIndex');
 
     }

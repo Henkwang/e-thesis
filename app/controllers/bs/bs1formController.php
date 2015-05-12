@@ -30,7 +30,7 @@ class bs1formController extends \Phalcon\Mvc\Controller
         //print_r($this->init_class[sess]->get());
     }
 
-    public function indexAction()
+    public function getformAction($manage = '')
     {
 
 //        $form = $this->_get_config();
@@ -38,12 +38,20 @@ class bs1formController extends \Phalcon\Mvc\Controller
 //        print_r(array_keys($form->get_form()['input']));
 //        echo '</pre>';
 //        return;
+
         $this->view->enable();
         $form = $this->_get_config();
-        $this->view->setVars($form->get_form());
-        $this->view->pick('/bs/bs1_form_00');
-        $this->logs->set(LOG_OPEN_PAGE);
 
+        $form->set_urlset($this->url->get('bs/bs1form/setdata/add'));
+        if ($manage == 'EDIT') {
+            $this->view->setVar('edit_id', $_POST['pk_id']);
+            $form->set_urlset($this->url->get('bs/bs1form/setdata/edit'));
+        }
+
+        $this->view->setVars($form->get_form());
+        $this->view->setVar('manage', $manage);
+        $this->view->setVar('table_name', $_POST['tablename']);
+        $this->view->pick('/bs/bs1_form_00');
     }
 
 
@@ -130,7 +138,7 @@ class bs1formController extends \Phalcon\Mvc\Controller
                 /* Upload Picture Person */
                 if (isset($_FILES['PERSON_IMAGE']) && $_FILES['PERSON_IMAGE']['error'] == UPLOAD_ERR_OK) {
                     $pic_file = $_FILES['PERSON_IMAGE'];
-                    $base_dir = $_SERVER['DOCUMENT_ROOT'] . $this->url->get();
+                    $base_dir = __BASE_DIR__;
                     $folder = 'public/uploads/bs1/pic_person/';
                     $pname = get_private_name();
                     $ext = get_ext_file($pic_file['name']);
@@ -143,13 +151,27 @@ class bs1formController extends \Phalcon\Mvc\Controller
                 /* Upload PDF Contract Person */
                 if ($ok && isset($_FILES['PERSON_CONTRACT_FILE']) && $_FILES['PERSON_CONTRACT_FILE']['error'] == UPLOAD_ERR_OK) {
                     $pic_file = $_FILES['PERSON_CONTRACT_FILE'];
-                    $base_dir = $_SERVER['DOCUMENT_ROOT'] . $this->url->get();
+                    $base_dir = __BASE_DIR__;
                     $folder = 'public/uploads/bs1/contract_person/';
                     $pname = get_private_name();
                     $ext = get_ext_file($pic_file['name']);
                     if (move_uploaded_file($pic_file['tmp_name'], $base_dir . $folder . $pname . $ext)) {
                         $ok = true;
                         $bs1_master['PERSON_CONTRACT_FILE'] = $pname . $ext;
+                    }
+                }
+                /* END */
+
+                /* Upload PDF Contract IS */
+                if ($ok && isset($_FILES['IS_CONTRACT_FILE']) && $_FILES['IS_CONTRACT_FILE']['error'] == UPLOAD_ERR_OK) {
+                    $pic_file = $_FILES['IS_CONTRACT_FILE'];
+                    $base_dir = __BASE_DIR__;
+                    $folder = 'public/uploads/bs1/is_file/';
+                    $pname = get_private_name();
+                    $ext = get_ext_file($pic_file['name']);
+                    if (move_uploaded_file($pic_file['tmp_name'], $base_dir . $folder . $pname . $ext)) {
+                        $ok = true;
+                        $bs1_master['IS_CONTRACT_FILE'] = $pname . $ext;
                     }
                 }
                 /* END */
@@ -194,6 +216,7 @@ class bs1formController extends \Phalcon\Mvc\Controller
                 if (!$ok) {
                     unlink($base_dir . 'public/uploads/bs1/pic_person/' . $bs1_master['PERSON_IMAGE']);
                     unlink($base_dir . 'public/uploads/bs1/contract_person/' . $bs1_master['PERSON_CONTRACT_FILE']);
+                    unlink($base_dir . 'public/uploads/bs1/is_file/' . $bs1_master['IS_CONTRACT_FILE']);
                 }
 
                 $response = $form->set_responce($set, $ok);
@@ -212,13 +235,14 @@ class bs1formController extends \Phalcon\Mvc\Controller
                 $research_model = new \EThesis\Models\Bs\Bs1_research_model();
                 $award_model = new \EThesis\Models\Bs\Bs1_award_model();
 
+
                 $result = $bs1_model->select_by_filter($bs1_model->field_insert, ['IN_ID' => $pk_id]);
                 if (is_object($result) && $result->RecordCount() > 0) {
                     $row = $result->FetchRow();
                     /* Upload Picture Person */
                     if (!empty($_FILES['PERSON_IMAGE']) && $_FILES['PERSON_IMAGE']['error'] == UPLOAD_ERR_OK) {
                         $pic_file = $_FILES['PERSON_IMAGE'];
-                        $base_dir = $_SERVER['DOCUMENT_ROOT'] . $this->url->get();
+                        $base_dir = __BASE_DIR__;
                         $folder = 'public/uploads/bs1/pic_person/';
                         $pname = get_private_name();
                         $ext = get_ext_file($pic_file['name']);
@@ -236,7 +260,7 @@ class bs1formController extends \Phalcon\Mvc\Controller
                     /* Upload PDF Contract Person */
                     if ($ok && !empty($_FILES['PERSON_CONTRACT_FILE']) && $_FILES['PERSON_CONTRACT_FILE']['error'] == UPLOAD_ERR_OK) {
                         $pic_file = $_FILES['PERSON_CONTRACT_FILE'];
-                        $base_dir = $_SERVER['DOCUMENT_ROOT'] . $this->url->get();
+                        $base_dir = __BASE_DIR__;
                         $folder = 'public/uploads/bs1/contract_person/';
                         $pname = get_private_name();
                         $ext = get_ext_file($pic_file['name']);
@@ -246,10 +270,29 @@ class bs1formController extends \Phalcon\Mvc\Controller
                             unlink($base_dir . 'public/uploads/bs1/contract_person/' . $row['PERSON_CONTRACT_FILE']);
                             $ck_upload = true;
                         }
-                    }else {
+                    } else {
                         $data['PERSON_CONTRACT_FILE'] = $row['PERSON_CONTRACT_FILE'];
                         $ok = true;
                     }
+                    /* END */
+                    /* Upload PDF Contract IS */
+                    if ($ok && !empty($_FILES['IS_CONTRACT_FILE']) && $_FILES['IS_CONTRACT_FILE']['error'] == UPLOAD_ERR_OK) {
+                        $pic_file = $_FILES['IS_CONTRACT_FILE'];
+                        $base_dir = __BASE_DIR__;
+                        $folder = 'public/uploads/bs1/is_file/';
+                        $pname = get_private_name();
+                        $ext = get_ext_file($pic_file['name']);
+                        if (move_uploaded_file($pic_file['tmp_name'], $base_dir . $folder . $pname . $ext)) {
+                            $ok = true;
+                            $data['IS_CONTRACT_FILE'] = $pname . $ext;
+                            unlink($base_dir . 'public/uploads/bs1/is_file/' . $row['IS_CONTRACT_FILE']);
+                            $ck_upload = true;
+                        }
+                    } else {
+                        $data['IS_CONTRACT_FILE'] = $row['IS_CONTRACT_FILE'];
+                        $ok = true;
+                    }
+                    /* END */
 
                     if ($ok) {
                         $data['MAX_GRADUATE_DATE'] = datetime_to_sql($data['MAX_GRADUATE_DATE']);
@@ -288,12 +331,24 @@ class bs1formController extends \Phalcon\Mvc\Controller
                     if (!$ok && $ck_upload) {
                         unlink($base_dir . 'public/uploads/bs1/pic_person/' . $data['PERSON_IMAGE']);
                         unlink($base_dir . 'public/uploads/bs1/contract_person/' . $data['PERSON_CONTRACT_FILE']);
+                        unlink($base_dir . 'public/uploads/bs1/is_file/' . $data['IS_CONTRACT_FILE']);
                     }
                     $response['success'] = true;
                     $response['msg'] = 'แก้ไขข้อมูลสำเร็จ';
                     $response['pk_id'] = $pk_id;
                     goto END;
                 }
+            } else if ($set == 'DELETE' && !empty($_POST['pk_id'])) {
+                $bs1_model = new \EThesis\Models\Bs\Bs1_master_model();
+                $research_model = new \EThesis\Models\Bs\Bs1_research_model();
+                $award_model = new \EThesis\Models\Bs\Bs1_award_model();
+                $pk_id = $_POST['pk_id'];
+                $bs1_model->delete($pk_id);
+                $research_model->delete_by_bs1($pk_id);
+                $award_model->delete_by_bs1($pk_id);
+                $response['success'] = true;
+                $response['msg'] = 'ลบข้อมูลสำเร็จ';
+                goto END;
             }
         }
         $response['success'] = false;
@@ -312,7 +367,7 @@ class bs1formController extends \Phalcon\Mvc\Controller
         $data = [];
 
         if (!empty($pk_id)) {
-            $result = $bs1_model->select_by_filter($bs1_model->field_insert, ['IN_ID' => $pk_id]);
+            $result = $bs1_model->select_by_filter($bs1_model->select_and_field, ['IN_ID' => $pk_id]);
             if (is_object($result) && $result->RecordCount() > 0) {
                 $data = $result->FetchRow();
                 $data['pk_id'] = $pk_id;
@@ -341,6 +396,10 @@ class bs1formController extends \Phalcon\Mvc\Controller
                         ];
                     }
                 }
+                $data['url_PERSON_IMAGE'] = text_encode('bs1/pic_person/' . $data['PERSON_IMAGE']);
+                $data['url_PERSON_CONTRACT_FILE'] = text_encode('bs1/contract_person/' . $data['PERSON_CONTRACT_FILE']);
+                $data['url_IS_CONTRACT_FILE'] = text_encode('bs1/is_file/' . $data['IS_CONTRACT_FILE']);
+//                $data['PERSON_IMAGE'] = $data['CITIZEN_ID'];
                 /* END */
 
                 $success = TRUE;
@@ -359,7 +418,7 @@ class bs1formController extends \Phalcon\Mvc\Controller
         $form = new Form();
         $form->param_default['col'] = 12;
 
-        $form->set_urlset($this->url->get('bs/bs1form/setdata/add'));
+
         $form->set_model(new \EThesis\Models\Bs\Bs1_master_model());
 
         $form->param_default['required'] = true;
@@ -585,6 +644,14 @@ class bs1formController extends \Phalcon\Mvc\Controller
             'minlength' => 4,
             'novalidate' => true,
             'label' => 'ระบุครั้งล่าสุด พ.ศ.'
+        ]);
+        $form->add_input('IS_CONTRACT_FILE', [
+            'type' => Form::TYPE_FILE,
+            'filesize' => 10,
+            'filetype' => 'pdf',
+            'required' => false,
+            'label' => 'ไฟล์คำสั่งแต่งตั้งอาจารย์ศึกษาค้นคว้าด้วยตนเอง (PDF)'
+
         ]);
 
         /*

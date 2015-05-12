@@ -1,14 +1,14 @@
 <?php
 
-namespace EThesis\Models\Hrd;
+namespace EThesis\Models\Bs;
 
 
-class Hrd_position_model extends \EThesis\Library\Adodb
+class Bs1_process_model extends \EThesis\Library\Adodb
 {
 
-    var $schema = 'hrd';
-    var $table = 'HRD_MAS_POSITION';
-    var $primary = 'POS_ID';
+    var $schema = 'dbo';
+    var $table = 'BS1_PROCESS';
+    var $primary = 'BS1_PROCESS_ID';
 
     var $use_view = false;
 
@@ -22,6 +22,12 @@ class Hrd_position_model extends \EThesis\Library\Adodb
     {
         parent::__construct();
 //        $this->adodb->debug = TRUE;
+        $sess = new \EThesis\Library\Session();
+
+        $this->date_current = $this->adodb->sysTimeStamp;
+        $this->user_access = ($sess->has('username') ? $sess->get('username') : die(AUTH_FALSE_J));
+        $this->user_group = ($sess->has('usergroup') ? $sess->get('usergroup') : die(AUTH_FALSE_J));
+        $this->user_type = ($sess->has('usertype') ? $sess->get('usertype') : die(AUTH_FALSE_J));
     }
 
     private function check_filter(array $filter)
@@ -31,14 +37,15 @@ class Hrd_position_model extends \EThesis\Library\Adodb
 
         } else if (is_array($filter)) {
 
-            $sql .= (isset($filter['POS_NAME_TH']) ? " AND POS_NAME_TH LIKE'%{$filter['POS_NAME_TH']}%'" : '');
-            $sql .= (isset($filter['POS_NAME_EN']) ? " AND POS_NAME_EN LIKE'%{$filter['POS_NAME_EN']}%'" : '');
+            $sql .= (isset($filter['BS1_PROCESS_NAME_TH']) ? " AND BS1_PROCESS_NAME_TH LIKE '%{$filter['BS1_PROCESS_NAME_TH']}%'" : '');
+            $sql .= (isset($filter['BS1_PROCESS_NAME_EN']) ? " AND BS1_PROCESS_NAME_EN LIKE '%{$filter['BS1_PROCESS_NAME_EN']}%'" : '');
 
             $sql .= (isset($filter['IN_ID']) ? " AND {$this->primary} IN ({$filter['IN_ID']})" : '');
             $sql .= (isset($filter['NOT_IN_ID']) ? " AND {$this->primary} NOT IN ({$filter['IN_ID']})" : '');
 
             $sql .= (isset($filter['SQL']) ? " AND {$filter['SQL']}" : '');
             $sql .= (isset($filter['AUTO']) ? " AND {$filter['AUTO']}" : '');
+
         }
         return $sql;
     }

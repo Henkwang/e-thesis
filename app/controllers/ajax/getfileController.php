@@ -21,6 +21,7 @@ class GetfileController
         $this->lang = ($session->has('lang') ? $session->get('lang') : 'TH');
         $this->_dbmodel = require(__DIR__ . "/../../config/dbmodel.php");
         $this->filemanage = new  \EThesis\Library\FileManage();
+
     }
 
     public function __construct()
@@ -29,12 +30,17 @@ class GetfileController
     }
 
     public function get_pdfAction($b64 = ''){
+        $tmp = $this->filemanage->base_dir;
+        $this->filemanage->base_dir .= 'public/uploads/';
         $filename = text_decode($b64);
         $this->filemanage->get_pdf($filename);
+        $this->filemanage->base_dir = $tmp;
 
     }
 
     public function get_imageAction($b64 = ''){
+        $tmp = $this->filemanage->base_dir;
+        $this->filemanage->base_dir .= 'public/uploads/';
         $filename = text_decode($b64);
 //        $filename = 'public/uploads/bs1/pic_person/2015042910571430279845668.jpg';
         if($this->filemanage->get_image($filename)){
@@ -42,7 +48,16 @@ class GetfileController
         }else{
             echo 'false';
         }
+        $this->filemanage->base_dir = $tmp;
 
+    }
+
+    public function get_bankimageAction(){
+        $this->filemanage->get_image('public/resource/img/no_image.png');
+    }
+
+    public function get_bankpersonAction(){
+        $this->filemanage->get_image('public/resource/img/blank.jpg');
     }
 
 }

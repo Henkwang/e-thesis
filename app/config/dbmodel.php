@@ -116,6 +116,14 @@ return [
         'order' => 'GRP_NAME_ML ASC',
     ],
 
+    'BS1_PROCESS' => [
+        'module' => 'bs',
+        'model' => 'bs1_process_model',
+        'key' => 'BS1_PROCESS_ID',
+        'label' => "CONVERT(VARCHAR, BS1_PROCESS_ORDER) + '. ' + BS1_PROCESS_NAME_ML",
+        'filter' => [],
+        'order' => 'BS1_PROCESS_ORDER ASC',
+    ],
 
 ];
 

@@ -30,13 +30,16 @@ class Bs1rptController extends \Phalcon\Mvc\Controller
 
     public function indexAction()
     {
-        echo '<a target="_blank" href="/e-thesis/bs/bs1rpt/preview">Preview</a>';
+//        echo '<pre>';
+//        print_r($_SERVER);
+//        echo '<a target="_blank" href="/e-thesis/bs/bs1rpt/preview">Preview</a>';
+
 
     }
 
     private function getdata($pk_id)
     {
-        $pk_id = 2051;
+//        $pk_id = 2051;
         $bs1_model = new \EThesis\Models\Bs\Bs1_master_model();
         $research_model = new \EThesis\Models\Bs\Bs1_research_model();
         $award_model = new \EThesis\Models\Bs\Bs1_award_model();
@@ -68,12 +71,15 @@ class Bs1rptController extends \Phalcon\Mvc\Controller
         return false;
     }
 
-    public function previewAction()
+    public function previewAction($pk_id = '')
     {
-        $data = $this->getdata(2051);
+        $data = $this->getdata($pk_id);
+
+//        echo '<pre>';
+//        print_r($data);return;
 
         if (empty($data)) {
-            echo 'ผิดพลาด ไม่เจอข้อมูลที่ค้นหา';
+            echo 'ผิดพลาด! ไม่เจอข้อมูลที่ค้นหา';
             return;
         }
         $this->data_model = new \EThesis\Controllers\Ajax\AutocompleteController();
@@ -83,8 +89,8 @@ class Bs1rptController extends \Phalcon\Mvc\Controller
         $pdf = new \TCPDF('P');
         $pdf->SetCreator(PDF_CREATOR);
         $pdf->SetAuthor('EThesis - UP');
-        $pdf->SetTitle('TEST');
-        $pdf->SetSubject('Test');
+        $pdf->SetTitle('ประวัติอาจารย์บัณฑิตศึกษา');
+        $pdf->SetSubject('บันทึก ประวัติอาจารย์บัณฑิตศึกษา/อาจารย์พิเศษบัณฑิตศึกษา');
 
         $pdf->setPrintHeader(false);
         $pdf->setPrintFooter(false);
@@ -233,6 +239,7 @@ class Bs1rptController extends \Phalcon\Mvc\Controller
 
         $pdf->SetFont('', '', 14);
         $sc = substr_count($data['BS1_EXPERIENCE'], PHP_EOL);
+        $pdf->MultiCell(6, $h * ($sc > 2 ? $sc : 3), '', '', 'L', 0, 0);
         $pdf->MultiCell(30, $h * ($sc > 2 ? $sc : 3), $data['BS1_EXPERIENCE'], '', 'L', 0, 1);
 
 
@@ -304,21 +311,188 @@ class Bs1rptController extends \Phalcon\Mvc\Controller
             $pdf->Cell(20, $h, $data['PRESENT_ACADEMIC_IS_EXPERIENCE_YEAR'], 0, 1, '');
 
             $pdf->Cell(10, $h, '', 0, 0, '');
-            $pdf->SetTextColor(0,0,255);
+            $pdf->SetTextColor(0, 0, 255);
             $pdf->SetFont('', 'UB', 14);
-            $file = text_encode('public/uploads/bs1/contract_person/'. $data['PERSON_CONTRACT_FILE']);
-            $pdf->Cell(0, $h, 'ดาวโหลดคำส่งแต่งตั้งอาจารย์ที่ปริกษาการศึกษาค้าคว้าด้วยตนเอง', 0, 1, '', 0, $this->url->get('ajax/getfile/get_pdf/'. $file));
-            $pdf->SetTextColor(0,0,0);
+            $file = text_encode('bs1/is_file/' . $data['IS_CONTRACT_FILE']);
+            $pdf->Cell(0, $h, 'แนบคำส่งแต่งตั้งอาจารย์ที่ปริกษาการศึกษาค้าคว้าด้วยตนเอง', 0, 1, '', 0, $this->url->get('ajax/getfile/get_pdf/' . $file));
+            $pdf->SetTextColor(0, 0, 0);
         }
-
 
 
         $pdf->addPage();
 
 
+        $pdf->SetFont('', '', 14);
+        $pdf->Cell(6, $h, '5.', 0, 0, '');
+        $pdf->Cell(55, $h, 'งานวิจัยที่สนใจหรือกำลังดำเนินการอยู่', 0, 0, '');
+        $pdf->SetFont('', 'B', 14);
+        $pdf->Cell(50, $h, ($data['MORE_RESEARCH_STATUS'] == 'F' ? 'ไม่มี' : 'มี') . 'งานวิจัยที่สนใจ', 0, 1, '');
+
+        if ($data['MORE_RESEARCH_STATUS'] == 'T') {
+            foreach ($data['research'] as $key => $val) {
+                $pdf->SetFont('', 'B', 14);
+                $pdf->Cell(6, $h, '', 0, 0, '');
+                $pdf->Cell(7, $h, '5.' . ($key + 1), 0, 0, '');
+                $pdf->Cell(0, $h, $val['BS1_RESEARCH_NAME_TH'], 0, 1, '');
+            }
+        }
+
+        $pdf->setY($pdf->getY() + ($h / 4));
+        $pdf->SetFont('', '', 14);
+        $pdf->Cell(6, $h, '6.', 0, 0, '');
+        $pdf->Cell(100, $h, 'รางวัลหรือเกียรติคุณทางการสอน การวิจัยหรือทางวิชาการ ที่เคยได้รับ', 0, 0, '');
+        $pdf->SetFont('', 'B', 14);
+        $pdf->Cell(50, $h, ($data['AWARD_NAME_STATUS'] == 'F' ? 'ไม่เคย' : 'เคย') . 'ได้รับรางวัล', 0, 1, '');
+        if ($data['AWARD_NAME_STATUS'] == 'T') {
+            foreach ($data['award'] as $key => $val) {
+                $pdf->SetFont('', 'B', 14);
+                $pdf->Cell(6, $h, '', 0, 0, '');
+                $pdf->Cell(7, $h, '6.' . ($key + 1), 0, 0, '');
+                $pdf->Cell(0, $h, $val['BS1_AWARD_NAME_TH'] .  '   พ.ศ.' . $val['BS1_AWARD_YEAR'], 0, 1, '');
+            }
+        }
+
+        $pdf->ln();
+        $pdf->ln();
+        $pdf->SetFont('', 'B', 16);
+        $pdf->Cell(0, $h, 'ส่วนที่  2  คณะจัดการเรียนการสอน', 0, 1, '');
 
 
+        $pdf->setY($pdf->getY() + ($h / 4));
+        $pdf->SetFont('', '', 14);
+        $pdf->Cell(6, $h, '1.', 0, 0, '');
+        $pdf->Cell(90, $h, 'บันทึกการตรวจสอบ วันที่เริ่มทำงาน (เฉพาะอาจารย์บัณฑิตศึกษา)', 0, 0, '');
+        $pdf->SetFont('', 'B', 14);
+        $pdf->Cell(6, $h, '', 0, 0, '');
+        $pdf->Cell(0, $h, ($data['ADVISER_STATUS'] == 'A' ? '' : 'ไม่') . 'เป็นอาจารย์บัณฑิตศึกษา', 0, 1, '');
+        if ($data['ADVISER_STATUS'] == 'A') {
+            $pdf->SetFont('', '', 14);
+            $pdf->Cell(6, $h, '', 0, 0, '');
+            $pdf->Cell(30, $h, 'ประเภทสัญญาจ้าง', 0, 0, '');
+            $pdf->SetFont('', 'B', 14);
+            $pdf->Cell(0, $h, $this->lang->lang('ADVISER_TYPE_ID', $data['ADVISER_TYPE_ID']), 0, 1, '');
 
+
+            $pdf->SetFont('', '', 14);
+            $pdf->Cell(6, $h, '', 0, 0, '');
+            $pdf->Cell(90, $h, 'ตรวจสอบแล้วเป็นพนักงานมหาวิทยาลัยตามสัญญาจ้างตำแหน่ง', 0, 0, '');
+            $pdf->SetFont('', 'B', 14);
+            $pdf->Cell(0, $h, $data['CK_POSITION_TH'], 0, 1, '');
+            if ($data['ADVISER_TYPE_ID'] == 2) {
+                $pdf->SetFont('', '', 14);
+                $pdf->Cell(6, $h, '', 0, 0, '');
+                $pdf->Cell(0, $h, 'แห่งข้อบังคับมหาวิทยาลัยพะเยา ว่าด้วย การบริหารงานบุคคล สัญญาจ้างตั้งแต่', 0, 1, '');
+                $pdf->SetFont('', '', 14);
+                $pdf->Cell(6, $h, '', 0, 0, '');
+                $pdf->SetFont('', 'B', 14);
+                $pdf->Cell(80, $h, 'วันที่ ' . view_date($data['CK_START_DATE'], 'mm') . ' ถึง วันที่ ' . view_date($data['CK_END_DATE'], 'mm'), 0, 0, '');
+
+                $pdf->SetTextColor(0, 0, 255);
+                $pdf->SetFont('', 'UB', 14);
+                $file = text_encode('bs1/contract_person/' . $data['PERSON_CONTRACT_FILE']);
+                $pdf->Cell(0, $h, 'แนบสัญญาจ้าง', 0, 1, '', 0, $this->url->get('ajax/getfile/get_pdf/' . $file));
+                $pdf->SetTextColor(0, 0, 0);
+            }
+
+        }
+
+
+        $pdf->setY($pdf->getY() + ($h / 4));
+        $pdf->SetFont('', '', 14);
+        $pdf->Cell(6, $h, '2.', 0, 0, '');
+        $pdf->Cell(0, $h, 'บันทึกการตรวจสอบ คุณสมบัติการแต่งตั้งอาจารย์บัณฑิตสึกษา/อาจารย์พิเศษบัณฑิตศึกษา ได้ตรวจสอบแล้วสามารถแต่งตั้งเป็น', 0, 1, '');
+
+
+        $pop_data = [
+            /*0*/
+            'มีคุณวุติไม่ตำกว่าปริญญาโทหรือเทียบเท่า หรือเป็นผู้ตำรงตำแหน่งทางวิชาการไม่ต่ำกว่าผู้ช่วยศาสตร์จารย์ และมีประสบการณ์ด้านการสอนและการทำวิจัยที่มิใช่ส่วนหนึ่งของการศึกษาเพื่อรับปริญญา',
+            /*1*/
+            'มีคุณวุติไม่ตำกว่าปริญญาเอกหรือเทียบเท่า และยังไม่มีผลงานวิจัยหลังสำเร็จการศึกษา',
+            /*2*/
+            'มีคุณวุติไม่ตำกว่าปริญญาเอกหรือเทียบเท่า หรือเป็นผู้ตำรงตำแหน่งทางวิชาการไม่ต่ำกว่าผู้ช่วยศาสตร์จารย์ และมี ประสบการณ์ด้านการสอนและการทำวิจัยที่มิใช่ส่วนหนึ่งของการศึกษาเพื่อรับปริญญา',
+            /*3*/
+            'เป็นอาจารย์ประจำมหาวิทยาลัยพะเยา มีคุณวุติไม่ตำกว่าปริญญาเอกหรือเทียบเท่า หรือเป็นผู้ตำรงตำแหน่งทาง วิชาการไม่ต่ำกว่าผู้ช่วยศาสตร์จารย์ และมีประสบการณ์ด้านการสอนและการทำวิจัยที่มิใช่ส่วนหนึ่งของการศึกษา เพื่อรับปริญญา',
+            /*4*/
+            'เป็นผู้เชี่ยวชาญเฉพาะ ที่เป็นอาจารย์ประจำมหาวิทยาลัยพะเยา มีความรู้ ความเชี่ยวชาญและประสบการณ์สูงใน สาขาวิชานั้นๆ เป็นที่ยอมรับในหน่วยงานหรือระดับกระทรวงหรือวงการด้านวิชาชืพนั้นๆ เทียบได้ไม่ต่ำกว่าระดับ 9 ตามหลักเกณฑ์และวิธีการที่สำนักงานคณะกรรมการข้าราชการพลเรือนและหน่วยงานที่เกี่ยวข้องกำหนด'
+        ];
+
+
+        $pdf->SetFont('', '', 14);
+        $pdf->Cell(15, $h, '2.1  ', 0, 0, 'R');
+//        $pdf->Cell(23, $h, 'อาจารย์ผู้สอน', 0, 0, '');
+        $pdf->SetFont('', 'B', 14);
+        $pdf->Cell(40, $h, ($data['POP_INS_ID'] == '-1' ? 'ไม่' : '') . 'แต่งตั้งเป็นอาจารย์ผู้สอน', 0, 0, '');
+        if (!($data['POP_INS_ID'] == '-1')) {
+            if ($data['POP_INS_ID'] == 1 || $data['POP_INS_ID'] == 2) {
+                $pdf->SetFont('', 'B', 14);
+                $pdf->Cell(40, $h, 'ระดับปริญญาโท', 0, 1, '');
+            } else if ($data['POP_INS_ID'] == 3) {
+                $pdf->SetFont('', 'B', 14);
+                $pdf->Cell(40, $h, 'ระดับปริญญาเอก ', 0, 1, '');
+            }
+            $pdf->Cell(15, $h, '', 0, 0, '');
+            $pdf->SetFont('', 'B', 14);
+            $pdf->Cell(15, $h, 'เนื่องจาก ', 0, 0, '');
+
+            $pdf->SetFont('', '', 14);
+            if ($data['POP_INS_ID'] == 1) {
+                $pdf->MultiCell(00, $h * 2, $pop_data[0], '', 'J', 0, 1);
+            } else if ($data['POP_INS_ID'] == 2) {
+                $pdf->MultiCell(00, $h * 2, $pop_data[1], '', 'J', 0, 1);
+            } else if ($data['POP_INS_ID'] == 3) {
+                $pdf->MultiCell(00, $h, $pop_data[2], '', 'J', 0, 1);
+            }
+        }
+
+
+        $pdf->SetFont('', '', 14);
+        $pdf->Cell(15, $h, '2.2  ', 0, 0, 'R');
+//        $pdf->Cell(, $h, '', 0, 0, '');
+        $pdf->SetFont('', 'B', 14);
+        $pdf->Cell(90, $h, ($data['POP_HEAD_THESIS_ID'] == '-1' ? 'ไม่' : '') . 'แต่งตั้งเป็นประธานที่ปรึกษาวิทยานิพนธ์ ระดับบัณฑิตศึกษา', 0, 1, '');
+        if (!($data['POP_HEAD_THESIS_ID'] == '-1')) {
+            $pdf->Cell(15, $h, '', 0, 0, '');
+            $pdf->SetFont('', 'B', 14);
+            $pdf->Cell(15, $h, 'เนื่องจาก ', 0, 0, '');
+            $pdf->SetFont('', '', 14);
+            if ($data['POP_HEAD_THESIS_ID'] == 1) {
+                $pdf->MultiCell(0, $h, $pop_data[3], '', 'J', 0, 1);
+            } else if ($data['POP_HEAD_THESIS_ID'] == 2) {
+                $pdf->MultiCell(0, $h, $pop_data[4], '', 'J', 0, 1);
+            }
+        }
+
+
+        $pdf->SetFont('', '', 14);
+        $pdf->Cell(15, $h, '2.3  ', 0, 0, 'R');
+        $pdf->SetFont('', 'B', 14);
+        $pdf->MultiCell(0, $h * 2, ($data['POP_COM_THESIS_ID'] == '-1' ? 'ไม่' : '') . 'แต่งตั้งเป็นกรรมการที่ปรึกษาวิทยานิพนธ์ ประธานกรรมการพิจารณาโครงร่างวิทยานิพนธ์ กรรมการพิจารณา โครงร่างวิทยานิพนธ์ และกรรมการสอบวิทยานิพนธ์ ระดับบัณฑิตศึกษา', '', 'L', 0, 1);
+        if (!($data['POP_COM_THESIS_ID'] == '-1')) {
+            $pdf->Cell(15, $h, '', 0, 0, '');
+            $pdf->SetFont('', 'B', 14);
+            $pdf->Cell(15, $h, 'เนื่องจาก ', 0, 0, '');
+            $pdf->SetFont('', '', 14);
+            if ($data['POP_COM_THESIS_ID'] == 1) {
+                $pdf->MultiCell(0, $h, $pop_data[2], '', 'J', 0, 1);
+            } else if ($data['POP_COM_THESIS_ID'] == 2) {
+                $pdf->MultiCell(0, $h, $pop_data[4], '', 'J', 0, 1);
+            }
+        }
+
+
+        $pdf->SetFont('', '', 14);
+        $pdf->Cell(15, $h, '2.4  ', 0, 0, 'R');
+        $pdf->SetFont('', 'B', 14);
+        $pdf->MultiCell(0, $h, ($data['POP_COM_THESIS_ID'] == '-1' ? 'ไม่' : '') . 'แต่งตั้งเป็นอาจารย์ที่ปรึกษาการศึกษาค้นคว้าด้วยตนเอง', '', 'L', 0, 1);
+        if (!($data['POP_COM_THESIS_ID'] == '-1')) {
+            $pdf->Cell(15, $h, '', 0, 0, '');
+            $pdf->SetFont('', 'B', 14);
+            $pdf->Cell(15, $h, 'เนื่องจาก ', 0, 0, '');
+            $pdf->SetFont('', '', 14);
+            if ($data['POP_COM_THESIS_ID'] == 1) {
+                $pdf->MultiCell(0, $h, $pop_data[2], '', 'J', 0, 1);
+            }
+        }
 
 
         $pdf->Output('bs1.pdf', 'I');
@@ -327,7 +501,12 @@ class Bs1rptController extends \Phalcon\Mvc\Controller
 
     function iden_fill($iden)
     {
-        $fill = $iden[0] . '-' . substr($iden, 1, 4) . '-' . substr($iden, 5, 5) . '-' . substr($iden, 9, 2) . '-' . substr($iden, 12, 1);
+        if (strlen($iden) == 13) {
+            $fill = $iden[0] . '-' . substr($iden, 1, 4) . '-' . substr($iden, 5, 5) . '-' . substr($iden, 9, 2) . '-' . substr($iden, 12, 1);
+        } else {
+            $fill = $iden;
+        }
+
         return $fill;
     }
 

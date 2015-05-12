@@ -1,0 +1,378 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: attapon.th
+ * Date: 17/3/2558
+ * Time: 10:24
+ */
+
+$table_name = 'bs1_' . rand(0, 999999);
+?>
+<br/><br/>
+<div class="row">
+    <div class="col-xs-8 col-xs-offset-2">
+        <?= $formclass->get_inputgroup_complate($table_name, false) ?>
+    </div>
+</div>
+<hr/>
+<div class="row">
+<div class="col-sm-12">
+<table id="<?= $table_name ?>" class="display cell-border hover" cellspacing="0"
+       width="100%"></table>
+<script>
+$.material.init();
+var O<?=$table_name?> = $('#<?=$table_name?>').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '<?=$burl. 'getdata';?>',
+            type: 'POST'
+        },
+        language: (lang == 'th' ? {
+            "sProcessing": "กำลังดำเนินการ...",
+            "sLengthMenu": "แสดง_MENU_ แถว",
+            "sZeroRecords": "ไม่พบข้อมูล",
+            "sInfo": "แสดง _START_ ถึง _END_ จาก _TOTAL_ แถว",
+            "sInfoEmpty": "แสดง 0 ถึง 0 จาก 0 แถว",
+            "sInfoFiltered": "(กรองข้อมูล _MAX_ ทุกแถว)",
+            "sInfoPostFix": "",
+            "sSearch": "ค้นหา:",
+            "sUrl": "",
+            "oPaginate": {
+                "sFirst": "เริ่มต้น",
+                "sPrevious": "ก่อนหน้า",
+                "sNext": "ถัดไป",
+                "sLast": "สุดท้าย"
+            }
+        } : ''),
+        dom: '<"#top">rt<"#bottom"ilp>',
+        columns: [
+            {
+                name: 'pk_id',
+                data: 'pk_id',
+                orderable: false,
+                visible: false
+            },
+            {
+                name: 'ASEAN_STATUS',
+                data: 'ASEAN_STATUS',
+                class: 'dt-center',
+                width: '10%',
+                orderable: true,
+                title: '<?=$Lang->label('ASEAN_STATUS')?>'
+            },
+            {
+                name: 'ACAD_YEAR',
+                data: 'ACAD_YEAR',
+                class: 'dt-center',
+                width: '10%',
+                orderable: true,
+                title: '<?=$Lang->label('ACAD_YEAR')?>'
+            },
+            {
+                name: 'ADVISER_STATUS',
+                data: 'ADVISER_STATUS',
+                class: 'dt-head-center',
+                width: '20%',
+                orderable: true,
+                title: '<?=$Lang->label('ADVISER_STATUS')?>'
+            },
+            {
+                name: 'NAME_TH',
+                data: 'NAME_TH',
+                width: '40%',
+                class: 'dt-head-center',
+                orderable: true,
+                title: '<?=$Lang->label('NAME_TH')?>'
+            },
+            {
+                name: 'BS1_PROCESS_ORDER',
+                data: 'BS1_PROCESS_ORDER',
+                class: 'dt-center',
+                orderable: true,
+                title: '<?=$Lang->label('BS1_PROCESS_ORDER')?>'
+            }, {
+                name: 'BS1_HIS_STATUS',
+                data: 'BS1_HIS_STATUS',
+                orderable: false,
+                visible: false
+            },
+        ]
+    })
+        .on('init.dt', function () {
+            $('#<?=$table_name?>_wrapper #top').html('')
+                .append('<div  style="float: left;margin: 0 10px 0 0;">'
+                + '<button type="button" id="ADD" class="btn btn-sm btn-primary"><i class="md-add"></i> <?=$Lang->label('ADD')?></button>'
+                + '<button type="button" id="EDIT" class="btn btn-sm btn-warning disabled"><i class="md-edit"></i> <?=$Lang->label('EDIT')?></button>'
+                + '<button type="button" id="DELETE" class="btn btn-sm btn-danger disabled"><i class="md-remove"></i> <?=$Lang->label('DELETE')?></button>'
+                + '</div>')
+                .append('<button type="button" id="PRINT" class="btn btn-sm btn-info disabled"><i class="md-description"></i> พิมพ์</button>')
+                .append('<button type="button" id="SEND" class="btn btn-sm btn-success disabled"><i class="md-work"></i> ดำเนินการ</button>')
+            ;
+            $('#<?=$table_name?>_wrapper #top').children().click(function (e) {
+                evant_manage(e.target.id);
+            });
+        })
+    ;
+$('#<?=$table_name?> tbody').on('click', 'tr', function () {
+    if ($(this).hasClass('selected')) {
+        $(this).removeClass('selected');
+        $('#<?=$table_name?>_wrapper #top #EDIT')
+            .add('#<?=$table_name?>_wrapper #top #DELETE')
+            .add('#<?=$table_name?>_wrapper #top #PRINT')
+            .add('#<?=$table_name?>_wrapper #top #SEND')
+            .addClass('disabled');
+    } else {
+        O<?=$table_name?>.$('tr.selected').removeClass('selected');
+        $(this).addClass('selected');
+        $('#<?=$table_name?>_wrapper #top #EDIT')
+            .add('#<?=$table_name?>_wrapper #top #DELETE')
+            .add('#<?=$table_name?>_wrapper #top #PRINT')
+            .add('#<?=$table_name?>_wrapper #top #SEND')
+            .removeClass('disabled');
+    }
+});
+
+function evant_manage(manage) {
+    var ID = 'main_tab';
+    var la = '';
+    var murl = '';
+
+
+    if (manage == 'ADD') {
+        var elm = add_tab(ID);
+        la = '<i class="md-add"></i> <?=$Lang->label('ADD')?>';
+        murl = base_url + 'bs/bs1form/getform/' + manage;
+    } else if (O<?=$table_name?>.row('.selected').length == 0) {
+        alert('กรุณาทำการเลือกรายการทำการ');
+        return;
+    } else if (manage == 'EDIT') {
+        if (O<?=$table_name?>.row('.selected').data().BS1_HIS_STATUS == 'T') {
+            alert('ไม่สามารถทำรายการได้ เนื่องจากได้ทำการส่งแบบฟอร์มแล้ว');
+            return;
+        }
+        var elm = add_tab(ID);
+        la = '<i class="md-edit"></i> <?=$Lang->label('EDIT')?>';
+        murl = base_url + 'bs/bs1form/getform/' + manage;
+    } else if (manage == 'DELETE') {
+        if (O<?=$table_name?>.row('.selected').data().BS1_HIS_STATUS == 'T') {
+            alert('ไม่สามารถทำรายการได้ เนื่องจากได้ทำการส่งแบบฟอร์มแล้ว');
+            return;
+        }
+        if (!confirm('คุณต้องการลบรายการนี้หรือไม่')) {
+            return;
+        }
+        la = '<i class="md-remove"></i> <?=$Lang->label('DELETE')?>';
+        murl = base_url + 'bs/bs1form/setdata/' + manage;
+    }
+    else if (manage == 'PRINT') {
+        window.open(base_url + 'bs/bs1rpt/preview/' + (O<?=$table_name?>.row('.selected').length > 0 ? O<?=$table_name?>.row('.selected').data().pk_id : '' ) + '/', '_blank')
+    } else if (manage == 'SEND') {
+        process_bs1((O<?=$table_name?>.row('.selected').length > 0 ? O<?=$table_name?>.row('.selected').data().pk_id : '' ));
+    }
+
+
+    if (manage == 'ADD' || manage == 'EDIT' || manage == 'DELETE') {
+        jQuery.ajax({
+                type: "POST",
+                url: murl,
+                data: 'tablename=<?=$table_name?>&pk_id=' + (O<?=$table_name?>.row('.selected').length > 0 ? O<?=$table_name?>.row('.selected').data().pk_id : '' ),
+                success: function (result) {
+                    if (manage == 'ADD' || manage == 'EDIT') {
+                        if (manage == 'EDIT') {
+                            //Set Label Tab
+                            la = '<i class="md-edit"></i>  <?=$Lang->label('EDIT')?>';
+                            la += '[' + O<?=$table_name?>.row('.selected').data().NAME_TH + ']';
+                        }
+                        elm.tab.html(la);
+                        elm.content.html(result);
+                    } else if (manage == 'DELETE') {
+                        var res = decode_json(result);
+//                                        clog(res);
+                        if (res.msg) {
+                            alert(res.msg);
+                        } else {
+                            alert('ผิดพลาด!');
+                        }
+                        $('#<?=$table_name?>_wrapper #top #EDIT')
+                            .add('#<?=$table_name?>_wrapper #top #DELETE')
+                            .add('#<?=$table_name?>_wrapper #top #PRINT')
+                            .add('#<?=$table_name?>_wrapper #top #SEND')
+                            .addClass('disabled');
+                        O<?=$table_name?>.ajax.reload();
+
+                    }
+                }
+            }
+        );
+    }
+
+}
+var process_bs1_data;
+function process_bs1(pk_id) {
+    if (pk_id) {
+        $.ajax({
+            dataType: 'json',
+            url: base_url + 'bs/bs1/getdeteilprocess/' + pk_id,
+            type: 'POST',
+            success: function (result) {
+                if (result.success == true) {
+                    process_bs1_data = result.data;
+                    create_process_bs1_dialog(pk_id);
+                } else {
+                    alert('ไม่พบข้อมูลที่คุณต้องการค้นหา');
+                    close_dialog();
+                }
+            },
+            error: function () {
+                alert('ผิดพลาด!!');
+                close_dialog();
+            }
+        });
+    }
+}
+var PPPP_table = null;
+function create_process_bs1_dialog() {
+    var table = $('#table_process_bs1');
+    if (PPPP_table !== null) {
+        PPPP_table.destroy();
+    }
+    set_dialog_attr('60%');
+    var process_name = process_bs1_data.BS1_PROCESS;
+    var process_his = process_bs1_data.BS1_HIS;
+    var first_null = true;
+    var ck_sta_F = false;
+    var tbody = $('tbody', table);
+    tbody.empty();
+    for (var i in process_name) {
+        var tr = '';
+        tr += '<tr>';
+        tr += '<td>' + process_name[i] + '</td>';
+        if (process_his[i]) {
+            tr += '<td class="dt-center">' + process_his[i].BS1_HIS_DATE + '</td>';
+            tr += '<td class="dt-center" >' + process_his[i].BS1_HIS_STATUS + '</td>';
+            tr += '<td class="dt-center"><a href="javascript:process_bs1_detail(' + i + ')" > <i class="md-assignment"></i> รายละเอียด</a></td>';
+            if (process_his[i].BS1_HIS_STATUS_TF == 'F') {
+                first_null = false;
+                ck_sta_F = true;
+            }
+        } else if (first_null === true) {
+            first_null = false;
+            tr += '<td></td><td class="dt-center">กำลังดำเนินการ...</td><td></td>';
+        }
+        else {
+            tr += '<td></td><td></td><td></td>';
+        }
+        tr += '</tr>';
+        tbody.append(tr);
+    }
+
+    PPPP_table = $('table', table).DataTable({
+        "bPaginate": false,
+        "bSort": false,
+        "bFilter": false,
+        "bProcessing": false,
+        "bInfo": false
+    });
+    var foot_dialog = '';
+    if (process_his.length == 0 || ck_sta_F) {
+        foot_dialog = '<a href="javascript:process_bs1_send_form(' + process_bs1_data.pk_id + ')" class="btn btn-primary btn-raised"> <i class="md-assignment"></i> ส่งแบบฟอร์ม</a>';
+    }
+
+    set_dialog(table.html(), 'รายละเอียดกระบวนการดำเนินการ', foot_dialog);
+    open_dialog();
+}
+
+function process_bs1_detail(pk_id) {
+    var head = 'รายละเอียดกระบวณการ ' + process_bs1_data.BS1_PROCESS[pk_id];
+    var body = '<br/><br/><div class="col-xs-6" style="font-size: 1.2em">' +
+        '<div class="col-xs-4 text-primary text-right">กระบวนการ :</div><div class="col-xs-8">' + process_bs1_data.BS1_PROCESS[pk_id] + '</div>' +
+        '<div class="col-xs-4 text-primary text-right">สถานะ :</div><div class="col-xs-8">' + process_bs1_data.BS1_HIS[pk_id].BS1_HIS_STATUS + '</div>' +
+        '<div class="col-xs-4 text-primary text-right">วันที่ทำรายการ :</div><div class="col-xs-8">' + process_bs1_data.BS1_HIS[pk_id].BS1_HIS_DATE + '</div>' +
+        '<div class="col-xs-4 text-primary text-right">หมายเหตุ :</div><div class="col-xs-8">' + process_bs1_data.BS1_HIS[pk_id].BS1_HIS_REMARK + '</div>' +
+        '</div><br/><br/>';
+    var foot = '<a href="javascript:create_process_bs1_dialog();" class="btn btn-warning btn-raised"> <i class="md-arrow-back"></i> กลับ</a>';
+    set_dialog(body, head, foot);
+}
+
+function process_bs1_send_form(pk_id) {
+    var body = $('#confirm_bs1_send_process').clone();
+    var head = 'ยืนยันการส่งแบบฟอร์ม';
+    var foot = '<a href="javascript:process_bs1_send_form_data()" class="btn btn-primary"> <i class="md-assignment"></i> ส่ง</a>';
+    foot += '<a href="javascript:create_process_bs1_dialog();" class="btn btn-warning"> <i class="md-arrow-back"></i> กลับ</a>';
+    set_dialog(body.html(), head, foot);
+}
+
+function process_bs1_send_form_data() {
+    var pk_id = process_bs1_data.pk_id;
+    var data_form = $('#complete-dialog #form_confirm_bs1_send_process').serialize();
+    data_form += '&pk_id=' + pk_id;
+
+    $.ajax({
+        dataType: 'json',
+        url: base_url + 'bs/bs1/setdata/SEND_PO1',
+        data: data_form,
+        type: 'POST',
+        success: function (result) {
+            if (result.success == true) {
+                alert(result.msg);
+                O<?=$table_name?>.ajax.reload();
+            } else {
+                alert(result.msg);
+            }
+            close_dialog();
+        },
+        error: function () {
+            alert('ผิดพลาด!!');
+        }
+    });
+
+}
+
+
+</script>
+</div>
+</div>
+
+<div id="table_process_bs1" style="display: none">
+    <table class="display cell-border hover">
+        <thead>
+        <th style="width: 40%" class="dt-head-center">กระบวณการ</th>
+        <th style="width: 25%" class="dt-center">วันเวลาบันทึก</th>
+        <th style="width: 25%" class="dt-center">สถานะตำเนินการ</th>
+        <th style="width: 10%" class="dt-center">รายละเอียด</th>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<div class="col-xs-12" style="display: none" id="confirm_bs1_send_process">
+    <form method="post" id="form_confirm_bs1_send_process">
+        <div class="form-group">
+            <label class="col-xs-2 control-label">ส่งแบบฟอร์ม</label>
+
+            <div class="col-xs-10">
+                <div class="radio radio-primary">
+                    <label>
+                        <input type="radio" name="BS1_HIS_STATUS" value="T" checked="">
+                        ส่ง
+                    </label>
+                </div>
+                <div class="radio radio-primary" style="display: none">
+                    <label>
+                        <input type="radio" name="BS1_HIS_STATUS" value="F">
+                        ไม่ส่ง
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="textArea" class="col-xs-2 control-label">รายละเอียด</label>
+
+            <div class="col-lg-10">
+                <textarea rows="4" name="BS1_HIS_REMARK" class="form-control" rows="3" id="BS1_HIS_REMARK"></textarea>
+            </div>
+        </div>
+    </form>
+</div>

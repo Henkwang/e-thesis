@@ -34,6 +34,11 @@ $di->set('lang', function ()  {
     return $lang;
 }, true);
 
+
+$di->set('load', function ()  {
+    $load = new \EThesis\Library\Includephp();
+    return $load;
+}, true);
 /**
  * The URL component is used to generate all kind of urls in the application
  */

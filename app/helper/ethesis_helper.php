@@ -38,15 +38,6 @@ if (!function_exists('et_array_marge')) {
     }
 }
 
-if (!function_exists('get_url')) {
-    function get_url()
-    {
-        $base_url = \Phalcon\DI\FactoryDefault::getDefault()['url']->get();
-        $uri = $_SERVER['REQUEST_URI'];
-        return substr($_SERVER['REQUEST_URI'], stripos($uri, $base_url) + strlen($base_url));
-    }
-}
-
 
 if (!function_exists('array_is_numeric')) {
     function array_is_numeric(array $arr)
@@ -84,10 +75,19 @@ if (!function_exists('text_encode')) {
 }
 
 
-
 if (!function_exists('text_decode')) {
     function text_decode($text)
     {
         return base64_decode(urldecode($text));
+    }
+}
+
+if (!function_exists('default_response')) {
+    function default_response($msg = '')
+    {
+        return [
+            'success' => false,
+            'msg' => $msg,
+        ];
     }
 }

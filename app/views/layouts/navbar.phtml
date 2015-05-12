@@ -17,7 +17,15 @@ if ($di->session->get('auth') === true && is_numeric($di->session->get('grouplog
     ?>
 
 
-    <div class="navbar navbar-material-deep-purple-700" style="margin-bottom: 0px">
+    <div class="navbar" style="margin-bottom: 0px;
+  background: -webkit-linear-gradient(90deg, #2a0845 10%, #6441A5 90%); /* Chrome 10+, Saf5.1+ */
+  background:    -moz-linear-gradient(90deg, #2a0845 10%, #6441A5 90%); /* FF3.6+ */
+  background:     -ms-linear-gradient(90deg, #2a0845 10%, #6441A5 90%); /* IE10 */
+  background:      -o-linear-gradient(90deg, #2a0845 10%, #6441A5 90%); /* Opera 11.10+ */
+  background:         linear-gradient(90deg, #2a0845 10%, #6441A5 90%); /* W3C */
+ */
+
+    ">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-inverse-collapse">
                 <span class="icon-bar"></span>
@@ -39,7 +47,16 @@ if ($di->session->get('auth') === true && is_numeric($di->session->get('grouplog
     </script>
 
 
-    <div class="navbar navbar-material-purple-400 navber-small">
+    <div class="navbar  navber-small" style="
+
+  background: -webkit-linear-gradient(90deg, #1D976C 10%, #52b767 90%); /* Chrome 10+, Saf5.1+ */
+  background:    -moz-linear-gradient(90deg, #1D976C 10%, #52b767 90%); /* FF3.6+ */
+  background:     -ms-linear-gradient(90deg, #1D976C 10%, #52b767 90%); /* IE10 */
+  background:      -o-linear-gradient(90deg, #1D976C 10%, #52b767 90%); /* Opera 11.10+ */
+  background:         linear-gradient(90deg, #1D976C 10%, #52b767 90%); /* W3C */
+
+
+ ">
         <div class="navbar-collapse collapse navbar-responsive-collapse">
             <ul class="nav navbar-nav">
                 <?= $html ?>
@@ -85,6 +102,10 @@ if ($di->session->get('auth') === true && is_numeric($di->session->get('grouplog
             padding-right: 5px;
         }
 
+        table tbody tr td {
+            padding: 2px !important;
+        }
+
     </style>
 
     <div class="col-md-12" id="main_tab">
@@ -117,8 +138,15 @@ if ($di->session->get('auth') === true && is_numeric($di->session->get('grouplog
         }
         function add_tab(ID) {
             var elm = $('#' + ID);
+            var tab_color = '\n\
+            background: -webkit-linear-gradient(90deg, #4b6cb7 10%, #182848 90%);\n\
+            background:    -moz-linear-gradient(90deg, #4b6cb7 10%, #182848 90%); \n\
+            background:     -ms-linear-gradient(90deg, #4b6cb7 10%, #182848 90%); \n\
+            background:      -o-linear-gradient(90deg, #4b6cb7 10%, #182848 90%); \n\
+            background:         linear-gradient(90deg, #4b6cb7 10%, #182848 90%); \n\
+            ';
             if (count_tab(ID) < 1) {
-                var ck = elm.html('<ul class="nav nav-tabs"></ul> <div id="' + ID + '_content" class="tab-content"> </div>');
+                var ck = elm.html('<ul class="nav nav-tabs" style="height:40px;' + tab_color + '"></ul> <div id="' + ID + '_content" class="tab-content"> </div>');
             }
             var num_tab = Math.floor(Math.random() * 99999);
 
@@ -216,7 +244,16 @@ if ($di->session->get('auth') === true && is_numeric($di->session->get('grouplog
             text-align: center;
         }
     </style>
-    <div class="navbar navbar-fixed-bottom navbar-material-deep-purple-700 navber-small" style="margin-bottom: 0px">
+    <div class="navbar navbar-fixed-bottom navber-inverse navber-small" style="margin-bottom: 0px;background: #e4f5fc;
+
+  background: -webkit-linear-gradient(0deg, #16222A 10%, #3A6073 90%); /* Chrome 10+, Saf5.1+ */
+  background:    -moz-linear-gradient(0deg, #16222A 10%, #3A6073 90%); /* FF3.6+ */
+  background:     -ms-linear-gradient(0deg, #16222A 10%, #3A6073 90%); /* IE10 */
+  background:      -o-linear-gradient(0deg, #16222A 10%, #3A6073 90%); /* Opera 11.10+ */
+  background:         linear-gradient(0deg, #16222A 10%, #3A6073 90%); /* W3C */
+
+
+    ">
         <div class="navbar-collapse navber-center collapse navbar-inverse-collapse">
             <ul class="nav navbar-nav" style=" display: inline-block;float: none;">
                 <li class="dropdown">
@@ -261,6 +298,54 @@ if ($di->session->get('auth') === true && is_numeric($di->session->get('grouplog
 ?>
 
 
+<!--model and function-->
+<div id="complete-dialog" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title"></h4>
+            </div>
+            <div class="modal-body">
+                <p></p>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function open_dialog(){
+        var edialog  = $('#complete-dialog');
+        edialog.modal('show');
+    }
+    function close_dialog(){
+        var edialog  = $('#complete-dialog');
+        edialog.modal('hide');
+    }
+    function  set_dialog_attr(width){
+        var edialog  = $('#complete-dialog .modal-dialog');
+        edialog.css('width', width);
+    }
 
+    function  set_dialog(body, title, foot){
+
+        var ehead = $('#complete-dialog .modal-title');
+        var ebody = $('#complete-dialog .modal-body p');
+        var efoot = $('#complete-dialog .modal-footer');
+        ebody.html(body);
+        if(title){
+            ehead.html(title);
+        }
+        if(foot){
+            efoot.html(foot).append('<button class="btn btn-danger" data-dismiss="modal">ปิด</button>');
+
+        }else{
+            efoot.html('<button class="btn btn-danger" data-dismiss="modal">ปิด</button>');
+        }
+
+    }
+
+</script>
 
 

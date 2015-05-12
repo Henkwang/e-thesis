@@ -118,8 +118,9 @@ class Sys_module_model extends \EThesis\Library\Adodb
     }
 
     public function delete($id){
-        $sql = "UPDATE  {$this->schema}.{$this->table} SET RECORD_STATUS='D' ";
-        $sql .= "LAST_DATE={$this->date_current}, LAST_USER='{$this->user_access}', LAST_USER_TYPE='{$this->user_type}'";
+        $sql = "UPDATE  {$this->schema}.{$this->table} SET RECORD_STATUS='D'";
+        $sql .= ",LAST_DATE={$this->date_current}, LAST_USER='{$this->user_access}', LAST_USER_TYPE='{$this->user_type}'";
+        $sql .= " WHERE {$this->primary}='$id'";
         $result = $this->adodb->Execute($sql);
         return $result;
     }

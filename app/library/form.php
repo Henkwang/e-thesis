@@ -282,7 +282,7 @@ class Form
             $html .= '</script>';
         } else {
             $html .= '<div class="row"><div class="col-xs-offset-5">';
-            $html .= ' <button type="submit" class="btn btn-primary btn-raised" ';
+            $html .= ' <button type="button" class="btn btn-primary btn-raised" ';
             $html .= 'onclick="O' . $table_name . '.search(JSON.stringify($(\'#' . $this->formname . '\').serializeArray())).draw();"><i class="md-search"></i>' . $this->_lang_class->label('SEARCH') . '</button>';
             $html .= '<button type="reset" class="btn btn-default btn-raised">    <i class="md-refresh"></i> ' . $this->_lang_class->label('CLEAR') . '</button>';
             $html .= '</div></div>';
@@ -332,38 +332,30 @@ class Form
             $result = $this->_set_model->insert($data);
             if ($result) {
                 $msg = 'เพิ่มข้อมูลสำเร็จ';
-                $this->_log_model->set(LOG_ADD_COMPLETE);
             } else {
                 $msg = 'ผิดพลาด! ไม่สามารถเพิ่มข้อมูลได้';
-                $this->_log_model->set(LOG_ADD_ERROR);
             }
 
         } else if ($set == 'edit') {
             if (empty($pk_id)) {
-                $this->_log_model->set(LOG_UPDATE_ERROR);
                 $msg = 'ผิดพลาด! ไม่สามารถแก้ไขข้อมูลได้';
             } else {
                 $result = $this->_set_model->update($data, $pk_id);
                 if ($result) {
                     $msg = 'แก้ไขข้อมูลสำเร็จ';
-                    $this->_log_model->set(LOG_UPDATE_COMPLETE);
                 } else {
                     $msg = 'ผิดพลาด! ไม่สามารถแก้ไขข้อมูลได้';
-                    $this->_log_model->set(LOG_UPDATE_ERROR);
                 }
             }
         } else if ($set == 'delete') {
             if (empty($pk_id)) {
-                $this->_log_model->set(LOG_DELETE_USED);
                 $msg = 'ผิดพลาด! ไม่สามารถแก้ไขข้อมูลได้';
             } else {
                 $result = $this->_set_model->delete($pk_id);
                 if ($result) {
                     $msg = 'แก้ไขข้อมูลสำเร็จ';
-                    $this->_log_model->set(LOG_DELETE_COMPLETE);
                 } else {
                     $msg = 'ผิดพลาด! ไม่สามารถลบข้อมูลได้';
-                    $this->_log_model->set(LOG_DELETE_USED);
                 }
             }
         } else {

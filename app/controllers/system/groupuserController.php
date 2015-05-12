@@ -18,7 +18,6 @@ class GroupuserController extends \Phalcon\Mvc\Controller
     protected function initialize()
     {
         $Lang = new \EThesis\Library\Lang($this->session->get('lang'));
-        $this->session->check_auth_die($Lang->label('ERROR_AUTH'));
 
         $this->view->enable();
         $this->view->setVar('Lang', $Lang);
@@ -51,8 +50,6 @@ class GroupuserController extends \Phalcon\Mvc\Controller
 
         $this->view->pick('system/groupuserIndex');
 
-
-        $this->logs->set(LOG_OPEN_PAGE);
 
     }
 

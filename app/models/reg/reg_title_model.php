@@ -18,7 +18,7 @@ class Reg_title_model extends \EThesis\Library\Adodb
     var $user_type;
 
 
-    public function initialize()
+    public function __construct()
     {
         parent::__construct();
 //        $this->adodb->debug = TRUE;

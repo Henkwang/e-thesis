@@ -12,7 +12,7 @@
             'public/resource/css/material-design-iconic-font.min.css',
             'public/resource/css/ripples.min.css',
 //            'public/resource/css/roboto.min.css',
-            'public/resource/css/material-fullpalette.min.css',
+            'public/resource/css/material.min.css',
 
 //            'public/resource/plugin/datetimepicker/css/bootstrap-datetimepicker.min.css',
             'public/resource/plugin/datepicker/datepicker.css',
@@ -70,7 +70,13 @@
         }
     </style>
 </head>
-<body>
+<body style="
+  background: -webkit-linear-gradient(90deg, #ECE9E6 10%, #FFFFFF 90%); /* Chrome 10+, Saf5.1+ */
+  background:    -moz-linear-gradient(90deg, #ECE9E6 10%, #FFFFFF 90%); /* FF3.6+ */
+  background:     -ms-linear-gradient(90deg, #ECE9E6 10%, #FFFFFF 90%); /* IE10 */
+  background:      -o-linear-gradient(90deg, #ECE9E6 10%, #FFFFFF 90%); /* Opera 11.10+ */
+  background:         linear-gradient(90deg, #ECE9E6 10%, #FFFFFF 90%); /* W3C */
+        ">
 <?php
 $lang = $di->session->get('lang');
 $base_url = $di->url->get();

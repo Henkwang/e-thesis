@@ -51,7 +51,6 @@ class LogsController extends \Phalcon\Mvc\Controller
 
         $this->view->pick('system/logIndex');
 
-        $this->logs->set(LOG_OPEN_PAGE);
 
     }
 

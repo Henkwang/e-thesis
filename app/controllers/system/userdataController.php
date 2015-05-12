@@ -49,7 +49,6 @@ class UserdataController extends \Phalcon\Mvc\Controller
 
         $this->view->pick('system/userIndex');
 
-        $this->logs->set(LOG_OPEN_PAGE);
 
     }
 

@@ -102,7 +102,7 @@ class Sys_log_model extends \EThesis\Library\Adodb
         $arrInsert = [
             'LOG_USER' => $this->sess_class->get('userid'),
             'LOG_USER_TYPE' => $this->user_type,
-            'LOG_PAGE' => get_url(),
+            'LOG_PAGE' => __URI_CALL__,
             'LOG_PROCESS' => $log_process,
             'LOG_VALUE' => json_encode($this->sess_class->get()),
             'LOG_TYPE' => $this->LOG_TYPE[$log_process],
