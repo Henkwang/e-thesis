@@ -22,14 +22,15 @@ class ModuleController extends \Phalcon\Mvc\Controller
 
 
         $form = new Form();
+        $form->param_default['required'] = false;
 
         $form->add_input('MOD_PARENT_ID', [
             'type' => Form::TYPE_NUMBER,
             'label' => 'รหัสโหนดแม่',
         ]);
-        $form->add_input('MOD_LEVEL', [
+        $form->add_input('MOD_CODE', [
             'type' => Form::TYPE_NUMBER,
-            'label' => 'รหัสโหนดแม่',
+            'label' => 'รหัสโหนด',
         ]);
 
         $form->add_input('MOD_NAME_TH', [

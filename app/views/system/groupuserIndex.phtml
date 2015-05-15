@@ -11,7 +11,7 @@ $table_name = 'groupuser_' . rand(0, 999999);
 <br/><br/>
 <div class="row">
     <div class="col-xs-8 col-xs-offset-2">
-       <?=$formclass->get_inputgroup_complate($table_name, false)?>
+        <?= $formclass->get_inputgroup_complate($table_name, false) ?>
     </div>
 </div>
 <hr/>
@@ -45,29 +45,45 @@ $table_name = 'groupuser_' . rand(0, 999999);
                         }
                     } : ''),
                     dom: '<"#top">rt<"#bottom"ilp>',
-                    columns: decode_json('<?php
-                /*
-                  'name' => '',
-                    'data' => [],
-                    'className' => null,
-                    'searchable' => false,
-                    'orderable' => true,
-                    'width' => null,
-                    'visible' => true,
-                    'title' => ''
-                 */
-
-                 // Set Columns Table
-                    echo json_encode([
-                    ['name' => 'pk_id','data' => 'pk_id','orderable' => false, 'visible'=>false],
-                    ['name' => 'GRP_NAME_TH','data' => 'GRP_NAME_TH','orderable' => true,'title' => $Lang->label('GRP_NAME_TH')],
-                    ['name' => 'GRP_NAME_EN','data' => 'GRP_NAME_EN','orderable' => true,'title' => $Lang->label('GRP_NAME_EN')],
-                    ['name' => 'ENABLE','data' => 'ENABLE','orderable' => true,'title' => $Lang->label('ENABLE')],
-                    ['name' => 'GRP_TOPMENU','data' => 'GRP_TOPMENU','orderable' => true,'title' => $Lang->label('GRP_TOPMENU')],
-                    ['name' => 'GRP_USER_TYPE','data' =>  'GRP_USER_TYPE','orderable' => true,'title' => $Lang->label('GRP_USER_TYPE')],
-                    ['name' => 'GRP_TOPMENU','data' => 'GRP_TOPMENU','orderable' => true,'title' => $Lang->label('GRP_TOPMENU')],
-                    ]);
-                ?>')
+                    columns: [
+                        {
+                            name: 'pk_id',
+                            data: 'pk_id',
+                            orderable: false,
+                            visible: false
+                        },
+                        {
+                            name: 'GRP_TOPMENU',
+                            data: 'GRP_TOPMENU',
+                            class: 'dt-center',
+                            width: '10%',
+                            orderable: true,
+                            title: '<?=$Lang->label('GRP_TOPMENU')?>'
+                        },
+                        {
+                            name: 'GRP_NAME_TH',
+                            data: 'GRP_NAME_TH',
+                            class: 'dt-head-center',
+                            width: '30%',
+                            orderable: true,
+                            title: '<?=$Lang->label('GRP_NAME_TH')?>'
+                        },
+                        {
+                            name: 'GRP_NAME_EN',
+                            data: 'GRP_NAME_EN',
+                            class: 'dt-head-center',
+                            width: '30%',
+                            orderable: true,
+                            title: '<?=$Lang->label('GRP_NAME_EN')?>'
+                        },
+                        {
+                            name: 'GRP_USER_TYPE',
+                            data: 'GRP_USER_TYPE',
+                            class: 'dt-head-center',
+                            orderable: true,
+                            title: '<?=$Lang->label('GRP_USER_TYPE')?>'
+                        },
+                    ]
                 })
                     .on('init.dt', function () {
                         $('#<?=$table_name?>_wrapper #top').html('')
@@ -100,9 +116,9 @@ $table_name = 'groupuser_' . rand(0, 999999);
                                     } else if (manage == 'DELETE') {
                                         var res = decode_json(result);
 //                                        clog(res);
-                                        if(res.msg ){
+                                        if (res.msg) {
                                             alert(res.msg);
-                                        }else{
+                                        } else {
                                             alert('ผิดพลาด!');
                                         }
                                         $('#<?=$table_name?>_wrapper #top #EDIT').add('#<?=$table_name?>_wrapper #top #DELETE').addClass('disabled');

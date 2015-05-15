@@ -78,7 +78,7 @@ class GroupuserController extends \Phalcon\Mvc\Controller
         $form->add_input('GRP_USER_TYPE', [
             'type' => Form::TYPE_SELECT,
             'required' => false,
-            'datalang' => 'USER_TYPE',
+            'datalang' => 'USR_TYPE',
         ]);
         return $form;
     }
@@ -129,17 +129,21 @@ class GroupuserController extends \Phalcon\Mvc\Controller
 
         $order = $post['columns'][$post['order'][0]['column']]['name'] . ' ' . $post['order'][0]['dir'];
         $result = $Module_model->select_by_filter($col, $filter, $order, $post['length'], $post['start']);
-        $rows = [];
-        if($result && $result->RecordCount() > 0){
-            $rows =  $result->GetAll();
 
+        $fill_class = new \EThesis\Library\Autofill();
+        $rows = [];
+        while ($row = @$result->FetchRow()) {
+            $row['GRP_USER_TYPE'] = $fill_class->fill_lang('USR_TYPE', $row['GRP_USER_TYPE']);
+            $row['ENABLE'] = $fill_class->fill_lang('TRUE_FALSE', $row['ENABLE']);
+
+            $rows[] = $row;
         }
         $count = $Module_model->count_by_filter($filter);
         $data = [
             "draw" => $post['draw']++,
             "recordsTotal" => $post['length'],
             "recordsFiltered" => $count,
-            'data' => ($result ? $result->GetAll() : []),
+            'data' => $rows,
         ];
         echo json_encode($data);
     }

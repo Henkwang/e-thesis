@@ -31,20 +31,24 @@ class LogsController extends \Phalcon\Mvc\Controller
         $form = new Form();
         $form->add_input('LOG_USER', [
             'type' => Form::TYPE_TEXT,
+            'label' => 'ชื่อผู้ใช้งาน',
         ]);
         $form->add_input('LOG_PAGE', [
-            'type' => Form::TYPE_TEXT
+            'type' => Form::TYPE_TEXT,
+            'label' => 'หน้าใช้งาน',
         ]);
         $form->add_input('LOG_PROCESS', [
             'type' => Form::TYPE_SELECT,
-            'datalang' => 'LOG_PROCESS'
+            'datalang' => 'LOG_PROCESS',
         ]);
 
         $form->add_input('LOG_DATE', [
             'type' => Form::TYPE_DATE,
+            'label' => 'เวลาบันทึก',
         ]);
         $form->add_input('LOG_BROWSER_INFO', [
             'type' => Form::TYPE_TEXT,
+            'label' => 'เบราเซอร์ที่ใช้',
         ]);
 
         $this->view->setVars($form->get_form());
@@ -77,11 +81,16 @@ class LogsController extends \Phalcon\Mvc\Controller
         $order = $post['columns'][$post['order'][0]['column']]['name'] . ' ' . $post['order'][0]['dir'];
         $result = $Module_model->select_by_filter($col, $filter, $order, $post['length'], $post['start']);
         $count = $Module_model->count_by_filter($filter);
+        $rows = [];
+        while ($row = @$result->FetchRow()) {
+            $row['LOG_DATE'] = view_date($row['LOG_DATE'], 'dt', true);
+            $rows[] = $row;
+        }
         $data = [
             "draw" => $post['draw']++,
             "recordsTotal" => $post['length'],
             "recordsFiltered" => $count,
-            'data' => ($result ? $result->GetAll() : []),
+            'data' => $rows,
         ];
         echo json_encode($data);
     }

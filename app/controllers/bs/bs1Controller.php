@@ -123,11 +123,14 @@ class bs1Controller extends \Phalcon\Mvc\Controller
                     'BS1_PROCESS_ID' => '1',
                     'BS1_HIS_ORDER' => $max_his_order,
                     'BS1_ID' => $pk_id,
-                    'BS1_HIS_STATUS' =>  $_POST['BS1_HIS_STATUS'],
+                    'BS1_HIS_STATUS' => $_POST['BS1_HIS_STATUS'],
                     'BS1_HIS_REMARK' => $_POST['BS1_HIS_REMARK'],
                     'BS1_HIS_DATE' => 'GETDATE()'
                 ];
-                if ($bph_model->insert($data)) {
+                $bs1_model = new \EThesis\Models\Bs\Bs1_master_model();
+                $bs1_model->field_update = ['BS1_PROCESS_ORDER'];
+
+                if ($bph_model->insert($data) && $bs1_model->update(['BS1_PROCESS_ORDER'=> 1], $pk_id)) {
                     $response['success'] = true;
                     $response['msg'] = 'ดำเนินการส่งแบบฟอร์มสำเร็จ';
                 }

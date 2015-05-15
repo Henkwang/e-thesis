@@ -88,6 +88,7 @@ $table_name = 'log_' . rand(0, 999999);
             var O<?=$table_name?> = $('#<?=$table_name?>').DataTable({
                 processing: true,
                 serverSide: true,
+                order: [[4, 'desc']],
                 ajax: {
                     url: '<?=$di->url->get('system/logs/getdata');?>',
                     type: 'POST'

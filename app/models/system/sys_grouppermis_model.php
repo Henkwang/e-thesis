@@ -25,14 +25,15 @@ class Sys_grouppermis_model extends \EThesis\Library\Adodb
     {
         parent::__construct();
 
-//        $this->adodb->debug = TRUE;
+        $this->adodb->debug = false;
 
         $sess = new \EThesis\Library\Session();
 
+        $this->lang = strtoupper($sess->get('lang'));
+
         $this->date_current = $this->adodb->sysTimeStamp;
-        $this->user_access = ($sess->has('username') ? $sess->get('username') : die(AUTH_FALSE_J));
-        $this->user_group = ($sess->has('usergroup') ? $sess->get('usergroup') : die(AUTH_FALSE_J));
-        $this->user_type = ($sess->has('usertype') ? $sess->get('usertype') : die(AUTH_FALSE_J));
+        $this->user_access = $sess->get('username');
+        $this->user_type = $sess->get('usertype');
     }
 
     private function check_filter(array $filter)

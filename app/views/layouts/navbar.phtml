@@ -338,10 +338,10 @@ if ($di->session->get('auth') === true && is_numeric($di->session->get('grouplog
             ehead.html(title);
         }
         if(foot){
-            efoot.html(foot).append('<button class="btn btn-danger" data-dismiss="modal">ปิด</button>');
+            efoot.html(foot).append('<button class="btn btn-sm btn-danger" data-dismiss="modal">ปิด</button>');
 
         }else{
-            efoot.html('<button class="btn btn-danger" data-dismiss="modal">ปิด</button>');
+            efoot.html('<button class="btn btn-sm btn-danger" data-dismiss="modal">ปิด</button>');
         }
 
     }

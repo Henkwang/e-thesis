@@ -20,6 +20,8 @@ $table_name = 'module_' . rand(0, 999999);
         <table id="<?= $table_name ?>" class="display cell-border hover" cellspacing="0" width="100%"></table>
         <script>
             $.material.init();
+            <?=$valid?>
+
             var O<?=$table_name?> = $('#<?=$table_name?>').DataTable({
                     processing: true,
                     serverSide: true,
@@ -49,7 +51,7 @@ $table_name = 'module_' . rand(0, 999999);
 
                     echo json_encode([
                     ['name' => 'pk_id','data' => 'pk_id','orderable' => false, 'visible'=>false],
-                    ['name' => 'MOD_ID','data' => 'MOD_ID','orderable' => false,'title' => 'รหัส'],
+                    ['name' => 'MOD_CODE','data' => 'MOD_CODE','orderable' => true,'title' => 'รหัสโหนด'],
                     ['name' => 'MOD_PARENT_ID','data' => 'MOD_PARENT_ID','orderable' => true,'title' => $Lang->label('MOD_PARENT_ID')],
                     ['name' => 'MOD_ORDER','data' => 'MOD_ORDER','orderable' => true,'title' => $Lang->label('MOD_ORDER')],
                     ['name' => 'MOD_NAME_TH','data' => 'MOD_NAME_TH','orderable' => true,'title' => $Lang->label('MOD_NAME_TH')],

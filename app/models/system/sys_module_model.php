@@ -25,14 +25,15 @@ class Sys_module_model extends \EThesis\Library\Adodb
     {
         parent::__construct();
 
-//        $this->adodb->debug = TRUE;
+        $this->adodb->debug = false;
 
         $sess = new \EThesis\Library\Session();
 
+        $this->lang = strtoupper($sess->get('lang'));
+
         $this->date_current = $this->adodb->sysTimeStamp;
-        $this->user_access = ($sess->has('username') ? $sess->get('username') : die(AUTH_FALSE_J));
-        $this->user_group = ($sess->has('usergroup') ? $sess->get('usergroup') : die(AUTH_FALSE_J));
-        $this->user_type = ($sess->has('usertype') ? $sess->get('usertype') : die(AUTH_FALSE_J));
+        $this->user_access = $sess->get('username');
+        $this->user_type = $sess->get('usertype');
     }
 
     private function check_filter(array $filter)
@@ -45,9 +46,11 @@ class Sys_module_model extends \EThesis\Library\Adodb
             $sql .= (!empty($filter['MOD_NAME_TH']) ? " AND MOD_NAME_TH LIKE '%{$filter['MOD_NAME_TH']}%'" : '');
             $sql .= (!empty($filter['MOD_NAME_EN']) ? " AND MOD_NAME_EN LIKE '%{$filter['MOD_NAME_EN']}%'" : '');
             $sql .= (!empty($filter['MOD_LEVEL']) ? " AND MOD_LEVEL = '{$filter['MOD_LEVEL']}'" : '');
+            $sql .= (!empty($filter['MOD_CODE']) ? " AND MOD_CODE = '{$filter['MOD_CODE']}'" : '');
             $sql .= (!empty($filter['MOD_ORDER']) ? " AND MOD_ORDER = '{$filter['MOD_ORDER']}'" : '');
             $sql .= (!empty($filter['ENABLE']) ? " AND ENABLE = '{$filter['ENABLE']}'" : '');
             $sql .= (!empty($filter['MOD_URL']) ? " AND MOD_URL LIKE '%{$filter['MOD_URL']}%'" : '');
+
 
             $sql .= (!empty($filter['IN_ID']) ? " AND {$this->primary} IN ({$filter['IN_ID']})" : '');
             $sql .= (!empty($filter['NOT_IN_ID']) ? " AND {$this->primary} NOT IN ({$filter['IN_ID']})" : '');

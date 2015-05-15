@@ -23,13 +23,15 @@ return [
         'MSG_IMPORT_ERROR' => 'MSG_IMPORT_ERROR',
         'MSG_IMPORT_ITEM_ERROR' => 'MSG_IMPORT_ITEM_ERROR'
     ],
-    'USER_TYPE' => [
-        'label' => 'USER TYPE',
-        'A' => 'A : Admin',
-        'T' => 'T : Teacher',
-        'U' => 'U : Staff',
-        'S' => 'S : Student',
-    ],
+
+    'TRUE_FALSE' =>[
+        'label' => 'TF',
+        'T' =>'<span class="text-success"><i class="md-done"></i></span>',
+        'F' =>'<span class="text-danger"><i class="md-clear"></i></span>',
+    ]
+
+
+
 
 
 ];

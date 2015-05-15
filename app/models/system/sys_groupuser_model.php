@@ -36,8 +36,6 @@ class Sys_groupuser_model extends \EThesis\Library\Adodb
         $this->date_current = $this->adodb->sysTimeStamp;
         $this->user_access = $sess->get('username');
         $this->user_type = $sess->get('usertype');
-
-//        print_r($this->user_access);
     }
 
     private function check_filter(array $filter)

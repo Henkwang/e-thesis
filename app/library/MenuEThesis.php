@@ -54,7 +54,7 @@ class MenuEThesis
         }
 
         $module_model = new \EThesis\Models\System\Sys_module_model();
-        $field = ['MOD_PARENT_ID', 'MOD_LEVEL', 'MOD_ID', 'MOD_NAME_' . strtoupper($this->lang) . ' [MOD_NAME]', 'MOD_URL'];
+        $field = ['MOD_PARENT_ID', 'MOD_LEVEL', 'MOD_CODE AS MOD_ID', 'MOD_NAME_' . strtoupper($this->lang) . ' [MOD_NAME]', 'MOD_URL'];
         $filter = ['IN_ID' => implode(',', $gid), 'ENABLE' => 'T'];
         $order = 'MOD_LEVEL ASC, MOD_ORDER ASC';
         $objMenu = $module_model->select_by_filter($field, $filter, $order);

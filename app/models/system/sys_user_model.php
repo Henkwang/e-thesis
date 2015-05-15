@@ -25,11 +25,15 @@ class Sys_user_model extends \EThesis\Library\Adodb
     {
         parent::__construct();
 
-        $this->adodb->debug = TRUE;
+        $this->adodb->debug = false;
 
-        $sess = \EThesis\Library\DIPhalcon::get('sess');
+        $sess = new \EThesis\Library\Session();
+
+        $this->lang = strtoupper($sess->get('lang'));
 
         $this->date_current = $this->adodb->sysTimeStamp;
+        $this->user_access = $sess->get('username');
+        $this->user_type = $sess->get('usertype');
     }
 
     private function check_filter(array $filter)

@@ -72,14 +72,23 @@ class UserdataController extends \Phalcon\Mvc\Controller
             $filter = [];
         }
 
+
         $order = $post['columns'][$post['order'][0]['column']]['name'] . ' ' . $post['order'][0]['dir'];
         $result = $Module_model->select_by_filter($col, $filter, $order, $post['length'], $post['start']);
         $count = $Module_model->count_by_filter($filter);
+
+        $fill_class = new \EThesis\Library\Autofill();
+        $rows = [];
+        while ($row = @$result->FetchRow()) {
+            $row['USR_TYPE'] = $fill_class->fill_lang('USR_TYPE', $row['USR_TYPE']);
+            $rows[] = $row;
+        }
+
         $data = [
             "draw" => $post['draw']++,
             "recordsTotal" => $post['length'],
             "recordsFiltered" => $count,
-            'data' => ($result ? $result->GetAll() : []),
+            'data' => $rows,
         ];
         echo json_encode($data);
     }

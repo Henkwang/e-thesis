@@ -44,12 +44,13 @@ class Sys_log_model extends \EThesis\Library\Adodb
 
         $this->adodb->debug = false;
 
-        $this->sess_class = new \EThesis\Library\Session();
+        $sess = new \EThesis\Library\Session();
+
+        $this->lang = strtoupper($sess->get('lang'));
+
+        $this->sess_class = $sess;
 
         $this->date_current = $this->adodb->sysTimeStamp;
-        $this->user_access = ($this->sess_class->has('username') ? $this->sess_class->get('username') : '');
-        $this->user_group = ($this->sess_class->has('usergroup') ? $this->sess_class->get('usergroup') : '');
-        $this->user_type = ($this->sess_class->has('usertype') ? $this->sess_class->get('usertype') : '');
     }
 
     private function check_filter(array $filter)
