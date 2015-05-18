@@ -83,7 +83,7 @@ class bs1Controller extends \Phalcon\Mvc\Controller
             $fill_class = new \EThesis\Library\Autofill();
             $bs1_process_history_model = new \EThesis\Models\Bs\Bs1_process_history_model();
             $field = ['BS1_PROCESS_ID', 'BS1_HIS_ORDER', 'BS1_HIS_STATUS', 'BS1_HIS_REMARK', 'BS1_HIS_DATE'];
-            $filter = ['BS1_ID' => $pk_id];
+            $filter = ['BS1_ID' => $pk_id, 'BS1_HIS_ORDER'=> $bs1_process_history_model->get_num_max_order_by_bs1($pk_id)];
             $result = $bs1_process_history_model->select_by_filter($field, $filter);
             $data['BS1_HIS'] = [];
             $data['pk_id'] = $pk_id;
@@ -125,12 +125,16 @@ class bs1Controller extends \Phalcon\Mvc\Controller
                     'BS1_ID' => $pk_id,
                     'BS1_HIS_STATUS' => $_POST['BS1_HIS_STATUS'],
                     'BS1_HIS_REMARK' => $_POST['BS1_HIS_REMARK'],
-                    'BS1_HIS_DATE' => 'GETDATE()'
+                    'BS1_HIS_DATE' => 'GETDATE()',
+                    'BS1_USER_APPROVE' => $this->session->get('name'),
+                    'BS1_NAME_APPROVE' => $this->session->get('username'),
                 ];
                 $bs1_model = new \EThesis\Models\Bs\Bs1_master_model();
                 $bs1_model->field_update = ['BS1_PROCESS_ORDER'];
-
-                if ($bph_model->insert($data) && $bs1_model->update(['BS1_PROCESS_ORDER'=> 1], $pk_id)) {
+                $bph_model->adodb->BeginTrans();
+                $ok = ($bph_model->insert($data) && $bs1_model->update(['BS1_PROCESS_ORDER' => 1], $pk_id));
+                $bph_model->adodb->CommitTrans($ok);
+                if ($ok) {
                     $response['success'] = true;
                     $response['msg'] = 'ดำเนินการส่งแบบฟอร์มสำเร็จ';
                 }
@@ -152,7 +156,7 @@ class bs1Controller extends \Phalcon\Mvc\Controller
                 if ($post['columns'][$i]['name'] == 'pk_id') {
                     $col[$i] = $Module_model->primary . ' [pk_id]';
                 } else {
-                    if (!in_array($post['columns'][$i]['name'], ['BS1_PROCESS_ORDER', 'BS1_HIS_STATUS'])) {
+                    if (!in_array($post['columns'][$i]['name'], ['BS1_HIS_STATUS'])) {
                         $col[$i] = $post['columns'][$i]['name'];
                     }
                 }
@@ -168,31 +172,25 @@ class bs1Controller extends \Phalcon\Mvc\Controller
         $result = $Module_model->select_by_filter($col, $filter, $order, $post['length'], $post['start']);
         $rows = [];
         if ($result && $result->RecordCount() > 0) {
-            $bs1_process_history_model = new \EThesis\Models\Bs\Bs1_process_history_model();
             while ($row = $result->FetchRow()) {
                 $row['ASEAN_STATUS'] = $fill_class->fill_asean($row['ASEAN_STATUS']);
                 $row['ADVISER_STATUS'] = $fill_class->fill_lang('ADVISER_STATUS', $row['ADVISER_STATUS']);
 
 
-                $tmp = $bs1_process_history_model->get_field_max_order_by_bs1([], $row['pk_id']);
-                $cp = ($tmp['BS1_PROCESS_ORDER'] ? $tmp['BS1_PROCESS_ORDER'] : 0);
+                $cp = ($row['BS1_PROCESS_ORDER'] ? $row['BS1_PROCESS_ORDER'] : 0);
                 $pr_cc = '';
                 $wp = 'กำลังดำเนินการ..';
-                if ($cp == 5 && $tmp['BS1_HIS_STATUS'] == 'T') {
+                if ($cp == 5 && $row['BS1_LAST_APPROVE'] == 'T') {
                     $wp = 'ผ่าน';
                 }
-                if ($tmp['BS1_HIS_STATUS'] == 'F') {
+                if ($row['BS1_LAST_APPROVE'] == 'F') {
                     $pr_cc = 'progress-bar-danger';
                     $wp = 'ไม่ผ่าน';
                 }
-
                 $w = round(($cp) * (100 / ($this->process_success)));
                 $row['BS1_PROCESS_ORDER'] = ' <small> ' . $wp . '[' . round($cp) . "/$this->process_success" . ']</small>
                 <div class="progress" style="margin: 2px 15px"><div class="progress-bar ' . $pr_cc . '" style="width: ' . $w . '%"></div>
                 </div>';
-                $row['BS1_HIS_STATUS'] = $tmp['BS1_HIS_STATUS'];
-
-
                 $rows[] = $row;
             }
 

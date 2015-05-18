@@ -12,8 +12,8 @@ class Bs1_process_history_model extends \EThesis\Library\Adodb
 
     var $use_view = 'VW';
 
-    var $field_insert = ['BS1_PROCESS_ID', 'BS1_HIS_ORDER', 'BS1_ID', 'BS1_HIS_STATUS', 'BS1_HIS_REMARK', 'BS1_HIS_DATE'];
-    var $field_update = ['BS1_PROCESS_ID', 'BS1_HIS_ORDER', 'BS1_ID', 'BS1_HIS_STATUS', 'BS1_HIS_REMARK', 'BS1_HIS_DATE'];
+    var $field_insert = ['BS1_PROCESS_ID', 'BS1_HIS_ORDER', 'BS1_ID', 'BS1_HIS_STATUS', 'BS1_HIS_REMARK', 'BS1_HIS_DATE', 'BS1_NAME_APPROVE','BS1_USER_APPROVE'];
+    var $field_update = ['BS1_PROCESS_ID', 'BS1_HIS_ORDER', 'BS1_ID', 'BS1_HIS_STATUS', 'BS1_HIS_REMARK', 'BS1_HIS_DATE', 'BS1_NAME_APPROVE','BS1_USER_APPROVE'];
 
     var $date_current;
     var $user_access;
@@ -42,6 +42,11 @@ class Bs1_process_history_model extends \EThesis\Library\Adodb
 
             $sql .= (isset($filter['BS1_PROCESS_NAME_TH']) ? " AND BS1_PROCESS_NAME_TH LIKE '%{$filter['BS1_PROCESS_NAME_TH']}%'" : '');
             $sql .= (isset($filter['BS1_PROCESS_NAME_EN']) ? " AND BS1_PROCESS_NAME_EN LIKE '%{$filter['BS1_PROCESS_NAME_EN']}%'" : '');
+
+            $sql .= (isset($filter['BS1_NAME_APPROVE']) ? " AND BS1_NAME_APPROVE LIKE '%{$filter['BS1_NAME_APPROVE']}%'" : '');
+            $sql .= (isset($filter['BS1_USER_APPROVE']) ? " AND BS1_USER_APPROVE LIKE '%{$filter['BS1_USER_APPROVE']}%'" : '');
+
+
 
 
             $sql .= (isset($filter['BS1_PROCESS_ID']) ? " AND BS1_PROCESS_ID IN ({$filter['BS1_PROCESS_ID']})" : '');

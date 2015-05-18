@@ -19,6 +19,8 @@ class bs1approveController extends \Phalcon\Mvc\Controller
 
     private $process_success = 5;
 
+    private $approve_process_order = 2;
+
 
     protected function initialize()
     {
@@ -83,9 +85,10 @@ class bs1approveController extends \Phalcon\Mvc\Controller
             $fill_class = new \EThesis\Library\Autofill();
             $bs1_process_history_model = new \EThesis\Models\Bs\Bs1_process_history_model();
             $field = ['BS1_PROCESS_ID', 'BS1_HIS_ORDER', 'BS1_HIS_STATUS', 'BS1_HIS_REMARK', 'BS1_HIS_DATE'];
-            $filter = ['BS1_ID' => $pk_id];
+            $filter = ['BS1_ID' => $pk_id, 'BS1_HIS_ORDER' => $bs1_process_history_model->get_num_max_order_by_bs1($pk_id)];
             $result = $bs1_process_history_model->select_by_filter($field, $filter);
             $data['BS1_HIS'] = [];
+            $data['BS1_POP'] = [];
             $data['pk_id'] = $pk_id;
 
             if (is_object($result) && $result->RecordCount() > 0) {
@@ -99,6 +102,23 @@ class bs1approveController extends \Phalcon\Mvc\Controller
                     ];
                 }
             }
+
+            /*  GET POP E-Thesis */
+            $bs1_Model = new \EThesis\Models\Bs\Bs1_master_model();
+            $result = $bs1_Model->select_by_filter(['POP_INS_ID', 'POP_HEAD_THESIS_ID', 'POP_COM_THESIS_ID', 'POP_INS_IS_ID'], ['IN_ID' => $pk_id]);
+            if (is_object($result) && $result->RecordCount() > 0) {
+                while ($row = $result->FetchRow()) {
+                    $data['BS1_POP'] = [
+                        'POP_INS_ID' => $row['POP_INS_ID'],
+                        'POP_HEAD_THESIS_ID' => $row['POP_HEAD_THESIS_ID'],
+                        'POP_COM_THESIS_ID' => $row['POP_COM_THESIS_ID'],
+                        'POP_INS_IS_ID' => $row['POP_INS_IS_ID'],
+                    ];
+                }
+            }
+            /* END */
+
+
             $response['success'] = true;
         }
         $response['data'] = $data;
@@ -110,27 +130,40 @@ class bs1approveController extends \Phalcon\Mvc\Controller
 
     public function setdataAction($set)
     {
+
         $response = default_response('ผิดพลาด! การเข้าถึงไม่ถูกต้อง');
         $set = strtolower($set);
-        if ($set == 'send_po1') {
+        if ($set == 'send_po2') {
             $response = default_response('ผิดพลาด! ไม่สามารถดำเนินการส่งแบบฟอร์มได้');
             if (!empty($_POST['pk_id'])) {
                 $pk_id = $_POST['pk_id'];
                 $bph_model = new \EThesis\Models\Bs\Bs1_process_history_model();
                 $max_his_order = $bph_model->get_num_max_order_by_bs1($pk_id);
-                $max_his_order += 1;
+//                $max_his_order += 1;
                 $data = [
-                    'BS1_PROCESS_ID' => '2',
+                    'BS1_PROCESS_ID' => $this->approve_process_order,
                     'BS1_HIS_ORDER' => $max_his_order,
                     'BS1_ID' => $pk_id,
                     'BS1_HIS_STATUS' => $_POST['BS1_HIS_STATUS'],
                     'BS1_HIS_REMARK' => $_POST['BS1_HIS_REMARK'],
-                    'BS1_HIS_DATE' => 'GETDATE()'
+                    'BS1_HIS_DATE' => 'GETDATE()',
+                    'BS1_USER_APPROVE' => $this->session->get('name'),
+                    'BS1_NAME_APPROVE' => $this->session->get('username'),
                 ];
                 $bs1_model = new \EThesis\Models\Bs\Bs1_master_model();
-                $bs1_model->field_update = ['BS1_PROCESS_ORDER'];
-
-                if ($bph_model->insert($data) && $bs1_model->update(['BS1_PROCESS_ORDER' => 2], $pk_id)) {
+                $bs1_model->field_update = ['BS1_PROCESS_ORDER', 'BS1_POP_THESIS_ID', 'BS1_LAST_APPROVE'];
+                $bph_model->adodb->BeginTrans();
+                $ok = (
+                    $bph_model->insert($data) &&
+                    $bs1_model->update(
+                        [
+                            'BS1_PROCESS_ORDER' => $this->approve_process_order,
+                            'BS1_POP_THESIS_ID' => ($_POST['BS1_HIS_STATUS'] == 'F' ? '' : implode(',', $_POST['BS1_POP_THESIS_ID'])),
+                            'BS1_LAST_APPROVE' => $_POST['BS1_HIS_STATUS'],
+                        ], $pk_id)
+                );
+                $bph_model->adodb->CommitTrans($ok);
+                if ($ok) {
                     $response['success'] = true;
                     $response['msg'] = 'ดำเนินการส่งแบบฟอร์มสำเร็จ';
                 }
@@ -152,7 +185,7 @@ class bs1approveController extends \Phalcon\Mvc\Controller
                 if ($post['columns'][$i]['name'] == 'pk_id') {
                     $col[$i] = $Module_model->primary . ' [pk_id]';
                 } else {
-                    if (!in_array($post['columns'][$i]['name'], ['BS1_PROCESS_ORDER', 'BS1_HIS_STATUS'])) {
+                    if (!in_array($post['columns'][$i]['name'], [ 'BS1_HIS_STATUS'])) {
                         $col[$i] = $post['columns'][$i]['name'];
                     }
                 }
@@ -169,20 +202,20 @@ class bs1approveController extends \Phalcon\Mvc\Controller
         $result = $Module_model->select_by_filter($col, $filter, $order, $post['length'], $post['start']);
         $rows = [];
         if ($result && $result->RecordCount() > 0) {
-            $bs1_process_history_model = new \EThesis\Models\Bs\Bs1_process_history_model();
+
+//            $bs1_process_history_model = new \EThesis\Models\Bs\Bs1_process_history_model();
             while ($row = $result->FetchRow()) {
                 $row['ASEAN_STATUS'] = $fill_class->fill_asean($row['ASEAN_STATUS']);
                 $row['ADVISER_STATUS'] = $fill_class->fill_lang('ADVISER_STATUS', $row['ADVISER_STATUS']);
 
 
-                $tmp = $bs1_process_history_model->get_field_max_order_by_bs1([], $row['pk_id']);
-                $cp = ($tmp['BS1_PROCESS_ORDER'] ? $tmp['BS1_PROCESS_ORDER'] : 0);
+                $cp = ($row['BS1_PROCESS_ORDER'] ? $row['BS1_PROCESS_ORDER'] : 0);
                 $pr_cc = '';
                 $wp = 'กำลังดำเนินการ..';
-                if ($cp == 5 && $tmp['BS1_HIS_STATUS'] == 'T') {
+                if ($cp == 5 && $row['BS1_LAST_APPROVE'] == 'T') {
                     $wp = 'ผ่าน';
                 }
-                if ($tmp['BS1_HIS_STATUS'] == 'F') {
+                if ($row['BS1_LAST_APPROVE'] == 'F') {
                     $pr_cc = 'progress-bar-danger';
                     $wp = 'ไม่ผ่าน';
                 }
@@ -191,7 +224,6 @@ class bs1approveController extends \Phalcon\Mvc\Controller
                 $row['BS1_PROCESS_ORDER'] = ' <small> ' . $wp . '[' . round($cp) . "/$this->process_success" . ']</small>
                 <div class="progress" style="margin: 2px 15px"><div class="progress-bar ' . $pr_cc . '" style="width: ' . $w . '%"></div>
                 </div>';
-                $row['BS1_HIS_STATUS'] = $tmp['BS1_HIS_STATUS'];
 
 
                 $rows[] = $row;

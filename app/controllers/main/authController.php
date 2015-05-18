@@ -77,7 +77,15 @@ class AuthController extends \Phalcon\Mvc\Controller
 
             $ad_info = FALSE;
 
-            $ad_info = $this->login_ad($user, $pws);
+          //  $ad_info = $this->login_ad($user, $pws);
+			
+			/* auto login*/
+			$ad_info = [];
+			$ad_info[0]['samaccountname'][0] = 'attapon.th';
+			$ad_info[0]['extensionattribute6'][0] = 'attapon.th';
+			$ad_info[0]['displayname'][0] = 'Attapon Thanawong';
+			
+			/* END */
 
             $ad_authen = ($ad_info) ? TRUE : FALSE;
 
@@ -86,7 +94,7 @@ class AuthController extends \Phalcon\Mvc\Controller
             $dbms_authen = (!empty($user_data['USR_PASSWORD']) && sha1($pws) == $user_data['USR_PASSWORD'] ? TRUE : FALSE);
 
             // #2 check authen by active directory
-            if ($this->_ad->get_last_errno() == 81) {
+            if (false && $this->_ad->get_last_errno() == 81) {
                 echo json_encode(['error' => true, 'msg' => "ไม่สามารถตรวจสอบ Account ของมหาวิทยาลัยได้ กรุณาติดต่องานบริการระบบเครือข่ายคอมพิวเตอร์ CITCOMS หรือใช้ Account ภายในระบบทะเบียน"]);
                 return;
             } else {

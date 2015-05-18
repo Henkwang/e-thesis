@@ -92,8 +92,8 @@ var O<?=$table_name?> = $('#<?=$table_name?>').DataTable({
                 orderable: true,
                 title: '<?=$Lang->label('BS1_PROCESS_ORDER')?>'
             }, {
-                name: 'BS1_HIS_STATUS',
-                data: 'BS1_HIS_STATUS',
+                name: 'BS1_LAST_APPROVE',
+                data: 'BS1_LAST_APPROVE',
                 orderable: false,
                 visible: false
             },
@@ -276,7 +276,7 @@ function create_process_bs1_dialog() {
     });
     var foot_dialog = '';
     if (process_his.length == 0 || ck_sta_F) {
-        foot_dialog = '<a href="javascript:process_bs1_send_form(' + process_bs1_data.pk_id + ')" class="btn btn-primary btn-raised"> <i class="md-assignment"></i> ส่งแบบฟอร์ม</a>';
+        foot_dialog = '<a href="javascript:process_bs1_send_form(' + process_bs1_data.pk_id + ')" class="btn  btn-sm btn-primary btn-raised"> <i class="md-assignment"></i> ส่งแบบฟอร์ม</a>';
     }
 
     set_dialog(table.html(), 'รายละเอียดกระบวนการดำเนินการ', foot_dialog);
@@ -290,16 +290,16 @@ function process_bs1_detail(pk_id) {
         '<div class="col-xs-4 text-primary text-right">สถานะ :</div><div class="col-xs-8">' + process_bs1_data.BS1_HIS[pk_id].BS1_HIS_STATUS + '</div>' +
         '<div class="col-xs-4 text-primary text-right">วันที่ทำรายการ :</div><div class="col-xs-8">' + process_bs1_data.BS1_HIS[pk_id].BS1_HIS_DATE + '</div>' +
         '<div class="col-xs-4 text-primary text-right">หมายเหตุ :</div><div class="col-xs-8">' + process_bs1_data.BS1_HIS[pk_id].BS1_HIS_REMARK + '</div>' +
-        '</div><br/><br/>';
-    var foot = '<a href="javascript:create_process_bs1_dialog();" class="btn btn-warning btn-raised"> <i class="md-arrow-back"></i> กลับ</a>';
+        '</div><br/><br/><br/><br/>';
+    var foot = '<a href="javascript:create_process_bs1_dialog();" class="btn btn-warning  btn-sm btn-raised"> <i class="md-arrow-back"></i> กลับ</a>';
     set_dialog(body, head, foot);
 }
 
 function process_bs1_send_form(pk_id) {
     var body = $('#confirm_bs1_send_process').clone();
     var head = 'ยืนยันการส่งแบบฟอร์ม';
-    var foot = '<a href="javascript:process_bs1_send_form_data()" class="btn btn-primary"> <i class="md-assignment"></i> ส่ง</a>';
-    foot += '<a href="javascript:create_process_bs1_dialog();" class="btn btn-warning"> <i class="md-arrow-back"></i> กลับ</a>';
+    var foot = '<a href="javascript:process_bs1_send_form_data()" class="btn btn-sm btn-primary"> <i class="md-assignment"></i> ส่ง</a>';
+    foot += '<a href="javascript:create_process_bs1_dialog();" style="margin-top: 0" class="btn btn-sm btn-warning"> <i class="md-arrow-back"></i> กลับ</a>';
     set_dialog(body.html(), head, foot);
 }
 
